@@ -147,20 +147,19 @@
     <h2 class="text-center mb-4">Álbumes Destacados</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <div th:each="album : ${albums}" class="col">
-            <div class="card h-100">
-                <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
-                <img th:unless="${album.imageUrl}" src="https://via.placeholder.com/300x300" class="card-img-top" alt="Placeholder">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${album.title}">Album Title</h5>
-                    <p class="card-text">
-                        <strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span><br>
-                    </p>
-                    <p class="card-text" th:text="${album.description}">Description</p>
+            <a th:href="@{/albums/{id}(id=${album.id})}" style="text-decoration: none;">
+                <div class="card h-100" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
+                    <img th:unless="${album.imageUrl}" src="https://via.placeholder.com/300x300" class="card-img-top" alt="Placeholder">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${album.title}">Album Title</h5>
+                        <p class="card-text">
+                            <strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span><br>
+                        </p>
+                        <p class="card-text" th:text="${album.description}">Description</p>
+                    </div>
                 </div>
-                <div class="card-footer text-center">
-                    <a th:href="@{/albums/{id}(id=${album.id})}" class="btn btn-info w-100">View</a>
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 </div>
