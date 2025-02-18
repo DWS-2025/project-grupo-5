@@ -135,17 +135,7 @@
     </style>
 </head>
 <body>
-    <header class="main-header">
-        <div class="container">
-            <h1>Music Store</h1>
-            <nav class="main-nav">
-                <a href="/albums"><i class="bi bi-house-fill"></i> Home</a>
-                <a href="#"><i class="bi bi-search"></i> Explore</a>
-                <a href="#"><i class="bi bi-star-fill"></i> Top Albums</a>
-                <a href="#"><i class="bi bi-envelope-fill"></i> Contact</a>
-            </nav>
-        </div>
-    </header>
+<div th:replace="fragments/fragments :: header"></div>
 
     <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -187,11 +177,8 @@
         </div>
     </div>
     </div>
-    <footer class="main-footer">
-        <div class="container">
-            <p>&copy; 2024 Music Store. All rights reserved.</p>
-        </div>
-    </footer>
+
+    <div th:replace="fragments/fragments :: footer"></div>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
