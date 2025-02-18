@@ -108,17 +108,33 @@
         .album-details-container {
             display: flex;
             flex-direction: row;
+            flex-wrap: wrap; /* Esto asegura que el contenedor se ajusta adecuadamente */
         }
 
         .album-image {
             flex: 1;
             display: flex;
             justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Evita que el contenido sobresalga */
+            position: relative;
+            max-height: 300px; /* Limita la altura máxima */
+            border-radius: 8px; /* Bordes redondeados */
         }
+
+        .album-image img {
+            width: 100%; /* Ajusta el ancho a 100% */
+            height: auto; /* Mantiene la proporción de la imagen */
+            object-fit: contain; /* Asegura que la imagen no se deforme */
+            border-radius: 8px; /* Mantiene los bordes redondeados */
+        }
+
 
         .album-info {
             flex: 2;
             padding-left: 20px;
+            overflow: hidden; /* Evita que el texto desborde */
+            text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
         }
 
         .audio-container {
@@ -134,7 +150,7 @@
             background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
             padding: 2rem 0;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .main-header h1 {
@@ -142,7 +158,7 @@
             margin-bottom: 1.5rem;
             text-align: center;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .main-nav {
@@ -160,10 +176,12 @@
             border-radius: 4px;
             transition: all 0.3s ease;
         }
+
         .main-nav a:hover {
-            background-color: rgba(255,255,255,0.1);
+            background-color: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
         }
+
         .main-footer {
             background: #333;
             color: white;
@@ -171,12 +189,10 @@
             margin-top: 3rem;
             text-align: center;
         }
+
         .main-footer p {
             margin: 0;
         }
-
-
-
     </style>
 </head>
 
