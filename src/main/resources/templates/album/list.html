@@ -1,45 +1,144 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Store - Albums</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        header {
+            background: #333;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        .card {
+            background-color: #333;
+            color: white;
+        }
+        .noselect {
+            width: 150px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            background: #e62222;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        .noselect, .noselect span {
+            transition: 200ms;
+        }
+        .noselect .text {
+            transform: translateX(35px);
+            color: white;
+            font-weight: bold;
+        }
+        .noselect .icon {
+            position: absolute;
+            border-left: 1px solid #c41b1b;
+            transform: translateX(110px);
+            height: 40px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .noselect svg {
+            width: 15px;
+            fill: #eee;
+        }
+        .noselect:hover {
+            background: #ff3636;
+        }
+        .noselect:hover .text {
+            color: transparent;
+        }
+        .noselect:hover .icon {
+            width: 150px;
+            border-left: none;
+            transform: translateX(0);
+        }
+        .noselect:focus {
+            outline: none;
+        }
+        .noselect:active .icon svg {
+            transform: scale(0.8);
+        }
+        .btn-info, .btn-warning {
+            font-weight: bold;
+            color: white !important;
+        }
+        .btn-warning {
+            background-color: #002766 !important;
+            border-color: #002766 !important;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Albums</h1>
-            <a href="/albums/new" class="btn btn-primary">Add New Album</a>
-        </div>
-        
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div th:each="album : ${albums}" class="col">
-                <div class="card h-100">
-                    <img th:if="${album.imageUrl != null and !album.imageUrl.empty}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
-                    <img th:unless="${album.imageUrl != null and !album.imageUrl.empty}" src="https://via.placeholder.com/300x300" class="card-img-top" alt="Placeholder">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${album.title}">Album Title</h5>
-                        <p class="card-text">
-                            <strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span><br>
-                            <strong>Genre:</strong> <span th:text="${album.genre}">Genre</span><br>
-                            <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
-                            <strong>Price:</strong> $<span th:text="${#numbers.formatDecimal(album.price, 1, 2)}">Price</span>
-                        </p>
-                        <p class="card-text" th:text="${album.description}">Description</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="d-flex gap-2">
-                            <a th:href="@{/albums/{id}(id=${album.id})}" class="btn btn-info flex-grow-1">View</a>
-                            <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="btn btn-warning flex-grow-1">Edit</a>
-                            <form th:action="@{/albums/{id}(id=${album.id})}" method="post" class="flex-grow-1">
-                                <input type="hidden" name="_method" value="DELETE"/>
-                                <button type="submit" class="btn btn-danger w-100">Delete</button>
-                            </form>
-                        </div>
+<header>
+    <h1>Álbumes de Música</h1>
+    <nav>
+        <a href="#">Inicio</a>
+        <a href="#">Explorar</a>
+        <a href="#">Top Álbumes</a>
+        <a href="#">Contacto</a>
+    </nav>
+</header>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Álbumes Destacados</h2>
+        <a href="/albums/new" class="btn btn-primary">Add New Album</a>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div th:each="album : ${albums}" class="col">
+            <div class="card h-100">
+                <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
+                <img th:unless="${album.imageUrl}" src="https://via.placeholder.com/300x300" class="card-img-top" alt="Placeholder">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${album.title}">Album Title</h5>
+                    <p class="card-text">
+                        <strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span><br>
+                        <strong>Genre:</strong> <span th:text="${album.genre}">Genre</span><br>
+                        <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
+                        <strong>Price:</strong> <span th:text="${#numbers.formatCurrency(album.price)}">Price</span>
+                    </p>
+                    <p class="card-text" th:text="${album.description}">Description</p>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group w-100">
+                        <a th:href="@{/albums/{id}(id=${album.id})}" class="btn btn-info">View</a>
+                        <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="btn btn-warning">Edit</a>
+                        <form th:action="@{/albums/{id}(id=${album.id})}" th:method="delete" style="display: inline;">
+                            <button type="submit" class="noselect" onclick="return confirm('Are you sure?')">
+                                <span class="text">Delete</span>
+                                <span class="icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                            <path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"></path>
+                                        </svg>
+                                    </span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
