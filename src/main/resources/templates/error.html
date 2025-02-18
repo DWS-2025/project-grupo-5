@@ -151,8 +151,8 @@
 </head>
 <body>
 
-<h1>Error <span id="error-code">404</span></h1>
-<p>La página que buscas no existe o ha sido movida.</p>
+<h1>Error <span id="error-code" th:text="${status}">404</span></h1>
+<p th:text="${error}">La página que buscas no existe o ha sido movida.</p>
 
 <div class="container">
   <div class="plate">
@@ -166,11 +166,7 @@
   </div>
 </div>
 
-<a href="/" class="btn">Volver al inicio</a>
-
-<script>
-  document.getElementById('error-code').textContent = '500';
-</script>
+<a href="/albums" class="btn">Volver al inicio</a>
 
 </body>
 </html>
