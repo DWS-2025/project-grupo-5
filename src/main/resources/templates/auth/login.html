@@ -31,14 +31,14 @@
                         
                         <hr class="my-4">
                         
-                        <form th:action="@{/auth/anonymous}" method="post" class="mb-3">
+                        <form th:action="@{/}" method="get" class="mb-3">
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-secondary">Continue as Anonymous</button>
                             </div>
                         </form>
                         
                         <div class="text-center">
-                            <p>Don't have an account? <a th:href="@{/auth/register}">Register here</a></p>
+                            <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
                         </div>
                     </div>
                 </div>
