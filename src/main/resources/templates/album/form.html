@@ -49,6 +49,15 @@
                 <label for="description" class="form-label">Description</label>
                 <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
             </div>
+
+            <div class="mb-3">
+                <label for="audioFile" class="form-label">Audio File Name</label>
+                <input type="text" class="form-control" id="audioFile" placeholder="example.mp3" th:field="*{audioFile}">
+                <small class="form-text text-muted">
+                    Introduce el nombre del archivo MP3 que se asociará con este álbum.
+                    Sube el archivo a <code>/src/main/snippets</code>.
+                </small>
+            </div>
             
             <div class="mb-3">
                 <a href="/albums" class="btn btn-secondary">Cancel</a>

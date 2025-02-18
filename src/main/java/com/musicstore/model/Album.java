@@ -1,11 +1,8 @@
 package com.musicstore.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -23,14 +20,15 @@ public class Album {
     @NotBlank(message = "Genre is required")
     private String genre;
 
-    @NotNull(message = "Year is required")
-    private Integer year;
-
     private String imageUrl;
+
+    private String audioFile; // Nuevo campo
 
     private Double price;
 
     private String description;
+
+    private Integer year; // Cambié la ubicación de year para mantener mejor orden
 
     public void setId(Long id) {
         this.id = id;

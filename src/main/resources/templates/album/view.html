@@ -25,7 +25,17 @@
             background-color: #333; /* Cambia el color de fondo de la tarjeta */
             color: #fff; /* Cambia el color del texto de la tarjeta */
         }
+
+        audio {
+            width: 100%; /* Ocupa todo el ancho */
+            background-color: #333; /* Fondo oscuro, simple y bonito */
+            border: none; /* Sin bordes */
+            border-radius: 8px; /* Bordes suaves */
+            height: 40px; /* Alto suficiente */
     </style>
+
+
+
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -43,12 +53,26 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
-                            <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="img-fluid rounded"
-                                 alt="Album Cover">
-                            <img th:unless="${album.imageUrl}" src="/images/default-album.jpg"
-                                 class="img-fluid rounded" alt="Default Album Cover">
+                        <div class="col-md-4 d-flex justify-content-center">
+                            <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="img-fluid rounded" alt="Album Cover">
+                            <img th:unless="${album.imageUrl}" src="/images/default-album.jpg" class="img-fluid rounded" alt="Default Album Cover">
                         </div>
+
+
+                        <div class="card-text mt-3">
+                            <strong>Audio Preview:</strong>
+                            <audio th:if="${album.audioFile}" autoplay loop controls controlsList="nodownload noremoteplayback">
+                                <source th:src="@{'/snippets/' + ${album.audioFile}}" type="audio/mpeg">
+                                Tu navegador no soporta la reproducción de audio.
+                            </audio>
+                            <p th:unless="${album.audioFile}">
+                                No hay audio asociado con este álbum.
+                            </p>
+                        </div>
+
+
+
+
                         <div class="col-md-8">
                             <h1 class="card-title" th:text="${album.title}">Album Title</h1>
                             <p class="card-text"><strong>Artist:</strong> <span
