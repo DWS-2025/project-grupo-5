@@ -19,21 +19,28 @@
             gap: 1rem;
             margin-bottom: 1rem;
         }
+        .header-content {
+            display: flex;
+            align-items: center; /* Asegura alineación vertical */
+            justify-content: center; /* Centra el contenido */
+            gap: 0.5rem; /* Reduce la separación entre logo y texto */
+        }
+
         .store-logo {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
+            height: 20px; /* Logo más pequeño */
+            width: auto; /* Mantiene la proporción */
+            margin-right: 5px; /* Ajuste fino del espacio */
         }
-        .header-content h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
+
         .main-header h1 {
-            font-size: 2.5rem;
+            font-size: 1.8rem; /* Ajusta el tamaño del texto */
             margin: 0;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center; /* Asegura alineación vertical */
         }
+
         .main-nav {
             display: flex;
             justify-content: center;
@@ -67,7 +74,7 @@
         <div class="container">
             <div class="header-content">
                 <img src="/images/store-logo.png" alt="Music Store Logo" class="store-logo">
-                <h1>Music Store</h1>
+                <h1>EchoReviews</h1>
             </div>
             <nav class="main-nav">
                 <a href="/"><i class="bi bi-house-door"></i> Home</a>
