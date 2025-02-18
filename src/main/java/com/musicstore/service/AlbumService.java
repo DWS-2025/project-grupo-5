@@ -27,6 +27,6 @@ public class AlbumService {
     }
 
     public void deleteAlbum(Long id) {
-        fileStorageService.deleteAlbum(id);
+        fileStorageService.deleteAlbum(id);  // Eliminamos el álbum por ID
     }
 }
