@@ -11,12 +11,7 @@ import lombok.Data;
 @Data
 @Entity
 public class Album {
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //private Long id;
-
     @Id
-    @NotBlank(message = "Title is required")
     private Long id;
 
     @NotBlank(message = "Title is required")

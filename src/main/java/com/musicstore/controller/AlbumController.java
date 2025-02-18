@@ -10,13 +10,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/albums")
 public class AlbumController {
-    // Root mapping to show album list
-    @GetMapping("/")
-    public String showHome(Model model) {
-        return listAlbums(model);
-    }
-
     @Autowired
     private AlbumService albumService;
 
@@ -66,6 +61,6 @@ public class AlbumController {
     @DeleteMapping("/{id}")
     public String deleteAlbum(@PathVariable Long id) {
         albumService.deleteAlbum(id);
-        return "redirect:/albums";
+        return "redirect:/";
     }
 }

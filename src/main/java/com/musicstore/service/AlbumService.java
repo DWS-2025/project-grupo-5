@@ -12,21 +12,21 @@ import java.util.Optional;
 public class AlbumService {
 
     @Autowired
-    private AlbumRepository albumRepository;
+    private FileStorageService fileStorageService;
 
     public List<Album> getAllAlbums() {
-        return albumRepository.findAll();
+        return fileStorageService.getAllAlbums();
     }
 
     public Optional<Album> getAlbumById(Long id) {
-        return albumRepository.findById(id);
+        return fileStorageService.getAlbumById(id);
     }
 
     public Album saveAlbum(Album album) {
-        return albumRepository.save(album);
+        return fileStorageService.saveAlbum(album);
     }
 
     public void deleteAlbum(Long id) {
-        albumRepository.deleteById(id);
+        fileStorageService.deleteAlbum(id);
     }
 }
