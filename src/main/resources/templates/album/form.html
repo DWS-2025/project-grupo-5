@@ -1,66 +1,168 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Store - Album Form</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 40px;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .form-control, .btn {
+            border-radius: 5px;
+        }
+        .form-control {
+            background-color: #333;
+            color: white;
+            border: 1px solid #444;
+        }
+        .form-control:focus {
+            border-color: #1db954;
+            background-color: #444;
+        }
+        .btn-primary {
+            background-color: #1db954;
+            border-color: #1db954;
+            font-weight: bold;
+        }
+        .btn-secondary {
+            background-color: #555;
+            border-color: #555;
+        }
+        .text-danger {
+            font-size: 0.9rem;
+        }
+        .mt-4 {
+            margin-top: 2rem !important;
+        }
+
+        header img {
+            display: none; /* Esto ocultará todas las imágenes en el encabezado */
+        }
+
+        .main-header {
+            background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .main-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .main-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .main-nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        footer p {
+            margin: 0;
+        }
+
+
+
+    </style>
 </head>
 <body>
-    <div th:replace="fragments/fragments :: header"></div>
-    <div class="container mt-4">
-        <h1 th:text="${album.id == null ? 'Add New Album' : 'Edit Album'}">Album Form</h1>
-        
-        <form th:action="${album.id == null ? '/albums' : '/albums/' + album.id}" th:object="${album}" method="post" class="mt-4">
-            <div class="mb-3">
-                <label for="title" class="form-label">Title</label>
-                <input type="text" class="form-control" id="title" th:field="*{title}" required>
-                <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="artist" class="form-label">Artist</label>
-                <input type="text" class="form-control" id="artist" th:field="*{artist}" required>
-                <div class="text-danger" th:if="${#fields.hasErrors('artist')}" th:errors="*{artist}"></div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="genre" class="form-label">Genre</label>
-                <input type="text" class="form-control" id="genre" th:field="*{genre}" required>
-                <div class="text-danger" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}"></div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="year" class="form-label">Year</label>
-                <input type="number" class="form-control" id="year" th:field="*{year}" required>
-                <div class="text-danger" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="imageUrl" class="form-label">Image URL</label>
-                <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}">
-            </div>
-            
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
-            </div>
 
-            <div class="mb-3">
-                <label for="audioFile" class="form-label">Audio File Name</label>
-                <input type="text" class="form-control" id="audioFile" placeholder="example.mp3" th:field="*{audioFile}">
-                <small class="form-text text-muted">
-                    Introduce el nombre del archivo MP3 que se asociará con este álbum.
-                    Sube el archivo a <code>/src/main/snippets</code>.
-                </small>
-            </div>
-            
-            <div class="mb-3">
-                <a href="/albums" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Save Album</button>
-            </div>
-        </form>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <div th:replace="fragments/fragments :: footer"></div>
+
+<div th:replace="fragments/fragments :: header"></div>
+
+<div class="container">
+    <h1 class="text-center mb-4" th:text="${album.id == null ? 'Add New Album' : 'Edit Album'}">Album Form</h1>
+
+    <form th:action="${album.id == null ? '/albums' : '/albums/' + album.id}" th:object="${album}" method="post">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="artist" class="form-label">Artist</label>
+            <input type="text" class="form-control" id="artist" th:field="*{artist}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('artist')}" th:errors="*{artist}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="genre" class="form-label">Genre</label>
+            <input type="text" class="form-control" id="genre" th:field="*{genre}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="year" class="form-label">Year</label>
+            <input type="number" class="form-control" id="year" th:field="*{year}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="imageUrl" class="form-label">Image URL</label>
+            <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}">
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="audioFile" class="form-label">Audio File Name</label>
+            <input type="text" class="form-control" id="audioFile" placeholder="example.mp3" th:field="*{audioFile}">
+            <small class="form-text text-muted">
+                <code>Introduce el nombre del archivo MP3 que se asociará con este álbum.
+                Sube el archivo a /src/main/snippets</code>.
+            </small>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between">
+            <a href="/albums" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Album</button>
+        </div>
+    </form>
+</div>
+
+<footer>
+    <p>&copy; 2026 Music Store. Todos los derechos reservados.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
