@@ -11,19 +11,18 @@
             background-color: #1e1e1e;
         }
 
-        /* Estilos específicos para la página de detalles del álbum */
         .breadcrumb-item a {
-            color: #fff; /* Cambia el color del enlace a blanco */
-            text-decoration: none; /* Elimina el subrayado */
+            color: #fff;
+            text-decoration: none;
         }
 
         .breadcrumb-item.active {
-            color: #999; /* Cambia el color del texto activo a gris */
+            color: #999;
         }
 
         .card {
-            background-color: #333; /* Cambia el color de fondo de la tarjeta */
-            color: #fff; /* Cambia el color del texto de la tarjeta */
+            background-color: #333;
+            color: #fff;
         }
 
         audio {
@@ -32,23 +31,13 @@
             border: none;
             border-radius: 8px;
             height: 40px;
-            display: none; /* Hide the audio player */
+            display: none;
         }
 
-        .audio-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end; /* Align mute button to the right */
-            gap: 10px;
-        }
-
-        /* Hide the Audio Preview text */
         .audio-preview-text {
             display: none;
         }
 
-        /* From Uiverse.io by vinodjangid07 */ 
-        /* The switch - the box around the speaker*/
         .toggleSwitch {
             width: 50px;
             height: 50px;
@@ -60,21 +49,12 @@
             border-radius: 50%;
             cursor: pointer;
             transition-duration: .3s;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.13);
+            box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.13);
             overflow: hidden;
         }
 
-        /* Hide default HTML checkbox */
         #checkboxInput {
             display: none;
-        }
-
-        .bell {
-            width: 18px;
-        }
-
-        .bell path {
-            fill: white;
         }
 
         .speaker {
@@ -107,14 +87,12 @@
             width: 18px;
         }
 
-        #checkboxInput:checked +.toggleSwitch .speaker {
+        #checkboxInput:checked + .toggleSwitch .speaker {
             opacity: 0;
-            transition-duration: .3s;
         }
 
-        #checkboxInput:checked +.toggleSwitch .mute-speaker {
+        #checkboxInput:checked + .toggleSwitch .mute-speaker {
             opacity: 1;
-            transition-duration: .3s;
         }
 
         #checkboxInput:active + .toggleSwitch {
@@ -124,8 +102,38 @@
         #checkboxInput:hover + .toggleSwitch {
             background-color: rgb(61, 61, 61);
         }
+
+        /* Modificación de la estructura */
+        .album-details-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .album-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .album-info {
+            flex: 2;
+            padding-left: 20px;
+        }
+
+        .audio-container {
+            display: flex;
+            position: absolute;
+            bottom: 10px;
+            right: 10px; /* Cambié left a right */
+            justify-content: flex-end;
+            gap: 10px; /* Añadí un pequeño gap para que no quede tan pegado al borde */
+        }
+
+
+
     </style>
 </head>
+
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container mt-5">
@@ -141,65 +149,59 @@
 
             <div class="card">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 d-flex justify-content-center">
+                    <div class="album-details-container">
+                        <div class="album-image">
                             <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="img-fluid rounded" alt="Album Cover">
                             <img th:unless="${album.imageUrl}" src="/images/default-album.jpg" class="img-fluid rounded" alt="Default Album Cover">
                         </div>
 
-                        <div class="card-text mt-3">
-                            <strong class="audio-preview-text">Audio Preview:</strong>
-                            <div class="audio-container">
-                                <audio th:if="${album.audioFile}" autoplay loop controls controlsList="nodownload noremoteplayback">
-                                    <source th:src="@{'/snippets/' + ${album.audioFile}}" type="audio/mpeg">
-                                    Tu navegador no soporta la reproducción de audio.
-                                </audio>
-                                <input type="checkbox" id="checkboxInput">
-                                <label for="checkboxInput" class="toggleSwitch">
-                                    <div class="speaker">
-                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 75 75">
-                                            <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" style="stroke:#fff;stroke-width:5;stroke-linejoin:round;fill:#fff;"></path>
-                                            <path d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6" style="fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="mute-speaker">
-                                        <svg version="1.0" viewBox="0 0 75 75" stroke="#fff" stroke-width="5">
-                                            <path d="m39,14-17,15H6V48H22l17,15z" fill="#fff" stroke-linejoin="round"></path>
-                                            <path d="m49,26 20,24m0-24-20,24" fill="#fff" stroke-linecap="round"></path>
-                                        </svg>
-                                    </div>
-                                </label>
-                            </div>
-                            <p th:unless="${album.audioFile}">
-                                No hay audio asociado con este álbum.
-                            </p>
-                        </div>
-
-                        <div class="col-md-8">
+                        <div class="album-info">
                             <h1 class="card-title" th:text="${album.title}">Album Title</h1>
-                            <p class="card-text"><strong>Artist:</strong> <span
-                                    th:text="${album.artist}">Artist Name</span></p>
-                            <p class="card-text"><strong>Genre:</strong> <span th:text="${album.genre}">Genre</span>
-                            </p>
+                            <p class="card-text"><strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span></p>
+                            <p class="card-text"><strong>Genre:</strong> <span th:text="${album.genre}">Genre</span></p>
                             <p class="card-text"><strong>Year:</strong> <span th:text="${album.year}">Year</span></p>
-                            <p class="card-text"><strong>Price:</strong> <span
-                                    th:text="'$' + ${#numbers.formatDecimal(album.price, 1, 2)}">Price</span></p>
                             <p class="card-text"><strong>Description:</strong></p>
                             <p class="card-text" th:text="${album.description}">Description</p>
-
-                            <div class="mt-4">
-                                <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="btn btn-primary me-2">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                                <form th:action="@{/albums/{id}(id=${album.id})}" th:method="delete"
-                                      style="display: inline;">
-                                    <button type="submit" class="btn btn-danger"
-                                            onclick="return confirm('Are you sure you want to delete this album?')">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form>
-                            </div>
                         </div>
+                    </div>
+
+                    <div class="audio-container">
+                        <strong class="audio-preview-text">Audio Preview:</strong>
+                        <audio th:if="${album.audioFile}" autoplay loop controls controlsList="nodownload noremoteplayback">
+                            <source th:src="@{'/snippets/' + ${album.audioFile}}" type="audio/mpeg">
+                            Tu navegador no soporta la reproducción de audio.
+                        </audio>
+                        <input type="checkbox" id="checkboxInput">
+                        <label for="checkboxInput" class="toggleSwitch">
+                            <div class="speaker">
+                                <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 75 75">
+                                    <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" style="stroke:#fff;stroke-width:5;stroke-linejoin:round;fill:#fff;"></path>
+                                    <path d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6" style="fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round"></path>
+                                </svg>
+                            </div>
+                            <div class="mute-speaker">
+                                <svg version="1.0" viewBox="0 0 75 75" stroke="#fff" stroke-width="5">
+                                    <path d="m39,14-17,15H6V48H22l17,15z" fill="#fff" stroke-linejoin="round"></path>
+                                    <path d="m49,26 20,24m0-24-20,24" fill="#fff" stroke-linecap="round"></path>
+                                </svg>
+                            </div>
+                        </label>
+                    </div>
+
+                    <p th:unless="${album.audioFile}">
+                        No hay audio asociado con este álbum.
+                    </p>
+
+                    <div class="mt-4">
+                        <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="btn btn-primary me-2">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form th:action="@{/albums/{id}(id=${album.id})}" th:method="delete" style="display: inline;">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this album?')">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -213,7 +215,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const audio = document.querySelector('audio');
         const checkbox = document.getElementById('checkboxInput');
-        
+
         if (audio) {
             audio.style.display = 'none';
             checkbox.addEventListener('change', function() {

@@ -24,8 +24,6 @@ public class Album {
 
     private String audioFile; // Nuevo campo
 
-    private Double price;
-
     private String description;
 
     private Integer year; // Cambié la ubicación de year para mantener mejor orden
