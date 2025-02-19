@@ -46,7 +46,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: rgb(39, 39, 39);
+            background-color: #1a5f42; /* Nuevo color de fondo */
             border-radius: 50%;
             cursor: pointer;
             transition-duration: .3s;
@@ -101,10 +101,10 @@
         }
 
         #checkboxInput:hover + .toggleSwitch {
-            background-color: rgb(61, 61, 61);
+            background-color: #0c3b25;
         }
 
-        /* Modificación de la estructura */
+
         .album-details-container {
             display: flex;
             flex-direction: row;
@@ -133,17 +133,17 @@
         .album-info {
             flex: 2;
             padding-left: 20px;
-            overflow: hidden; /* Evita que el texto desborde */
-            text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .audio-container {
             display: flex;
             position: absolute;
-            bottom: 10px;
-            right: 10px; /* Cambié left a right */
+            top: 10px;
+            right: 10px;
             justify-content: flex-end;
-            gap: 10px; /* Añadí un pequeño gap para que no quede tan pegado al borde */
+            gap: 10px;
         }
 
         .main-header {
@@ -254,13 +254,7 @@
                         No hay audio asociado con este álbum.
                     </p>
 
-                    <div class="mt-4">
-                        <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="btn btn-primary me-2">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
 
-
-                    </div>
                 </div>
             </div>
         </div>
