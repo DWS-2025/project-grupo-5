@@ -27,7 +27,7 @@ public class UserService {
             try {
                 objectMapper.writeValue(file, new ArrayList<User>());
             } catch (IOException e) {
-                throw new RuntimeException("Could not initialize users storage file", e);
+                throw new RuntimeException("Could not initialize storage file", e);
             }
         }
     }
@@ -46,14 +46,22 @@ public class UserService {
                 .findFirst();
     }
 
-    public User registerUser(User user) {
-        if (getUserByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
-        }
-
+    public User saveUser(User user) {
         List<User> users = getAllUsers();
-        user.setId(generateId(users));
-        users.add(user);
+        if (user.getId() == null) {
+            if (getUserByUsername(user.getUsername()).isPresent()) {
+                throw new RuntimeException("Username already exists");
+            }
+            user.setId(generateId(users));
+            users.add(user);
+        } else {
+            int index = findUserIndex(users, user.getId());
+            if (index != -1) {
+                users.set(index, user);
+            } else {
+                users.add(user);
+            }
+        }
         saveAllUsers(users);
         return user;
     }
@@ -65,11 +73,33 @@ public class UserService {
                 .findFirst();
     }
 
+    public User registerUser(User user) {
+        if (user == null) {
+            throw new RuntimeException("User cannot be null");
+        }
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new RuntimeException("Username cannot be empty");
+        }
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            throw new RuntimeException("Password cannot be empty");
+        }
+        return saveUser(user);
+    }
+
     private Long generateId(List<User> users) {
         return users.stream()
                 .mapToLong(User::getId)
                 .max()
                 .orElse(0L) + 1;
+    }
+
+    private int findUserIndex(List<User> users, Long id) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(id)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void saveAllUsers(List<User> users) {

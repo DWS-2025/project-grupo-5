@@ -35,13 +35,13 @@ public class AuthController {
                 });
     }
 
-    @GetMapping("/register")
+    @GetMapping("/auth/register")
     public String registerForm(Model model) {
         model.addAttribute("user", new User());
         return "auth/register";
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
         try {
             userService.registerUser(user);
@@ -49,7 +49,7 @@ public class AuthController {
             return "redirect:/login";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/register";
+            return "redirect:/auth/register";
         }
     }
 
