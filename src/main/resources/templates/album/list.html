@@ -111,8 +111,6 @@
             transition-duration: .3s;
             overflow: hidden;
             position: relative;
-            text-decoration: none;
-            color: white;
         }
 
         .svgIcon {
@@ -128,55 +126,29 @@
             width: 140px;
             border-radius: 50px;
             transition-duration: .3s;
-            background-color: #e62222;
-            display: flex;
+            background-color: rgb(69, 123, 255);
             align-items: center;
-            justify-content: center;
         }
 
         .button:hover .svgIcon {
-            width: 0;
-            transform: translateX(-50px);
-            opacity: 0;
+            width: 50px;
             transition-duration: .3s;
+            transform: translateY(100000%);
         }
 
         .button::before {
-            content: "Delete";
-            color: white;
             position: absolute;
-            font-size: 16px;
-            opacity: 0;
-            transition-duration: .3s;
-            transform: translateX(30px);
-        }
-
-        .button:hover::before {
-            opacity: 1;
-            transform: translateX(0);
-            transition-duration: .3s;
-        }
-
-        .button:hover .svgIcon {
-            transform: translateX(-50px);
-            transition-duration: .3s;
-            fill: white;
-        }
-
-        .button::before {
-            content: "Delete";
+            top: -20px;
+            content: "Edit";
             color: white;
             transition-duration: .3s;
             font-size: 2px;
-            position: absolute;
-            right: 20px;
-            opacity: 0;
         }
 
         .button:hover::before {
             font-size: 13px;
             opacity: 1;
-            transform: translateX(30px);
+            transform: translateY(35px);
             transition-duration: .3s;
         }
     </style>
@@ -330,9 +302,9 @@
                             <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
                         </p>
                         <div class="text-end">
-                            <a th:href="@{/albums/{id}/delete(id=${album.id})}" class="button">
-                                <svg viewBox="0 0 448 512" class="svgIcon">
-                                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                            <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="button">
+                                <svg viewBox="0 0 512 512" class="svgIcon">
+                                    <path d="M362.7 19.3c25-25 65.5-25 90.5 0l39.5 39.5c25 25 25 65.5 0 90.5L177.3 464H64V350.7L362.7 19.3zM96 380v52h52l260-260-52-52L96 380z"></path>
                                 </svg>
                             </a>
                         </div>
