@@ -214,10 +214,9 @@
                 <div class="card-body">
                     <div class="album-details-container">
                         <div class="album-image">
-                            <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="img-fluid rounded" alt="Album Cover">
-                            <img th:unless="${album.imageUrl}" src="/images/default-album.jpg" class="img-fluid rounded" alt="Default Album Cover">
+                            <img th:if="${album.imageUrl}" th:src="@{${album.imageUrl}}" class="img-fluid rounded" alt="Album Cover">
+                            <img th:unless="${album.imageUrl}" src="https://via.placeholder.com/300x300" class="card-img-top" alt="Placeholder">
                         </div>
-
                         <div class="album-info">
                             <h1 class="card-title" th:text="${album.title}">Album Title</h1>
                             <p class="card-text"><strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span></p>

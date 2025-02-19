@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.musicstore.model.Album;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 @Service
 public class FileStorageService {
-    private final String FILE_PATH = "data/albums.json";
+    private final String FILE_PATH = System.getProperty("user.dir") + "/data/albums.json";
     private final ObjectMapper objectMapper;
 
     public FileStorageService() {
@@ -117,6 +118,46 @@ public class FileStorageService {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error al guardar el archivo.");
+        }
+    }
+
+    public String storeFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("Failed to store empty file.");
+        }
+
+        try {
+            // Get the absolute path for the uploads directory
+            String projectDir = System.getProperty("user.dir");
+            String uploadDir = projectDir + "/src/main/resources/static/resources/uploads";
+            File directory = new File(uploadDir);
+
+            // Create directory if it doesn't exist
+            if (!directory.exists()) {
+                if (!directory.mkdirs()) {
+                    throw new RuntimeException("Failed to create directory: " + uploadDir);
+                }
+            }
+
+            // Generate a unique filename to prevent overwriting
+            String originalFilename = file.getOriginalFilename();
+            String fileName = System.currentTimeMillis() + "_" + 
+                            (originalFilename != null ? originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_") : "unknown");
+            
+            File dest = new File(directory, fileName);
+
+            // Transfer the file
+            file.transferTo(dest);
+
+            // Verify the file was created
+            if (!dest.exists()) {
+                throw new RuntimeException("Failed to store file: " + fileName);
+            }
+
+            // Return the relative path for the image URL
+            return "/resources/uploads/" + fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file. Error: " + e.getMessage(), e);
         }
     }
 }

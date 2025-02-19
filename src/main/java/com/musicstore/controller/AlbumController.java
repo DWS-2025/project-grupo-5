@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 import java.util.List;
 
@@ -34,7 +36,16 @@ public class AlbumController {
         if (result.hasErrors()) {
             return "album/form";
         }
-        albumService.saveAlbum(album);
+        try {
+            if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
+                albumService.saveAlbumWithImage(album, album.getImageFile());
+            } else {
+                albumService.saveAlbum(album);
+            }
+        } catch (IOException e) {
+            // Handle the error appropriately
+            return "album/form";
+        }
         return "redirect:/albums";
     }
 
@@ -55,8 +66,17 @@ public class AlbumController {
         if (result.hasErrors()) {
             return "album/form";
         }
-        album.setId(id);
-        albumService.saveAlbum(album);
+        try {
+            album.setId(id);
+            if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
+                albumService.saveAlbumWithImage(album, album.getImageFile());
+            } else {
+                albumService.saveAlbum(album);
+            }
+        } catch (IOException e) {
+            // Handle the error appropriately
+            return "album/form";
+        }
         return "redirect:/albums";
     }
 

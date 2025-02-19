@@ -1,9 +1,12 @@
 package com.musicstore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+import jakarta.persistence.Transient;
 
 @Data
 @Entity
@@ -21,6 +24,10 @@ public class Album {
     private String genre;
 
     private String imageUrl;
+
+    @Transient
+    @JsonIgnore
+    private MultipartFile imageFile;
 
     private String audioFile; // Nuevo campo
 

@@ -163,7 +163,7 @@
 <div class="container">
     <h1 class="text-center mb-4" th:text="${album.id == null ? 'Add New Album' : 'Edit Album'}">Album Form</h1>
 
-    <form th:action="${album.id == null ? '/albums' : '/albums/' + album.id}" th:object="${album}" method="post">
+    <form th:action="${album.id == null ? '/albums' : '/albums/' + album.id}" th:object="${album}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input type="text" class="form-control" id="title" th:field="*{title}" required>
@@ -189,8 +189,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="imageUrl" class="form-label">Image URL</label>
-            <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}">
+            <label for="imageFile" class="form-label">Album Cover Image</label>
+            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
         </div>
 
         <div class="mb-3">
