@@ -296,18 +296,19 @@
                     <img th:unless="${album.imageUrl}" src="https://via.placeholder.com/300x300" class="card-img-top" alt="Placeholder">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${album.title}">Album Title</h5>
-                        <p class="card-text">
-                            <strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span><br>
-                            <strong>Genre:</strong> <span th:text="${album.genre}">Genre</span><br>
-                            <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
-                        </p>
-                        <div class="text-end">
-                            <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="button">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="card-text m-0">
+                                <strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span><br>
+                                <strong>Genre:</strong> <span th:text="${album.genre}">Genre</span><br>
+                                <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
+                            </p>
+                            <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="button ms-3" style="margin-bottom: -23px;">
                                 <svg viewBox="0 0 512 512" class="svgIcon">
-                                    <path d="M362.7 19.3c25-25 65.5-25 90.5 0l39.5 39.5c25 25 25 65.5 0 90.5L177.3 464H64V350.7L362.7 19.3zM96 380v52h52l260-260-52-52L96 380z"></path>
+                                    <path d="M362.7 19.3c25-25 65.5-25 90.5 0l39.5 39.5c25 25 25 65.5 0 90.5L177.3 464H64V350.7L362.7 19.3z"></path>
                                 </svg>
                             </a>
                         </div>
+
                     </div>
                 </div>
             </a>
