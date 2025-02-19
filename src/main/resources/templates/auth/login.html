@@ -5,7 +5,7 @@
     <title>Login/Register - Music Store</title>
     <style>
         .wrapper {
-            --input-focus: #2d8cf0;
+            --input-focus: #00501a;
             --font-color: #323232;
             --font-color-sub: #666;
             --bg-color: #fff;
@@ -201,7 +201,7 @@
             cursor: pointer;
         }
         .notification {
-            background-color: #ff4444;
+            background-color: #00511f;
             color: white;
             padding: 10px;
             border-radius: 5px;
@@ -221,9 +221,85 @@
         .notification.hide {
             opacity: 0;
         }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .back-button button {
+            background-color: white;
+            text-align: center;
+            width: 12rem;
+            border-radius: 1rem;
+            height: 3.5rem;
+            position: relative;
+            overflow: hidden;
+            color: black;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-button p {
+            position: relative;
+            z-index: 20;
+            margin: 0;
+            opacity: 1;
+            transform: translateX(0.5rem);
+        }
+
+        .back-button button:hover p {
+            opacity: 0;
+            transform: translateX(0.5rem);
+        }
+
+        .back-button .slide-bg {
+            background-color: #4ade80;
+            border-radius: 0.75rem;
+            height: 3rem;
+            width: 25%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 0.25rem;
+            top: 0.25rem;
+            z-index: 10;
+            transition: width 0.5s;
+        }
+
+        .back-button button:hover .slide-bg {
+            width: calc(100% - 0.5rem);
+        }
+
+        .back-button p {
+            position: relative;
+            z-index: 20;
+            transform: translateX(0.5rem);
+            margin: 0;
+        }
+
+
     </style>
 </head>
 <body>
+<div class="back-button">
+    <a href="/">
+        <button type="button">
+            <div class="slide-bg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" height="25" width="25">
+                    <path d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" fill="#000000"></path>
+                    <path d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" fill="#000000"></path>
+                </svg>
+            </div>
+            <p>Go Back</p>
+        </button>
+    </a>
+</div>
 <div class="wrapper">
     <div class="card-switch">
         <label class="switch">
