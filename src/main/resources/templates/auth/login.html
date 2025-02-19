@@ -33,7 +33,7 @@
 
         .card-side::before {
             position: absolute;
-            content: 'Log in';
+            content: 'Login';
             left: -70px;
             top: 0;
             width: 100px;
@@ -211,11 +211,11 @@
             <span class="card-side"></span>
             <div class="flip-card__inner">
                 <div class="flip-card__front">
-                    <div class="title">Log in</div>
+                    <div class="title">Login</div>
                     <form class="flip-card__form" th:action="@{/login}" method="post">
                         <input class="flip-card__input" name="username" placeholder="Username" type="text" required>
                         <input class="flip-card__input" name="password" placeholder="Password" type="password" required>
-                        <button class="flip-card__btn" type="submit">Let's go!</button>
+                        <button class="flip-card__btn" type="submit">Confirm</button>
                     </form>
                 </div>
                 <div class="flip-card__back">
@@ -224,7 +224,7 @@
                         <input class="flip-card__input" name="username" placeholder="Username" type="text" required>
                         <input class="flip-card__input" name="email" placeholder="Email" type="email" required>
                         <input class="flip-card__input" name="password" placeholder="Password" type="password" required>
-                        <button class="flip-card__btn" type="submit">Confirm!</button>
+                        <button class="flip-card__btn" type="submit">Confirm</button>
                     </form>
                 </div>
             </div>
