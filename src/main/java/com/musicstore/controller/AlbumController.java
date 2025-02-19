@@ -60,9 +60,11 @@ public class AlbumController {
         return "redirect:/albums";
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/delete")
     public String deleteAlbum(@PathVariable Long id) {
-        albumService.deleteAlbum(id);
-        return "redirect:/";
+        albumService.deleteAlbum(id);  // Llamamos al servicio para eliminar el álbum
+        return "redirect:/albums";  // Redirigimos a la lista de álbumes después de eliminar
     }
+
+
 }

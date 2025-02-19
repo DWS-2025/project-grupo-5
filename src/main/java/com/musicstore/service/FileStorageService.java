@@ -64,10 +64,35 @@ public class FileStorageService {
     }
 
     public void deleteAlbum(Long id) {
-        List<Album> albums = getAllAlbums();
-        albums.removeIf(album -> album.getId().equals(id));
-        saveAllAlbums(albums);
+        try {
+            // Leer el archivo JSON y convertirlo a una lista de álbumes
+            File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                System.out.println("El archivo no existe en la ruta: " + FILE_PATH);
+                return;  // Si el archivo no existe, no procedemos
+            }
+
+            // Leer los álbumes desde el archivo
+            List<Album> albums = objectMapper.readValue(file, new TypeReference<List<Album>>() {});
+
+            // Eliminar el álbum que coincide con el ID
+            boolean removed = albums.removeIf(album -> album.getId().equals(id));
+
+            // Si el álbum fue eliminado, lo guardamos de nuevo
+            if (removed) {
+                System.out.println("Álbum con ID " + id + " ha sido eliminado.");
+                saveAllAlbums(albums);  // Guardamos la lista actualizada
+            } else {
+                System.out.println("No se encontró el álbum con ID " + id);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Hubo un error al leer o escribir el archivo JSON.");
+        }
     }
+
+
+
 
     private Long generateId(List<Album> albums) {
         return albums.stream()
@@ -87,9 +112,11 @@ public class FileStorageService {
 
     private void saveAllAlbums(List<Album> albums) {
         try {
+            // Sobrescribir el archivo con la lista actualizada
             objectMapper.writeValue(new File(FILE_PATH), albums);
         } catch (IOException e) {
-            throw new RuntimeException("Could not save albums", e);
+            e.printStackTrace();
+            System.out.println("Error al guardar el archivo.");
         }
     }
 }
