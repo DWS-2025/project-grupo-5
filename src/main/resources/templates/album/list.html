@@ -95,6 +95,90 @@
             font-weight: bold;
             color: white !important;
         }
+
+        .button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgb(20, 20, 20);
+            border: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+            cursor: pointer;
+            transition-duration: .3s;
+            overflow: hidden;
+            position: relative;
+            text-decoration: none;
+            color: white;
+        }
+
+        .svgIcon {
+            width: 12px;
+            transition-duration: .3s;
+        }
+
+        .svgIcon path {
+            fill: white;
+        }
+
+        .button:hover {
+            width: 140px;
+            border-radius: 50px;
+            transition-duration: .3s;
+            background-color: #e62222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button:hover .svgIcon {
+            width: 0;
+            transform: translateX(-50px);
+            opacity: 0;
+            transition-duration: .3s;
+        }
+
+        .button::before {
+            content: "Delete";
+            color: white;
+            position: absolute;
+            font-size: 16px;
+            opacity: 0;
+            transition-duration: .3s;
+            transform: translateX(30px);
+        }
+
+        .button:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+            transition-duration: .3s;
+        }
+
+        .button:hover .svgIcon {
+            transform: translateX(-50px);
+            transition-duration: .3s;
+            fill: white;
+        }
+
+        .button::before {
+            content: "Delete";
+            color: white;
+            transition-duration: .3s;
+            font-size: 2px;
+            position: absolute;
+            right: 20px;
+            opacity: 0;
+        }
+
+        .button:hover::before {
+            font-size: 13px;
+            opacity: 1;
+            transform: translateX(30px);
+            transition-duration: .3s;
+        }
     </style>
     <style>
         body {
@@ -245,26 +329,16 @@
                             <strong>Genre:</strong> <span th:text="${album.genre}">Genre</span><br>
                             <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
                         </p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group w-100">
-                            <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="btn btn-warning">Edit</a>
-                            <form th:action="@{/albums/{id}(id=${album.id})}" th:method="delete"
-                                  style="display: inline;">
-                                <button type="submit" class="noselect" onclick="return confirm('Are you sure?')">
-                                    <span class="text">Delete</span>
-                                    <span class="icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                             viewBox="0 0 24 24">
-                                            <path
-                                                    d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"></path>
-                                        </svg>
-                                    </span>
-                                </button>
-                            </form>
+                        <div class="text-end">
+                            <a th:href="@{/albums/{id}/delete(id=${album.id})}" class="button">
+                                <svg viewBox="0 0 448 512" class="svgIcon">
+                                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                                </svg>
+                            </a>
                         </div>
                     </div>
                 </div>
+            </a>
         </div>
     </div>
 </div>
