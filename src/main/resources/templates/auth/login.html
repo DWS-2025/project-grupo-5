@@ -131,7 +131,7 @@
                 <div class="card-body">
                     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-                    <form th:action="@{/auth/login}" method="post">
+                    <form th:action="@{/login}" method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username" required>
@@ -154,7 +154,7 @@
                     </form>
 
                     <div class="text-center">
-                        <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
+                        <p>Don't have an account? <a th:href="@{/auth/register}">Register here</a></p>
                     </div>
                 </div>
             </div>
