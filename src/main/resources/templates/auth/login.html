@@ -200,6 +200,27 @@
             color: var(--font-color);
             cursor: pointer;
         }
+        .notification {
+            background-color: #ff4444;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .notification.hide {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -211,6 +232,9 @@
             <span class="card-side"></span>
             <div class="flip-card__inner">
                 <div class="flip-card__front">
+                    <div th:if="${error}" class="notification" id="errorNotification">
+                        User or password Incorrect
+                    </div>
                     <div class="title">Login</div>
                     <form class="flip-card__form" th:action="@{/login}" method="post">
                         <input class="flip-card__input" name="username" placeholder="Username" type="text" required>
@@ -219,17 +243,32 @@
                     </form>
                 </div>
                 <div class="flip-card__back">
-                    <div class="title">Sign up</div>
-                    <form class="flip-card__form" th:action="@{/register}" method="post">
-                        <input class="flip-card__input" name="username" placeholder="Username" type="text" required>
-                        <input class="flip-card__input" name="email" placeholder="Email" type="email" required>
-                        <input class="flip-card__input" name="password" placeholder="Password" type="password" required>
-                        <button class="flip-card__btn" type="submit">Confirm</button>
+                    <form class="flip-card__form" th:action="@{/auth/register}" method="post">
+                        <div class="title">Sign up</div>
+                        <input type="text" class="flip-card__input" placeholder="Username" name="username" required>
+                        <input type="email" class="flip-card__input" placeholder="Email" name="email" required>
+                        <input type="password" class="flip-card__input" placeholder="Password" name="password" required>
+                        <button class="flip-card__btn" type="submit">SIGN UP</button>
                     </form>
                 </div>
             </div>
         </label>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notification = document.getElementById('errorNotification');
+        if (notification) {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, 5000);
+        }
+    });
+</script>
 </body>
 </html>
