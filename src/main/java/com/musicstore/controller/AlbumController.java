@@ -70,42 +70,43 @@ public class AlbumController {
     }
 
     @PostMapping("/{id}")
-    public String updateAlbum(@PathVariable Long id, @Valid Album album, BindingResult result) {
+    public String updateAlbum(
+            @PathVariable Long id,
+            @Valid Album album,
+            BindingResult result,
+            @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
+            Model model) throws IOException {
+
         if (result.hasErrors()) {
-            return "album/form";
-        }
-        try {
-            album.setId(id);
-
-            // Si no se sube una nueva imagen, mantenemos la URL existente
-            if (album.getImageFile() == null || album.getImageFile().isEmpty()) {
-                // Si no hay archivo y ya hay una URL, mantenemos la URL
-                if (album.getImageUrl() != null && !album.getImageUrl().isEmpty()) {
-                    album.setImageUrl(album.getImageUrl());  // Mantiene la imagen anterior
-                }
-                // Guardamos el álbum sin cambios en la imagen
-                albumService.saveAlbum(album);
-            } else {
-                // Si se sube una nueva imagen, la procesamos y la guardamos
-                albumService.saveAlbumWithImage(album, album.getImageFile());
-            }
-        } catch (IOException e) {
-            // Manejo de error
-            return "album/form";
+            model.addAttribute("album", album);
+            return "form"; // Asegúrate de que el nombre coincide con el HTML del formulario
         }
 
-        // Procesar el tracklist
-        if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
-            String[] tracklistArray = album.getTracklist().split("\\r?\\n");
-            String concatenatedTracklist = String.join(" + ", tracklistArray);
-            album.setTracklist(concatenatedTracklist);
-        }
+        // Buscar el álbum existente
+        Album existingAlbum = albumService.getAlbumById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id));
 
-        // Guardar el álbum con la información actualizada
-        albumService.saveAlbum(album);
+        // Actualizar los campos del álbum con los nuevos valores
+        existingAlbum.setTitle(album.getTitle());
+        existingAlbum.setArtist(album.getArtist());
+        existingAlbum.setGenre(album.getGenre());
+        existingAlbum.setDescription(album.getDescription());
+        existingAlbum.setTracklist(album.getTracklist());
+        existingAlbum.setYear(album.getYear());
+        existingAlbum.setSpotify_url(album.getSpotify_url());
+        existingAlbum.setApplemusic_url(album.getApplemusic_url());
+        existingAlbum.setTidal_url(album.getTidal_url());
+
+        // Procesar el archivo de audio si se ha cargado uno
+        if (audioFile2 != null && !audioFile2.isEmpty()) {
+            albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
+        } else {
+            albumService.saveAlbum(existingAlbum); // Guardar sin cambiar el archivo de audio
+        }
 
         return "redirect:/admin";
     }
+
 
 
     @PostMapping("/{id}/delete")

@@ -29,6 +29,10 @@ public class Album {
     @JsonIgnore
     private MultipartFile imageFile;
 
+    @Transient
+    @JsonIgnore
+    private MultipartFile audioFile2;
+
     private String audioFile; // Nuevo campo
 
     private String description;
