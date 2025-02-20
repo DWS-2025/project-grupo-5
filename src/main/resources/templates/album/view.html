@@ -199,11 +199,11 @@
                             <p class="card-text"><strong>Genre:</strong> <span th:text="${album.genre}">Genre</span></p>
                             <p class="card-text"><strong>Year:</strong> <span th:text="${album.year}">Year</span></p>
                             <p class="card-text" th:text="${album.description}">Description</p>
-                            
+
                             <div th:if="${album.tracklist}" class="mt-4">
                                 <h4>Tracklist</h4>
                                 <ol class="list-group list-group-numbered">
-                                    <li th:each="track : ${#strings.listSplit(album.tracklist, '\n')}" 
+                                    <li th:each="track : ${#strings.listSplit(album.tracklist, '+')}"
                                         class="list-group-item d-flex justify-content-between align-items-start"
                                         style="background-color: #444; color: white; border-color: #555;">
                                         <div class="ms-2 me-auto" th:text="${track}">Track name</div>

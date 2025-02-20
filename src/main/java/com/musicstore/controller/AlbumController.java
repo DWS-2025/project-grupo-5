@@ -46,6 +46,14 @@ public class AlbumController {
             // Handle the error appropriately
             return "album/form";
         }
+
+        if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
+            // Supongamos que cada canción está separada por saltos de línea
+            String[] tracklistArray = album.getTracklist().split("\\r?\\n");
+            String concatenatedTracklist = String.join(" + ", tracklistArray);
+            album.setTracklist(concatenatedTracklist);
+        } albumService.saveAlbum(album);
+
         return "redirect:/albums";
     }
 
@@ -77,6 +85,17 @@ public class AlbumController {
             // Handle the error appropriately
             return "album/form";
         }
+
+        if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
+            // Supongamos que cada canción está separada por saltos de línea
+            String[] tracklistArray = album.getTracklist().split("\\r?\\n");
+            String concatenatedTracklist = String.join(" + ", tracklistArray);
+            album.setTracklist(concatenatedTracklist);
+        } albumService.saveAlbum(album);
+
+
+
+
         return "redirect:/albums";
     }
 
