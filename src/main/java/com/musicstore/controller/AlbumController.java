@@ -96,7 +96,7 @@ public class AlbumController {
 
 
 
-        return "redirect:/albums";
+        return "redirect:/admin";
     }
 
     @PostMapping("/{id}/delete")

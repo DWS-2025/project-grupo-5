@@ -135,7 +135,7 @@
 <div class="container">
     <h1 class="text-center mb-4" th:text="${album.id == null ? 'Add New Album' : 'Edit Album'}">Album Form</h1>
 
-    <form th:action="${album.id == null ? '/albums' : '/albums/' + album.id}" th:object="${album}" method="post" enctype="multipart/form-data">
+    <form th:action="${album.id == null ? '/admin' : '/admin/' + album.id}" th:object="${album}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input type="text" class="form-control" id="title" th:field="*{title}" required>
@@ -186,9 +186,9 @@
         </div>
 
         <div class="mb-3 d-flex justify-content-between">
-            <a href="/albums" class="btn btn-secondary">Cancel</a>
+            <a href="/admin" class="btn btn-secondary">Cancel</a>
             <div class="d-flex gap-2">
-                <form th:if="${album.id != null}" th:action="@{/albums/{id}(id=${album.id})}" method="post" style="display: inline;">
+                <form th:if="${album.id != null}" th:action="@{/admin/{id}(id=${album.id})}" method="post" style="display: inline;">
                     <input type="hidden" name="_method" value="delete">
                     <button class="button">
                         <svg viewBox="0 0 448 512" class="svgIcon"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path></svg>
