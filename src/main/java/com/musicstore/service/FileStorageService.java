@@ -139,11 +139,12 @@ public class FileStorageService {
                 }
             }
 
-            // Generate a unique filename to prevent overwriting
+            // Get the original filename without any changes
             String originalFilename = file.getOriginalFilename();
-            String fileName = System.currentTimeMillis() + "_" + 
-                            (originalFilename != null ? originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_") : "unknown");
-            
+
+            // If the original filename is null (edge case), we set a default name
+            String fileName = (originalFilename != null ? originalFilename : "unknown");
+
             File dest = new File(directory, fileName);
 
             // Transfer the file

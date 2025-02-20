@@ -191,7 +191,7 @@
                     <div class="album-details-container">
                         <div class="album-image">
                             <img th:if="${album.imageUrl}" th:src="@{${album.imageUrl}}" class="img-fluid rounded" alt="Album Cover">
-                            <img th:unless="${album.imageUrl}" src="https://via.placeholder.com/300x300" class="card-img-top" alt="Placeholder">
+                            <img th:unless="${album.imageUrl}" src="/resources/uploads/error.png" class="card-img-top" alt="Placeholder">
                         </div>
                         <div class="album-info">
                             <h1 class="card-title" th:text="${album.title}">Album Title</h1>
