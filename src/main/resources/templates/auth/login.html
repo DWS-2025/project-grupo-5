@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Login/Register - Music Store</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
         .wrapper {
             --input-focus: #1db954;
             --font-color: #ffffff;
@@ -171,15 +176,14 @@
             color: var(--font-color);
             padding: 5px 10px;
             outline: none;
-        }
-
-        .flip-card__input::placeholder {
-            color: var(--font-color-sub);
-            opacity: 0.8;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .flip-card__input:focus {
             border: 2px solid var(--input-focus);
+            outline: none;
         }
 
         .flip-card__btn:active {
