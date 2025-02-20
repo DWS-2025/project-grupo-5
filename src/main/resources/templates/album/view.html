@@ -120,7 +120,7 @@
             align-items: center;
             overflow: hidden; /* Evita que el contenido sobresalga */
             position: relative;
-            max-height: 300px; /* Limita la altura máxima */
+            max-height: 600px; /* Limita la altura máxima */
             border-radius: 8px; /* Bordes redondeados */
         }
 
@@ -172,7 +172,6 @@
             transform: translateY(-2px);
         }
 
-        /* From Uiverse.io by ilkhoeri */
         .dropdown {
             width: 100%; /* O el mismo ancho que la card */
             max-width: 860px; /* Para asegurarse de que no sobrepase */
@@ -404,7 +403,7 @@
 <body>
 <div class="container mt-5">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-md-12 offset-md-0">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Albums</a></li>
@@ -471,27 +470,41 @@
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card col-md-6 mx-auto">
+        <!-- Primer bloque a la izquierda (tracklist) -->
+        <div class="col-md-4">
+            <div class="card">
                 <div class="card-body">
+                    <div class="mt-4">
+                        <h4>Tracklist</h4>
+                        <ol class="list-group list-group-numbered">
+                            <li th:each="track, iterStat : ${#strings.listSplit(album.tracklist, '+')}" class="listitem">
+                                <div class="track-item">
+                                    <span class="track-number" th:text="${iterStat.index + 1}">1</span>-
+                                    <span class="track-name" th:text="${track}">Track name</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <div class="mt-4">
-                            <h4>Tracklist</h4>
-                            <ol class="list-group list-group-numbered">
-                                <li th:each="track, iterStat : ${#strings.listSplit(album.tracklist, '+')}" class="listitem">
-                                    <div class="track-item">
-                                        <span class="track-number" th:text="${iterStat.index + 1}">1</span>-
-                                        <span class="track-name" th:text="${track}">Track name</span>
-                                    </div>
-                                </li>
-                            </ol>
-                        </div>
+        <!-- Segundo bloque a la derecha (ocupa el resto de la fila) -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mt-4">
+                        <h4>Reviews</h4>
 
-
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
 
 
 
