@@ -92,9 +92,6 @@ public class FileStorageService {
         }
     }
 
-
-
-
     private Long generateId(List<Album> albums) {
         return albums.stream()
                 .mapToLong(Album::getId)
