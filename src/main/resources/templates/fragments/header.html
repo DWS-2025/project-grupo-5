@@ -8,9 +8,18 @@
       <a href="#"><i class="bi bi-search"></i> Explore</a>
       <a href="#"><i class="bi bi-star-fill"></i> Top Albums</a>
       <div th:if="${session.user != null}" class="user-section">
-        <span th:text="${session.user.username}"></span>
-        <a th:if="${session.user.admin}" href="/admin" class="admin-button"><i class="bi bi-gear-fill"></i> Admin Panel</a>
-        <a href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        <div class="dropdown d-inline-block">
+          <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: #1a5f42;">
+            <i class="bi bi-person-circle"></i>
+            <span th:text="${session.user.username}"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
+            <li th:if="${session.user.admin}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+          </ul>
+        </div>
       </div>
       <div th:unless="${session.user != null}">
         <a href="/login"><i class="bi bi-person-fill"></i> Login</a>
