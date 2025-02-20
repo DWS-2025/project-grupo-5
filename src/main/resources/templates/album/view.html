@@ -12,6 +12,8 @@
             background-color: #1e1e1e;
         }
 
+
+
         .breadcrumb-item a {
             color: #fff;
             text-decoration: none;
@@ -170,10 +172,235 @@
             transform: translateY(-2px);
         }
 
+        /* From Uiverse.io by ilkhoeri */
+        .dropdown {
+            width: 100%; /* O el mismo ancho que la card */
+            max-width: 860px; /* Para asegurarse de que no sobrepase */
+            border-radius: 12px;
+            transition: all 300ms;
+            display: flex;
+            flex-direction: column;
+            min-height: 58px;
+            background-color: #333;
+            overflow: hidden;
+            position: relative;
+        }
+        .dropdown input:where(:checked) ~ .list {
+            opacity: 1;
+            transform: translateY(-3rem) scale(1);
+            transition: all 500ms ease;
+            margin-top: 32px;
+            padding-top: 4px;
+            margin-bottom: -32px;
+        }
+        .dropdown input:where(:not(:checked)) ~ .list {
+            opacity: 0;
+            transform: translateY(3rem);
+            margin-top: -100%;
+            user-select: none;
+            height: 0px;
+            max-height: 0px;
+            min-height: 0px;
+            pointer-events: none;
+            transition: all 500ms ease-out;
+        }
+        .trigger {
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            font-weight: 600;
+            color: #fff;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            flex-flow: row;
+            gap: 1rem;
+            padding: 1rem;
+            height: max-content;
+            position: relative;
+            z-index: 99;
+            border-radius: inherit;
+            background-color: #444;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        .dropdown input:where(:checked) + .trigger {
+            margin-bottom: 1rem;
+        }
+        .dropdown input:where(:checked) + .trigger:before {
+            rotate: 90deg;
+            transition-delay: 0ms;
+        }
+        .dropdown input:where(:checked) + .trigger::after {
+            content: "Close Dropdown";
+        }
+
+        .trigger:before,
+        .trigger::after {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .trigger:before {
+            content: "›";
+            rotate: -90deg;
+            width: 17px;
+            height: 17px;
+            color: #ccc;
+            border-radius: 2px;
+            font-size: 26px;
+            transition: all 350ms ease;
+            transition-delay: 85ms;
+        }
+        .trigger::after {
+            content: "Open Dropdown";
+        }
+        .list {
+            height: 100%;
+            max-height: 20rem;
+            width: calc(100% - calc(var(--w-scrollbar) / 2));
+            display: grid;
+            grid-auto-flow: row;
+            overflow: hidden auto;
+            gap: 1rem;
+            padding: 0 1rem;
+            margin-right: -8px;
+            --w-scrollbar: 8px;
+            background-color: #444;
+        }
+        .listitem {
+            height: 100%;
+            width: 100%;
+            list-style: none;
+        }
+
+        .article {
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: justify;
+            width: 100%;
+            border: 1px solid #666;
+            display: inline-block;
+            background-color: #555;
+            color: #fff;
+        }
+
+        .tracklist-container {
+            width: 100%;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        .track-item {
+            padding: 8px;
+            color: #fff;
+            font-size: 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .track-number {
+            font-weight: bold;
+        }
+
+        .track-name {
+            flex-grow: 1;
+        }
+
+        .listitem {
+            list-style: none;
+            border-bottom: 1px solid #444;
+            margin-bottom: 5px;
+        }
+
+        .dropdown input:where(:checked) ~ .list {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: all 500ms ease;
+            padding-top: 0; /* Cambié el padding-top */
+            margin-top: 0; /* Cambié el margin-top */
+            padding-bottom: 1rem; /* Añadí un poco de espacio al final de la lista */
+        }
+
+        .dropdown input:where(:not(:checked)) ~ .list {
+            opacity: 0;
+            transform: translateY(3rem);
+            margin-top: -100%;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .trigger:hover {
+            background-color: #555;
+        }
+
+
+        .webkit-scrollbar::-webkit-scrollbar {
+            width: var(--w-scrollbar);
+            height: var(--w-scrollbar);
+            border-radius: 9999px;
+        }
+        .webkit-scrollbar::-webkit-scrollbar-track {
+            background: #0000;
+        }
+        .webkit-scrollbar::-webkit-scrollbar-thumb {
+            background: #777;
+            border-radius: 9999px;
+        }
+        .webkit-scrollbar:hover::-webkit-scrollbar-thumb {
+            background: #aaa;
+        }
+
+
+        .main-footer {
+            background: #333;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .main-footer p {
+            margin: 0;
+        }
+
+        header {
+            background: #333;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .main-header {
+            background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .main-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
 
     </style>
 </head>
-<header th:replace="fragments/fragments :: header"></header>
+<div th:replace="~{fragments/header :: header}"></div>
 <body>
 <div class="container mt-5">
     <div class="row">
@@ -200,17 +427,12 @@
                             <p class="card-text"><strong>Year:</strong> <span th:text="${album.year}">Year</span></p>
                             <p class="card-text" th:text="${album.description}">Description</p>
 
-                            <div th:if="${album.tracklist}" class="mt-4">
-                                <h4>Tracklist</h4>
-                                <ol class="list-group list-group-numbered">
-                                    <li th:each="track : ${#strings.listSplit(album.tracklist, '+')}"
-                                        class="list-group-item d-flex justify-content-between align-items-start"
-                                        style="background-color: #444; color: white; border-color: #555;">
-                                        <div class="ms-2 me-auto" th:text="${track}">Track name</div>
-                                    </li>
-                                </ol>
-                            </div>
                         </div>
+
+
+
+
+
                     </div>
 
                     <div class="audio-container">
@@ -246,7 +468,34 @@
         </div>
     </div>
 </div>
-<footer th:replace="fragments/fragments :: footer"></footer>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card col-md-6 mx-auto">
+                <div class="card-body">
+
+                        <div class="mt-4">
+                            <h4>Tracklist</h4>
+                            <ol class="list-group list-group-numbered">
+                                <li th:each="track, iterStat : ${#strings.listSplit(album.tracklist, '+')}" class="listitem">
+                                    <div class="track-item">
+                                        <span class="track-number" th:text="${iterStat.index + 1}">1</span>-
+                                        <span class="track-name" th:text="${track}">Track name</span>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
