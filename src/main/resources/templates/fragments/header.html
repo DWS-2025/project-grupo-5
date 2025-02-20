@@ -1,54 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <style>
-    .main-header {
-      background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
-      padding: 2rem 0;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .header-content {
-      max-width: 1200px; /* Ajusta este valor según tus necesidades */
-      margin: 0 auto; /* Esto centra el contenido horizontalmente */
-      padding: 0 15px; /* Añade un poco de padding en los lados */
-    }
-
-    .main-header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      color: #fff;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .main-nav {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 2rem;
-    }
-
-    .main-nav a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-    }
-
-    .main-nav a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-    }
-  </style>
-</head>
-<body>
 <header th:fragment="header" class="main-header">
+  <link rel="stylesheet" th:href="@{/css/header.css}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <div class="header-content">
     <h1>EchoReview</h1>
     <nav class="main-nav">
@@ -59,5 +11,3 @@
     </nav>
   </div>
 </header>
-</body>
-</html>
