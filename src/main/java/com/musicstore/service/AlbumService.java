@@ -29,12 +29,18 @@ public class AlbumService {
     }
 
     public Album saveAlbumWithImage(Album album, MultipartFile imageFile) throws IOException {
-        String imageUrl = fileStorageService.storeFile(imageFile);
-        album.setImageUrl(imageUrl);
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // Guardar la nueva imagen y actualizar el campo imageUrl
+            String imageUrl = fileStorageService.storeFile(imageFile);
+            album.setImageUrl(imageUrl);
+        }
+        // Si no se sube una nueva imagen, simplemente no cambies el campo imageUrl
+
         return fileStorageService.saveAlbum(album);
     }
 
     public void deleteAlbum(Long id) {
         fileStorageService.deleteAlbum(id);  // Eliminamos el álbum por ID
     }
+
 }

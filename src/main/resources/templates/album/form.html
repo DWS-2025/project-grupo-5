@@ -163,7 +163,12 @@
         <div class="mb-3">
             <label for="imageFile" class="form-label">Album Cover Image</label>
             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+            <input type="hidden" th:field="*{imageUrl}">
         </div>
+
+        <!-- Mostrar la URL de la imagen subida -->
+        <p>Imagen subida actualmente: <span th:text="${album.imageUrl}">No hay imagen subida</span></p>
+
 
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>

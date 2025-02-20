@@ -76,28 +76,37 @@ public class AlbumController {
         }
         try {
             album.setId(id);
-            if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
-                albumService.saveAlbumWithImage(album, album.getImageFile());
-            } else {
+
+            // Si no se sube una nueva imagen, mantenemos la URL existente
+            if (album.getImageFile() == null || album.getImageFile().isEmpty()) {
+                // Si no hay archivo y ya hay una URL, mantenemos la URL
+                if (album.getImageUrl() != null && !album.getImageUrl().isEmpty()) {
+                    album.setImageUrl(album.getImageUrl());  // Mantiene la imagen anterior
+                }
+                // Guardamos el álbum sin cambios en la imagen
                 albumService.saveAlbum(album);
+            } else {
+                // Si se sube una nueva imagen, la procesamos y la guardamos
+                albumService.saveAlbumWithImage(album, album.getImageFile());
             }
         } catch (IOException e) {
-            // Handle the error appropriately
+            // Manejo de error
             return "album/form";
         }
 
+        // Procesar el tracklist
         if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
-            // Supongamos que cada canción está separada por saltos de línea
             String[] tracklistArray = album.getTracklist().split("\\r?\\n");
             String concatenatedTracklist = String.join(" + ", tracklistArray);
             album.setTracklist(concatenatedTracklist);
-        } albumService.saveAlbum(album);
+        }
 
-
-
+        // Guardar el álbum con la información actualizada
+        albumService.saveAlbum(album);
 
         return "redirect:/admin";
     }
+
 
     @PostMapping("/{id}/delete")
     public String deleteAlbum(@PathVariable Long id) {
