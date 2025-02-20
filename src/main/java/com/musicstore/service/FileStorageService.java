@@ -158,4 +158,47 @@ public class FileStorageService {
             throw new RuntimeException("Failed to store file. Error: " + e.getMessage(), e);
         }
     }
+
+    public String storeAudio(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("Failed to store empty file.");
+        }
+
+        try {
+            // Get the absolute path for the uploads directory
+            String projectDir = System.getProperty("user.dir");
+            String uploadDir = projectDir + "/src/main/resources/static/snippets";
+            File directory = new File(uploadDir);
+
+            // Create directory if it doesn't exist
+            if (!directory.exists()) {
+                if (!directory.mkdirs()) {
+                    throw new RuntimeException("Failed to create directory: " + uploadDir);
+                }
+            }
+
+            // Get the original filename without any changes
+            String originalFilename = file.getOriginalFilename();
+
+            // If the original filename is null (edge case), we set a default name
+            String fileName = (originalFilename != null ? originalFilename : "unknown");
+
+            File dest = new File(directory, fileName);
+
+            // Transfer the file
+            file.transferTo(dest);
+
+            // Verify the file was created
+            if (!dest.exists()) {
+                throw new RuntimeException("Failed to store file: " + fileName);
+            }
+
+            // Return the relative path for the image URL
+            return fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file. Error: " + e.getMessage(), e);
+        }
+    }
+
+
 }

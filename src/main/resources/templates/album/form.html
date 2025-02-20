@@ -166,8 +166,16 @@
             <input type="hidden" th:field="*{imageUrl}">
         </div>
 
-        <!-- Mostrar la URL de la imagen subida -->
         <p>Imagen subida actualmente: <span th:text="${album.imageUrl}">No hay imagen subida</span></p>
+
+
+        <div class="mb-3">
+            <label for="audioFile2" class="form-label">Audio File</label>
+            <input type="file" class="form-control" id="audioFile2" name="audioFile2">
+        </div>
+
+
+        <p>Audio subido actualmente: <span th:text="${album.audioFile}">No hay audio subido</span></p>
 
 
         <div class="mb-3">
@@ -181,14 +189,6 @@
             <small class="form-text text-muted">Enter each song on a new line to create the tracklist.</small>
         </div>
 
-        <div class="mb-3">
-            <label for="audioFile" class="form-label">Audio File Name</label>
-            <input type="text" class="form-control" id="audioFile" placeholder="example.mp3" th:field="*{audioFile}">
-            <small class="form-text text-muted">
-                <code>Introduce el nombre del archivo MP3 que se asociará con este álbum.
-                Sube el archivo a /src/main/snippets</code>.
-            </small>
-        </div>
 
         <div class="mb-3 d-flex justify-content-between">
             <a href="/admin" class="btn btn-secondary">Cancel</a>
