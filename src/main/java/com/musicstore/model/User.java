@@ -26,4 +26,6 @@ public class User {
     private String email;
 
     private boolean isAnonymous = false;
+    
+    private boolean isAdmin = false;
 }
