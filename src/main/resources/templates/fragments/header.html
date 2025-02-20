@@ -9,7 +9,7 @@
       <a href="#"><i class="bi bi-star-fill"></i> Top Albums</a>
       <div th:if="${session.user != null}" class="user-section">
         <span th:text="${session.user.username}"></span>
-        <a th:if="${session.user.admin}" href="/admin_view" class="admin-button"><i class="bi bi-gear-fill"></i> Admin Panel</a>
+        <a th:if="${session.user.admin}" href="/admin" class="admin-button"><i class="bi bi-gear-fill"></i> Admin Panel</a>
         <a href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
       </div>
       <div th:unless="${session.user != null}">

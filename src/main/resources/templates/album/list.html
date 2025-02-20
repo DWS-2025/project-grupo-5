@@ -295,7 +295,7 @@
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-4 " id="albumsGrid">
         <div th:each="album : ${albums}" class="col">
-            <a th:href="@{/albums/{id}(id=${album.id})}" style="text-decoration: none;">
+            <a th:href="@{/admin/{id}(id=${album.id})}" style="text-decoration: none;">
                 <div class="card h-100" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                     <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
                     <img th:unless="${album.imageUrl}" src="/resources/uploads/error.png" class="card-img-top" alt="Placeholder">
@@ -307,7 +307,7 @@
                                 <strong>Genre:</strong> <span th:text="${album.genre}">Genre</span><br>
                                 <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
                             </p>
-                            <a th:href="@{/albums/{id}/edit(id=${album.id})}" class="button ms-3" style="margin-bottom: -23px;">
+                            <a th:href="@{/admin/{id}/edit(id=${album.id})}" class="button ms-3" style="margin-bottom: -23px;">
                                 <svg viewBox="0 0 512 512" class="svgIcon">
                                     <path d="M362.7 19.3c25-25 65.5-25 90.5 0l39.5 39.5c25 25 25 65.5 0 90.5L177.3 464H64V350.7L362.7 19.3z"></path>
                                 </svg>
