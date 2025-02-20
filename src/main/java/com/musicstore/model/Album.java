@@ -23,7 +23,6 @@ public class Album {
     @JsonIgnore
     private MultipartFile imageFile;
 
-    @Transient
     @JsonIgnore
     private MultipartFile audioFile2;
 
