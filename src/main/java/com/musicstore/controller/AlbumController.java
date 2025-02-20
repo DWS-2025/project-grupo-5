@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin_view")
+@RequestMapping("/albums")
 public class AlbumController {
     @Autowired
     private AlbumService albumService;
@@ -54,7 +54,7 @@ public class AlbumController {
             album.setTracklist(concatenatedTracklist);
         } albumService.saveAlbum(album);
 
-        return "redirect:/admin_view";
+        return "redirect:/albums";
     }
 
     @GetMapping("/{id}/edit")
@@ -96,7 +96,7 @@ public class AlbumController {
 
 
 
-        return "redirect:/admin_view";
+        return "redirect:/albums";
     }
 
     @PostMapping("/{id}/delete")
