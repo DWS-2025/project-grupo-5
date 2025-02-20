@@ -33,6 +33,8 @@ public class Album {
 
     private String description;
 
+    private String tracklist; // Campo para la lista de canciones
+
     private Integer year; // Cambié la ubicación de year para mantener mejor orden
 
     public void setId(Long id) {
