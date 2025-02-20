@@ -1,17 +1,12 @@
 package com.musicstore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.persistence.Transient;
 
 @Data
-@Entity
 public class Album {
-    @Id
     private Long id;
 
     @NotBlank(message = "Title is required")
@@ -25,7 +20,6 @@ public class Album {
 
     private String imageUrl;
 
-    @Transient
     @JsonIgnore
     private MultipartFile imageFile;
 

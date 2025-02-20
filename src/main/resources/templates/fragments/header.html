@@ -4,7 +4,6 @@
   <div class="header-content">
     <h1>EchoReviews</h1>
     <nav class="main-nav">
-      <a href="/admin"><i class="bi bi-house-fill"></i> TEMP ADMIN</a>
       <a href="/"><i class="bi bi-house-fill"></i> Home</a>
       <a href="#"><i class="bi bi-search"></i> Explore</a>
       <a href="#"><i class="bi bi-star-fill"></i> Top Albums</a>
@@ -15,7 +14,7 @@
             <span th:text="${session.user.username}" style="color: white;"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
+            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile</a></li>
             <li th:if="${session.user.admin}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
