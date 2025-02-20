@@ -37,6 +37,12 @@ public class Album {
 
     private Integer year; // Cambié la ubicación de year para mantener mejor orden
 
+    private String spotify_url;
+
+    private String applemusic_url;
+
+    private String tidal_url;
+
     public void setId(Long id) {
         this.id = id;
     }
