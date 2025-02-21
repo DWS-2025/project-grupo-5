@@ -245,4 +245,17 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/4FftCsAcXXD1nFO9RFUNFO?si=XsPVkQXKQxCLHXpuA9xF5g",
   "applemusic_url" : "https://music.apple.com/us/album/nadie-sabe-lo-que-va-a-pasar-ma%C3%B1ana/1710982865",
   "tidal_url" : "https://tidal.com/browse/album/321414271"
+}, {
+  "id" : 22,
+  "title" : "Un Verano Sin Ti",
+  "artist" : "Bad Bunny",
+  "genre" : "Latino",
+  "imageUrl" : "/resources/uploads/uvst.jpg",
+  "audioFile" : "uvst.mp3",
+  "description" : "Este renovado proyecto de Bad Bunny venía siendo rumoreado por los fans, algunos meses después luego de la salida de EL ÚLTIMO TOUR DEL MUNDO.",
+  "tracklist" : "Moscow Mule + Después de la Playa + Me Porto Bonito (feat. Chencho Corleone) + Tití Me Preguntó + Un Ratito + Yo No Soy Celoso + Tarot (feat. JHAYCO) + Neverita + La Corriente (feat. Tony Dize) + Efecto + Party (feat. Rauw Alejandro) + Aguacero + Enséñame a Bailar + Ojitos Lindos (feat. Bomba Estéreo) + Dos Mil 16 + El Apagón + Otro Atardecer (feat. The Marías) + Un Coco + Andrea (feat. Buscabulla) + Me Fui de Vacaciones + Un Verano Sin Ti + Agosto + Callaita (feat. Tainy)",
+  "year" : 2022,
+  "spotify_url" : "https://open.spotify.com/intl-es/album/3RQQmkQEvNCY4prGKE6oc5?si=C-Ya74EFRQS2NR2O9Evd0g",
+  "applemusic_url" : "https://music.apple.com/es/album/un-verano-sin-ti/1622045624",
+  "tidal_url" : "https://tidal.com/browse/album/227614732"
 } ]
