@@ -21,4 +21,6 @@ public class User {
     private boolean isAnonymous = false;
     
     private boolean isAdmin = false;
+
+
 }
