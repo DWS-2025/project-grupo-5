@@ -48,21 +48,28 @@ public class FileStorageService {
     }
 
     public Album saveAlbum(Album album) {
-        List<Album> albums = getAllAlbums();
-        if (album.getId() == null) {
+        List<Album> albums = getAllAlbums(); // Obtiene la lista actual de álbumes
+
+        // Busca el álbum existente por ID
+        Optional<Album> existingAlbum = albums.stream()
+                .filter(a -> a.getId().equals(album.getId()))
+                .findFirst();
+
+        if (existingAlbum.isPresent()) {
+            // Si el álbum ya existe, actualiza sus datos
+            int index = albums.indexOf(existingAlbum.get());
+            albums.set(index, album); // Reemplaza el álbum existente con los datos nuevos
+        } else {
+            // Si el álbum no existe, genera un nuevo ID y lo agrega a la lista
             album.setId(generateId(albums));
             albums.add(album);
-        } else {
-            int index = findAlbumIndex(albums, album.getId());
-            if (index != -1) {
-                albums.set(index, album);
-            } else {
-                albums.add(album);
-            }
         }
+
+        // Guarda todos los álbumes en el archivo JSON
         saveAllAlbums(albums);
         return album;
     }
+
 
     public void deleteAlbum(Long id) {
         try {
@@ -110,13 +117,13 @@ public class FileStorageService {
 
     private void saveAllAlbums(List<Album> albums) {
         try {
-            // Sobrescribir el archivo con la lista actualizada
-            objectMapper.writeValue(new File(FILE_PATH), albums);
+            // Escribe todos los álbumes en el archivo JSON
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_PATH), albums);
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error al guardar el archivo.");
+            throw new RuntimeException("Error al guardar el archivo JSON: " + e.getMessage());
         }
     }
+
 
     public String storeFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {

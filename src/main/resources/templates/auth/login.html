@@ -4,6 +4,52 @@
     <meta charset="UTF-8">
     <title>Login/Register - Music Store</title>
     <style>
+
+        header {
+            background: #333;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .main-header {
+            background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .main-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+        .main-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .main-nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        .main-footer {
+            background: #333;
+            color: white;
+            padding: 0.2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -288,9 +334,145 @@
         }
 
 
+        body {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        #viewToggle {
+            background-color: #1a5f42;
+            color: white;
+            border: none;
+        }
+        #viewToggle:hover {
+            background-color: #236b4e;
+        }
+        .main-nav a i {
+            color: #1a5f42;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        .card {
+            background-color: #333;
+            color: white;
+        }
+        .noselect {
+            width: 150px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            background: #e62222;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        .noselect, .noselect span {
+            transition: 200ms;
+        }
+        .noselect .text {
+            transform: translateX(35px);
+            color: white;
+            font-weight: bold;
+        }
+        .noselect .icon {
+            position: absolute;
+            border-left: 1px solid #c41b1b;
+            transform: translateX(110px);
+            height: 40px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .noselect svg {
+            width: 15px;
+            fill: #eee;
+        }
+        .noselect:hover {
+            background: #ff3636;
+        }
+        .noselect:hover .text {
+            color: transparent;
+        }
+        .noselect:hover .icon {
+            width: 150px;
+            border-left: none;
+            transform: translateX(0);
+        }
+        .noselect:focus {
+            outline: none;
+        }
+        .noselect:active .icon svg {
+            transform: scale(0.8);
+        }
+        .btn-info {
+            background-color: #1db954; /* Verde claro de Spotify */
+            border-color: #1db954;
+            font-weight: bold;
+            color: white !important;
+        }
+
+        header {
+            background: #333;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .main-header {
+            background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .main-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+        .main-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .main-nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        .main-footer {
+            background: #333;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .main-footer p {
+            margin: 0;
+        }
+
+
     </style>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div class="back-button">
     <a href="/">
         <button type="button">
@@ -335,6 +517,9 @@
         </label>
     </div>
 </div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -26,13 +26,13 @@ public class Album {
     @JsonIgnore
     private MultipartFile audioFile2;
 
-    private String audioFile; // Nuevo campo
+    private String audioFile;
 
     private String description;
 
-    private String tracklist; // Campo para la lista de canciones
+    private String tracklist;
 
-    private Integer year; // Cambié la ubicación de year para mantener mejor orden
+    private Integer year;
 
     private String spotify_url;
 

@@ -32,9 +32,12 @@ public class AlbumController {
     }
 
     @PostMapping
-    public String createAlbum(@Valid Album album, BindingResult result) {
+    public String createAlbum(@Valid Album album, BindingResult result,
+                              @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
+                              Model model) throws IOException {
         if (result.hasErrors()) {
-            return "album/form";
+            model.addAttribute("album", album);
+            return "form";
         }
         try {
             if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
@@ -48,11 +51,16 @@ public class AlbumController {
         }
 
         if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
-            // Supongamos que cada canción está separada por saltos de línea
             String[] tracklistArray = album.getTracklist().split("\\r?\\n");
             String concatenatedTracklist = String.join(" + ", tracklistArray);
             album.setTracklist(concatenatedTracklist);
         } albumService.saveAlbum(album);
+
+        if (audioFile2 != null && !audioFile2.isEmpty()) {
+            albumService.saveAlbumWithAudio(album, audioFile2);
+        } else {
+            albumService.saveAlbum(album); // Si no hay archivo de audio, solo se guarda el álbum sin el audio
+        }
 
         return "redirect:/admin";
     }
@@ -79,14 +87,12 @@ public class AlbumController {
 
         if (result.hasErrors()) {
             model.addAttribute("album", album);
-            return "form"; // Asegúrate de que el nombre coincide con el HTML del formulario
+            return "form";
         }
 
-        // Buscar el álbum existente
         Album existingAlbum = albumService.getAlbumById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id));
 
-        // Actualizar los campos del álbum con los nuevos valores
         existingAlbum.setTitle(album.getTitle());
         existingAlbum.setArtist(album.getArtist());
         existingAlbum.setGenre(album.getGenre());
@@ -97,12 +103,15 @@ public class AlbumController {
         existingAlbum.setApplemusic_url(album.getApplemusic_url());
         existingAlbum.setTidal_url(album.getTidal_url());
 
-        // Procesar el archivo de audio si se ha cargado uno
+
+
         if (audioFile2 != null && !audioFile2.isEmpty()) {
             albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
         } else {
-            albumService.saveAlbum(existingAlbum); // Guardar sin cambiar el archivo de audio
+            albumService.saveAlbum(existingAlbum);
         }
+
+
 
         return "redirect:/admin";
     }
@@ -111,8 +120,8 @@ public class AlbumController {
 
     @PostMapping("/{id}/delete")
     public String deleteAlbum(@PathVariable Long id) {
-        albumService.deleteAlbum(id);  // Llamamos al servicio para eliminar el álbum
-        return "redirect:/admin_view";  // Redirigimos a la lista de álbumes después de eliminar
+        albumService.deleteAlbum(id);
+        return "redirect:/admin_view";
     }
 
 
