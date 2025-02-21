@@ -1,18 +1,5 @@
 [ {
   "id" : 1,
-  "title" : "YHLQMDLG",
-  "artist" : "Bad Bunny",
-  "genre" : "Latino",
-  "imageUrl" : "/resources/uploads/yhlqmdlg.png",
-  "audioFile" : null,
-  "description" : "Lanzado el 29 de febrero de 2020, YHLQMDLG es el segundo álbum de estudio de Bad Bunny. Sus letras son el acrónimo: Yo Hago Lo Que Me Da La Gana.",
-  "tracklist" : "Si Veo a Tu Mamá + La Difícil + Pero Ya No + La Santa (feat. Daddy Yankee) + Yo Perreo Sola + Bichiyal (feat. Yaviah) + Soliá + La Zona + Que Malo (feat. Ñengo Flow) + Vete + Ignorantes (feat. Sech) + A Tu Merced + Una Vez (feat. Mora) + Safaera (feat. Jowell & Randy & Ñengo Flow) + 25/8 + Está Cabrón Ser Yo (feat. Anuel AA) + Puesto Pa’ Guerrial (feat. Myke Towers) + P FKN R (feat. Kendo Kaponi & Arcángel) + Hablamos Mañana (feat. Duki & Pablo Chill-E) + <3",
-  "year" : 2020,
-  "spotify_url" : "https://open.spotify.com/intl-es/album/5lJqux7orBlA1QzyiBGti1?si=kB_lnt2lRamgf7qdwo8Bpw",
-  "applemusic_url" : "https://music.apple.com/es/album/yhlqmdlg/1500776322",
-  "tidal_url" : "https://tidal.com/browse/album/132672298"
-}, {
-  "id" : 2,
   "title" : "Bully",
   "artist" : "Kanye West",
   "genre" : "Hip-Hop/Rap",
@@ -24,6 +11,19 @@
   "spotify_url" : "",
   "applemusic_url" : "",
   "tidal_url" : ""
+}, {
+  "id" : 2,
+  "title" : "YHLQMDLG",
+  "artist" : "Bad Bunny",
+  "genre" : "Latino",
+  "imageUrl" : "/resources/uploads/yhlqmdlg.png",
+  "audioFile" : null,
+  "description" : "Lanzado el 29 de febrero de 2020, YHLQMDLG es el segundo álbum de estudio de Bad Bunny. Sus letras son el acrónimo: Yo Hago Lo Que Me Da La Gana.",
+  "tracklist" : "Si Veo a Tu Mamá + La Difícil + Pero Ya No + La Santa (feat. Daddy Yankee) + Yo Perreo Sola + Bichiyal (feat. Yaviah) + Soliá + La Zona + Que Malo (feat. Ñengo Flow) + Vete + Ignorantes (feat. Sech) + A Tu Merced + Una Vez (feat. Mora) + Safaera (feat. Jowell & Randy & Ñengo Flow) + 25/8 + Está Cabrón Ser Yo (feat. Anuel AA) + Puesto Pa’ Guerrial (feat. Myke Towers) + P FKN R (feat. Kendo Kaponi & Arcángel) + Hablamos Mañana (feat. Duki & Pablo Chill-E) + <3",
+  "year" : 2020,
+  "spotify_url" : "https://open.spotify.com/intl-es/album/5lJqux7orBlA1QzyiBGti1?si=kB_lnt2lRamgf7qdwo8Bpw",
+  "applemusic_url" : "https://music.apple.com/es/album/yhlqmdlg/1500776322",
+  "tidal_url" : "https://tidal.com/browse/album/132672298"
 }, {
   "id" : 5,
   "title" : "EL ÚLTIMO TOUR DEL MUNDO",
@@ -77,7 +77,7 @@
   "applemusic_url" : null,
   "tidal_url" : null
 }, {
-  "id" : 9,
+  "id" : 15,
   "title" : "My Beautiful Dark Twisted Fantasy",
   "artist" : "Kanye West",
   "genre" : "Hip-Hop/Rap",
@@ -155,31 +155,31 @@
   "applemusic_url" : null,
   "tidal_url" : null
 }, {
-  "id" : 15,
+  "id" : 9,
   "title" : "Hotel Morgan",
   "artist" : "Morgan",
   "genre" : "Pop",
   "imageUrl" : "/resources/uploads/Hotel Morgan Cover (1).jpeg",
   "audioFile" : "pyra.mp3",
-  "description" : "Hotel Morgan es el cuarto álbum de estudio de Morgan. Grabado en Ocean Sound, Noruega, y producido por Martin García Duque.",
+  "description" : "Hotel Morgan es el cuarto álbum   de estudio de Morgan. Grabado en Ocean Sound, Noruega, y producido por Martin García Duque.",
   "tracklist" : "Intro: Delta + Cruel + Eror 406 + El Jimador + Radio + 1838 + Arena + Pyra + Jon & Julia + Altar + Final",
   "year" : 2025,
-  "spotify_url" : null,
-  "applemusic_url" : null,
-  "tidal_url" : null
+  "spotify_url" : "https://open.spotify.com/intl-es/album/6RFZkL8rPHJeoKO4NCwUjE",
+  "applemusic_url" : "https://music.apple.com/in/album/hotel-morgan/1779551364",
+  "tidal_url" : "https://tidal.com/browse/album/399330972"
 }, {
   "id" : 16,
   "title" : "me da igual lo que digas de mi",
   "artist" : "Paul.",
   "genre" : "Variado (no se)",
   "imageUrl" : "/resources/uploads/Screenshot 2025-02-20 at 14.39.29.png",
-  "audioFile" : "",
+  "audioFile" : "paul.mp3",
   "description" : "b a r b a r i d a d",
   "tracklist" : "ME DA IGUAL + TENIS DOLCE + RÁPIDO Y FURIOSO + HMNG + INTERLUDIO + MANÁ + RED + LA TORMENTA + dosmilveinticuatro",
   "year" : 2024,
-  "spotify_url" : null,
-  "applemusic_url" : null,
-  "tidal_url" : null
+  "spotify_url" : "",
+  "applemusic_url" : "",
+  "tidal_url" : ""
 }, {
   "id" : 17,
   "title" : "Graduation",
@@ -258,4 +258,17 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/3RQQmkQEvNCY4prGKE6oc5?si=C-Ya74EFRQS2NR2O9Evd0g",
   "applemusic_url" : "https://music.apple.com/es/album/un-verano-sin-ti/1622045624",
   "tidal_url" : "https://tidal.com/browse/album/227614732"
+}, {
+  "id" : 23,
+  "title" : "Pepe",
+  "artist" : "Pepe",
+  "genre" : "Pepfaw",
+  "imageUrl" : "",
+  "audioFile" : null,
+  "description" : "",
+  "tracklist" : "",
+  "year" : 1235,
+  "spotify_url" : "",
+  "applemusic_url" : "",
+  "tidal_url" : ""
 } ]

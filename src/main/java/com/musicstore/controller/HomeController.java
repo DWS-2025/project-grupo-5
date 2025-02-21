@@ -19,8 +19,16 @@ public class HomeController {
     private UserService userService;
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, HttpSession session) {
         model.addAttribute("albums", albumService.getAllAlbums());
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("user", user);
+        } else {
+            User anonymousUser = new User();
+            anonymousUser.setAnonymous(true);
+            model.addAttribute("user", anonymousUser);
+        }
         return "album/welcome";
     }
 
