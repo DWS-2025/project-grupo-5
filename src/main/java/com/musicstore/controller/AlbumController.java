@@ -96,6 +96,7 @@ public class AlbumController {
         existingAlbum.setTitle(album.getTitle());
         existingAlbum.setArtist(album.getArtist());
         existingAlbum.setGenre(album.getGenre());
+        existingAlbum.setDescription(album.getDescription());
         existingAlbum.setTracklist(album.getTracklist());
         existingAlbum.setYear(album.getYear());
         existingAlbum.setSpotify_url(album.getSpotify_url());
@@ -107,8 +108,6 @@ public class AlbumController {
             String concatenatedTracklist = String.join(" + ", tracklistArray);
             existingAlbum.setTracklist(concatenatedTracklist);
         } albumService.saveAlbum(existingAlbum);
-
-
 
         try {
             if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
