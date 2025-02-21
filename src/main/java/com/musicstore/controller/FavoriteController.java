@@ -93,11 +93,8 @@ public class FavoriteController {
         // Agregar datos al modelo
         model.addAttribute("username", username);
         model.addAttribute("favoriteAlbums", favoriteAlbums);
-        return "favorites"; // Renderizar la vista HTML "favorites.html"
+        return "album/favorites"; // Renderizar la vista HTML "favorites.html"
     }
-
-
-
 
 }
 
