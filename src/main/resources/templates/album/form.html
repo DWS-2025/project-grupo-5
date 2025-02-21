@@ -287,7 +287,7 @@
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form th:action="@{/admin}" method="post" style="display: inline;">
+                <form th:action="@{/admin/{id}/delete(id=${album.id})}" method="post" style="display: inline;">
                     <input type="hidden" name="_method" value="delete">
                     <button type="submit" class="btn btn-danger">Delete Album</button>
                 </form>

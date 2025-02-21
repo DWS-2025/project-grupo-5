@@ -137,7 +137,7 @@ public class AlbumController {
     @PostMapping("/{id}/delete")
     public String deleteAlbum(@PathVariable Long id) {
         albumService.deleteAlbum(id);
-        return "redirect:/admin";
+        return "redirect:/";
     }
 
 
