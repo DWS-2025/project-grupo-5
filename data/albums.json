@@ -164,16 +164,16 @@
   "description" : "Hotel Morgan es el cuarto álbum de estudio de Morgan. Grabado en Ocean Sound, Noruega, y producido por Martin García Duque.",
   "tracklist" : "Intro: Delta + Cruel + Eror 406 + El Jimador + Radio + 1838 + Arena + Pyra + Jon & Julia + Altar + Final",
   "year" : 2025,
-  "spotify_url" : "https://open.spotify.com/intl-es/album/6RFZkL8rPHJeoKO4NCwUjE",
-  "applemusic_url" : "https://music.apple.com/in/album/hotel-morgan/1779551364",
-  "tidal_url" : "https://tidal.com/browse/album/399330972"
+  "spotify_url" : null,
+  "applemusic_url" : null,
+  "tidal_url" : null
 }, {
   "id" : 16,
   "title" : "me da igual lo que digas de mi",
   "artist" : "Paul.",
   "genre" : "Variado (no se)",
   "imageUrl" : "/resources/uploads/Screenshot 2025-02-20 at 14.39.29.png",
-  "audioFile" : "paul.mp3",
+  "audioFile" : "",
   "description" : "b a r b a r i d a d",
   "tracklist" : "ME DA IGUAL + TENIS DOLCE + RÁPIDO Y FURIOSO + HMNG + INTERLUDIO + MANÁ + RED + LA TORMENTA + dosmilveinticuatro",
   "year" : 2024,
@@ -258,4 +258,20 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/3RQQmkQEvNCY4prGKE6oc5?si=C-Ya74EFRQS2NR2O9Evd0g",
   "applemusic_url" : "https://music.apple.com/es/album/un-verano-sin-ti/1622045624",
   "tidal_url" : "https://tidal.com/browse/album/227614732"
-} ]
+},
+  {
+    "id" : 23,
+    "title" : "Super 20",
+    "artist" : "Nino Bravo",
+    "genre" : "Pop",
+    "imageUrl" : "/resources/uploads/1200x1200bb.jpg",
+    "audioFile" : "Libre (Remastered 2016).mp3",
+    "description" : "Super 20 de Nino Bravo es un recopilatorio que reúne 20 de las canciones más emblemáticas del icónico cantante español. Este álbum es una excelente introducción a su legado musical, destacando su poderosa voz y su estilo romántico inconfundible.",
+    "tracklist" : "Te Quiero, Te Quiero + Esa Será Mi Casa + Tú Cambiarás + Como Todos + Cartas Amarillas + Para Darte Mi Corazón + Hoy Soy Feliz + Un Beso Y Una Flor + Noelia + Te Acuerdas, María + Mi Tierra + Mis Noches Sin Tí + Mi Gran Amor + Amanecer + Es El Viento + Flor De Invernadero + Nuestro Hogar Será El Mundo + Puerta De Amor + Libre + América, América",
+    "year" : 1976,
+    "spotify_url" : "https://open.spotify.com/intl-es/album/6IXbg5QxJ4hGkrnTZo3n1B",
+    "applemusic_url" : "https://music.apple.com/es/album/ni%C3%B1o-bravo-super-20/1443352446",
+    "tidal_url" : "https://tidal.com/browse/album/37052751"
+  }
+
+]
