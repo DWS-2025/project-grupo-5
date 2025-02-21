@@ -104,6 +104,17 @@ public class AlbumController {
         existingAlbum.setTidal_url(album.getTidal_url());
 
 
+        try {
+            if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
+                albumService.saveAlbumWithImage(existingAlbum, album.getImageFile());
+            } else {
+                albumService.saveAlbum(existingAlbum);
+            }
+        } catch (IOException e) {
+            // Handle the error appropriately
+            return "album/form";
+        }
+
 
         if (audioFile2 != null && !audioFile2.isEmpty()) {
             albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
