@@ -920,8 +920,34 @@
         }
 
 
+        .heart-container {
+            display: flex;
+            gap: 20px;
+        }
 
+        .heart {
+            display: flex;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            justify-content: flex-end;
+            gap: 10px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
 
+        .heart:hover {
+            transform: scale(1.1);
+        }
+
+        .heart-gray {
+            fill: #252525;
+        }
+
+        .heart-red {
+            fill: #045704;
 
     </style>
 </head>
@@ -1048,18 +1074,22 @@
 
                     <!-- Formulario de Favoritos siempre visible -->
                     <form th:action="@{/favorites/add}" method="post">
-                        <input type="hidden" name="albumId" th:value="${album.id}"/>
-                        <input type="hidden" name="username" th:value="${session.user != null ? session.user.username : ''}"/>
-                        <!-- Si el usuario no está logueado, abre el modal -->
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal"
-                                th:if="${session.user == null or session.user.username == null}">
-                            Añadir a Favoritos
-                        </button>
+                    <input type="hidden" name="albumId" th:value="${album.id}"/>
+                    <input type="hidden" name="username" th:value="${session.user != null ? session.user.username : ''}"/>
+                    <!-- Si el usuario no está logueado, abre el modal -->
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username == null}" style="background: none; border: none; padding: 0;">
+                        <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                        </svg>
+                    </button>
 
-                        <!-- Si el usuario está logueado, el formulario se enviará normalmente -->
-                        <button type="submit" class="btn btn-primary" th:if="${session.user != null and session.user.username != null and !#lists.contains(session.user.favoriteAlbumIds, album.id)}">
-                            Añadir a Favoritos
-                        </button>
+
+
+                    <!-- Si el usuario está logueado, el formulario se enviará normalmente -->
+                        <button type="submit" class="btn-primary" th:if="${session.user != null and session.user.username != null and !#lists.contains(session.user.favoriteAlbumIds, album.id)}" style="background: none; border: none; padding: 0;">
+                            <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>                        </button>
                     </form>
 
 
@@ -1067,7 +1097,13 @@
                           th:action="@{/favorites/delete}" method="post">
                         <input type="hidden" name="albumId" th:value="${album.id}"/>
                         <input type="hidden" name="username" th:value="${session.user.username}"/>
-                        <button type="submit" class="btn btn-primary">Eliminar de Favoritos</button>
+
+                        <button type="submit" class="btn" style="background: none; border: none; padding: 0;">
+                            <svg class="heart heart-red" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                        </button>
+
                     </form>
 
 
