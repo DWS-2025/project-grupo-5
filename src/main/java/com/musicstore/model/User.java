@@ -3,6 +3,8 @@ package com.musicstore.model;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class User {
@@ -21,6 +23,9 @@ public class User {
     private boolean isAnonymous = false;
     
     private boolean isAdmin = false;
+
+    private List<Long> favoriteAlbumIds = new ArrayList<>(); // IDs de álbumes favoritos
+
 
 
 }

@@ -284,17 +284,4 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/3iQWCOqfiOEh5bXqbGD9oB",
   "applemusic_url" : "https://music.apple.com/es/album/sin-noticias-de-holanda/699839388",
   "tidal_url" : "https://listen.stage.tidal.com/album/1535260"
-}, {
-  "id" : 25,
-  "title" : "Album Para Borrar",
-  "artist" : "Borralo",
-  "genre" : "Pepe",
-  "imageUrl" : "/resources/uploads/istockphoto-1131230925-612x612.jpg",
-  "audioFile" : "paul.mp3",
-  "description" : "Pepeito",
-  "tracklist" : "Hola + que + tal",
-  "year" : 2022,
-  "spotify_url" : "",
-  "applemusic_url" : "",
-  "tidal_url" : ""
 } ]

@@ -3,6 +3,7 @@ package com.musicstore.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.musicstore.model.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -109,4 +110,74 @@ public class UserService {
             throw new RuntimeException("Could not save users", e);
         }
     }
+
+    public void addFavoriteAlbum(String username, Long albumId, HttpSession session) {
+        List<User> users = getAllUsers();
+
+        Optional<User> optionalUser = users.stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst();
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            if (!user.getFavoriteAlbumIds().contains(albumId)) {
+                user.getFavoriteAlbumIds().add(albumId);
+
+                // Guarda los cambios en la base de datos
+                saveAllUsers(users);
+
+                // ⚠️ ACTUALIZA LA SESIÓN PARA QUE EL CAMBIO SE VEA EN LA VISTA
+                session.setAttribute("user", user);
+            }
+        } else {
+            throw new IllegalArgumentException("Usuario no encontrado: " + username);
+        }
+    }
+
+
+    public List<Long> getFavoriteAlbums(String username) {
+        Optional<User> userOpt = getUserByUsername(username);
+        if (userOpt.isPresent()) {
+            return userOpt.get().getFavoriteAlbumIds();
+        }
+        return new ArrayList<>();
+    }
+
+
+    public void deleteFavoriteAlbum(String username, Long albumId, HttpSession session) {
+        List<User> users = getAllUsers();
+
+        Optional<User> optionalUser = users.stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst();
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            // Elimina el álbum si está en la lista de favoritos
+            if (user.getFavoriteAlbumIds().contains(albumId)) {
+                user.getFavoriteAlbumIds().remove(albumId); // Elimina el álbum de favoritos
+
+                // Guarda todos los usuarios con los cambios actualizados
+                saveAllUsers(users);
+
+                // ⚠️ ACTUALIZA LA SESIÓN PARA QUE EL CAMBIO SE VEA EN LA VISTA
+                session.setAttribute("user", user);
+            } else {
+                throw new IllegalArgumentException("El álbum no está en los favoritos de este usuario.");
+            }
+        } else {
+            throw new IllegalArgumentException("Usuario no encontrado: " + username);
+        }
+    }
+
+
+    public boolean isAlbumInFavorites(String username, Long albumId) {
+        Optional<User> userOpt = getUserByUsername(username);
+        return userOpt.map(user -> user.getFavoriteAlbumIds().contains(albumId)).orElse(false);
+    }
+
+
+
 }

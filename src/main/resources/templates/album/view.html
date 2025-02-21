@@ -921,10 +921,15 @@
 
 
 
+
+
     </style>
 </head>
 <div th:replace="~{fragments/header :: header}"></div>
 <body>
+
+
+
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-12 offset-md-0">
@@ -1022,20 +1027,48 @@
                     </p>
 
 
-
-                    <label class="ui-bookmark">
-                        <input type="checkbox">
-                        <div class="bookmark">
-                            <svg viewBox="0 0 32 32">
-                                <g>
-                                    <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z"></path>
-                                </g>
-                            </svg>
+                    <!-- Modal -->
+                    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content bg-dark text-white">
+                                <div class="modal-header border-secondary">
+                                    <h5 class="modal-title" id="loginModalLabel">Iniciar Sesión Necesario</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Para añadir a favoritos, necesitas iniciar sesión.
+                                </div>
+                                <div class="modal-footer border-secondary">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    <a href="/login" class="btn btn-primary">Iniciar Sesión</a>
+                                </div>
+                            </div>
                         </div>
-                    </label>
+                    </div>
+
+                    <!-- Formulario de Favoritos siempre visible -->
+                    <form th:action="@{/favorites/add}" method="post">
+                        <input type="hidden" name="albumId" th:value="${album.id}"/>
+                        <input type="hidden" name="username" th:value="${session.user != null ? session.user.username : ''}"/>
+                        <!-- Si el usuario no está logueado, abre el modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal"
+                                th:if="${session.user == null or session.user.username == null}">
+                            Añadir a Favoritos
+                        </button>
+
+                        <!-- Si el usuario está logueado, el formulario se enviará normalmente -->
+                        <button type="submit" class="btn btn-primary" th:if="${session.user != null and session.user.username != null and !#lists.contains(session.user.favoriteAlbumIds, album.id)}">
+                            Añadir a Favoritos
+                        </button>
+                    </form>
 
 
-
+                    <form th:if="${session.user != null and session.user.username != null and #lists.contains(session.user.favoriteAlbumIds, album.id)}"
+                          th:action="@{/favorites/delete}" method="post">
+                        <input type="hidden" name="albumId" th:value="${album.id}"/>
+                        <input type="hidden" name="username" th:value="${session.user.username}"/>
+                        <button type="submit" class="btn btn-primary">Eliminar de Favoritos</button>
+                    </form>
 
 
                 </div>
@@ -1100,5 +1133,17 @@
         }
     });
 </script>
+
+<script>
+    function checkLogin() {
+        var username = /*[[${session.user != null ? session.user.username : ''}]]*/ '';
+        if (!username) {
+            alert('Para añadir a favoritos, tienes que iniciar sesión.');
+            return false; // Evita que el formulario se envíe
+        }
+        return true; // Si está logueado, el formulario se envía
+    }
+</script>
+
 </body>
 </html>

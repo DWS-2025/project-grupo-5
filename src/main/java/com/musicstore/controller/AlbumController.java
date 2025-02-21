@@ -1,7 +1,9 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
+import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
+import com.musicstore.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,14 +12,19 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
 public class AlbumController {
     @Autowired
     private AlbumService albumService;
+    @Autowired
+    private UserService userService;
+
 
     @GetMapping
     public String listAlbums(Model model) {
@@ -72,10 +79,28 @@ public class AlbumController {
     }
 
     @GetMapping("/{id}")
-    public String viewAlbum(@PathVariable Long id, Model model) {
-        albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
-        return "album/view";
+    public String viewAlbum(@PathVariable Long id, Model model, HttpSession session) {
+        Optional<Album> albumOpt = albumService.getAlbumById(id);
+        if (albumOpt.isEmpty()) {
+            model.addAttribute("error", "El álbum no existe.");
+            return "redirect:/";
+        }
+
+        // Obtener el usuario en sesión
+        User user = (User) session.getAttribute("user");
+
+        boolean isFavorite = false; // Por defecto, no es favorito
+        // Si hay usuario en sesión y no es anónimo, revisamos si el álbum está en favoritos
+        if (user != null && !user.isAnonymous()) {
+            isFavorite = userService.isAlbumInFavorites(user.getUsername(), id);
+        }
+
+        // Pasar datos al modelo
+        model.addAttribute("album", albumOpt.get());
+        model.addAttribute("isFavorite", isFavorite); // Pasamos el estado de favorito
+        return "view"; // Renderiza la página view.html
     }
+
 
     @PostMapping("/{id}")
     public String updateAlbum(
