@@ -258,20 +258,30 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/3RQQmkQEvNCY4prGKE6oc5?si=C-Ya74EFRQS2NR2O9Evd0g",
   "applemusic_url" : "https://music.apple.com/es/album/un-verano-sin-ti/1622045624",
   "tidal_url" : "https://tidal.com/browse/album/227614732"
-},
-  {
-    "id" : 23,
-    "title" : "Super 20",
-    "artist" : "Nino Bravo",
-    "genre" : "Pop",
-    "imageUrl" : "/resources/uploads/1200x1200bb.jpg",
-    "audioFile" : "Libre (Remastered 2016).mp3",
-    "description" : "Super 20 de Nino Bravo es un recopilatorio que reúne 20 de las canciones más emblemáticas del icónico cantante español. Este álbum es una excelente introducción a su legado musical, destacando su poderosa voz y su estilo romántico inconfundible.",
-    "tracklist" : "Te Quiero, Te Quiero + Esa Será Mi Casa + Tú Cambiarás + Como Todos + Cartas Amarillas + Para Darte Mi Corazón + Hoy Soy Feliz + Un Beso Y Una Flor + Noelia + Te Acuerdas, María + Mi Tierra + Mis Noches Sin Tí + Mi Gran Amor + Amanecer + Es El Viento + Flor De Invernadero + Nuestro Hogar Será El Mundo + Puerta De Amor + Libre + América, América",
-    "year" : 1976,
-    "spotify_url" : "https://open.spotify.com/intl-es/album/6IXbg5QxJ4hGkrnTZo3n1B",
-    "applemusic_url" : "https://music.apple.com/es/album/ni%C3%B1o-bravo-super-20/1443352446",
-    "tidal_url" : "https://tidal.com/browse/album/37052751"
-  }
-
-]
+}, {
+  "id" : 23,
+  "title" : "Super 20",
+  "artist" : "Nino Bravo",
+  "genre" : "Pop",
+  "imageUrl" : "/resources/uploads/1200x1200bb.jpg",
+  "audioFile" : "Libre (Remastered 2016).mp3",
+  "description" : "Super 20 de Nino Bravo es un recopilatorio que reúne 20 de las canciones más emblemáticas del icónico cantante español. Este álbum es una excelente introducción a su legado musical, destacando su poderosa voz y su estilo romántico inconfundible.",
+  "tracklist" : "Te Quiero, Te Quiero + Esa Será Mi Casa + Tú Cambiarás + Como Todos + Cartas Amarillas + Para Darte Mi Corazón + Hoy Soy Feliz + Un Beso Y Una Flor + Noelia + Te Acuerdas, María + Mi Tierra + Mis Noches Sin Tí + Mi Gran Amor + Amanecer + Es El Viento + Flor De Invernadero + Nuestro Hogar Será El Mundo + Puerta De Amor + Libre + América, América",
+  "year" : 1976,
+  "spotify_url" : "https://open.spotify.com/intl-es/album/6IXbg5QxJ4hGkrnTZo3n1B",
+  "applemusic_url" : "https://music.apple.com/es/album/ni%C3%B1o-bravo-super-20/1443352446",
+  "tidal_url" : "https://tidal.com/browse/album/37052751"
+}, {
+  "id" : 24,
+  "title" : "Sin Noticias de Holanda",
+  "artist" : "Melendi",
+  "genre" : "Pop",
+  "imageUrl" : "/resources/uploads/ab67616d0000b27352ce1370223e498d7da83dfe.jpeg",
+  "audioFile" : "sndh.mp3",
+  "description" : "Sin noticias de Holanda es el álbum debut del cantante español Melendi, lanzado en 2003. Este disco marcó el inicio de su carrera y lo catapultó a la fama gracias a su estilo único, que mezcla rumba flamenca, pop y rock, con letras desenfadadas y callejeras.",
+  "tracklist" : "Mi Rumbita Pa Tus Pies + Desde Mi Ventana + Sé Lo Que Hicísteis + Sin Noticias De Holanda + Un Recuerdo Que Olvidar + Con La Luna Llena + Hablando En Plata + El Informe Del Forense + Vuelvo A Traficar + Una Historia De Tantas + Contando Primaveras + Asturias + Moratalá",
+  "year" : 2003,
+  "spotify_url" : "https://open.spotify.com/intl-es/album/3iQWCOqfiOEh5bXqbGD9oB",
+  "applemusic_url" : "https://music.apple.com/es/album/sin-noticias-de-holanda/699839388",
+  "tidal_url" : "https://listen.stage.tidal.com/album/1535260"
+} ]
