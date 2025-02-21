@@ -980,6 +980,16 @@
                             <p class="card-text"><strong>Genre:</strong> <span th:text="${album.genre}">Genre</span></p>
                             <p class="card-text"><strong>Year:</strong> <span th:text="${album.year}">Year</span></p>
                             <p class="card-text" th:text="${album.description}">Description</p>
+                            <p class="card-text" style="color: white;">
+                                Usuarios a los que les gusta <span th:text="${album.title}"></span>:
+                                <span th:each="user, iterStat : ${album.favoriteUsers}">
+        <span th:text="${user}"></span>
+        <span th:unless="${iterStat.last}">, </span>
+    </span>
+                            </p>
+
+
+
 
 
                             <div class="d-flex gap-3">
@@ -1075,7 +1085,8 @@
                     <!-- Formulario de Favoritos siempre visible -->
                     <form th:action="@{/favorites/add}" method="post">
                     <input type="hidden" name="albumId" th:value="${album.id}"/>
-                    <input type="hidden" name="username" th:value="${session.user != null ? session.user.username : ''}"/>
+
+                        <input type="hidden" name="username" th:value="${session.user != null ? session.user.username : ''}"/>
                     <!-- Si el usuario no está logueado, abre el modal -->
                     <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username == null}" style="background: none; border: none; padding: 0;">
                         <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">

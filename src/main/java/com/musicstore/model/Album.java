@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class Album {
     private Long id;
@@ -39,6 +42,8 @@ public class Album {
     private String applemusic_url;
 
     private String tidal_url;
+
+    private List<String> favoriteUsers = new ArrayList<>();
 
     public void setId(Long id) {
         this.id = id;

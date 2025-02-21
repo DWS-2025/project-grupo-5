@@ -28,46 +28,88 @@ public class FavoriteController {
 
     @PostMapping("/add")
     public String addFavorite(@RequestParam Long albumId,
-                              @RequestParam String username,
-                              Model model,
-                              HttpSession session) { // Inyectamos la sesión
+                              HttpSession session,
+                              Model model) {
         try {
-            // Validar que el usuario existe
-            if (userService.getUserByUsername(username).isEmpty()) {
-                model.addAttribute("error", "El usuario no existe: " + username);
-                return "welcome"; // Renderiza página con mensaje de error
+            // Obtén el usuario actual de la sesión
+            User user = (User) session.getAttribute("user");
+            if (user == null || user.getUsername() == null) {
+                model.addAttribute("error", "No se ha iniciado sesión.");
+                return "error";
             }
 
-            // Añadir a favoritos y actualizar sesión
+            String username = user.getUsername();
+
+            // Buscar el álbum
+            Optional<Album> albumOptional = albumService.getAlbumById(albumId);
+            if (albumOptional.isEmpty()) {
+                model.addAttribute("error", "Álbum no encontrado.");
+                return "error";
+            }
+
+            Album album = albumOptional.get();
+
+            // Añadir el álbum a los favoritos del usuario (usando el servicio)
             userService.addFavoriteAlbum(username, albumId, session);
 
-            return "redirect:/" + albumId; // Redirige a detalles del álbum
+
+            if (!album.getFavoriteUsers().contains(username)) {
+                album.getFavoriteUsers().add(username);
+                albumService.saveAlbum(album); // Guardar los cambios
+            }
+
+
+            return "redirect:/" + albumId; // Redirige a la página de favoritos del usuario
         } catch (Exception e) {
             model.addAttribute("error", "Ocurrió un error al añadir el álbum a favoritos: " + e.getMessage());
-            return "welcome"; // Renderiza página con mensaje de error
+            return "error"; // Renderiza página con el mensaje de error
         }
     }
 
 
     @PostMapping("/delete")
-    public String deleteFavorite(@RequestParam(required = true) Long albumId,
-                                 @RequestParam(required = true) String username,
-                                 Model model,
-                                 HttpSession session) { // Inyectamos la sesión
+    public String deleteFavorite(@RequestParam Long albumId,
+                                 HttpSession session,
+                                 Model model) {
         try {
-            // Validar que el usuario existe
-            if (userService.getUserByUsername(username).isEmpty()) {
-                model.addAttribute("error", "El usuario no existe: " + username);
-                return "welcome"; // Renderiza página con mensaje de error
+            // Obtén el usuario actual de la sesión
+            User user = (User) session.getAttribute("user");
+            if (user == null || user.getUsername() == null) {
+                model.addAttribute("error", "No se ha iniciado sesión.");
+                return "error";
             }
 
-            // Eliminar de favoritos y actualizar la sesión
-            userService.deleteFavoriteAlbum(username, albumId, session); // Pasamos la sesión
+            String username = user.getUsername();
 
-            return "redirect:/" + albumId; // Redirige a detalles del álbum
+            // Verificar si el usuario existe (opcional, ya que está en sesión)
+            Optional<User> userOptional = userService.getUserByUsername(username);
+            if (userOptional.isEmpty()) {
+                model.addAttribute("error", "El usuario no existe: " + username);
+                return "error";
+            }
+
+            // Buscar el álbum
+            Optional<Album> albumOptional = albumService.getAlbumById(albumId);
+            if (albumOptional.isEmpty()) {
+                model.addAttribute("error", "Álbum no encontrado.");
+                return "error";
+            }
+
+            Album album = albumOptional.get();
+
+            // Eliminar el álbum de los favoritos del usuario (usando el servicio)
+            userService.deleteFavoriteAlbum(username, albumId, session);
+
+            // Eliminar el usuario de la lista de favoritos del álbum (si está presente)
+            if (album.getFavoriteUsers().contains(username)) {
+                album.getFavoriteUsers().remove(username);
+                albumService.saveAlbum(album); // Guardamos el álbum actualizado
+            }
+
+            return "redirect:/" + albumId; // Redirige a la página de favoritos del usuario
         } catch (Exception e) {
             model.addAttribute("error", "Ocurrió un error al eliminar el álbum de favoritos: " + e.getMessage());
-            return "welcome"; // Renderiza página con mensaje de error
+            return "error"; // Renderiza página con el mensaje de error
         }
     }
 
@@ -95,6 +137,28 @@ public class FavoriteController {
         model.addAttribute("favoriteAlbums", favoriteAlbums);
         return "album/favorites"; // Renderizar la vista HTML "favorites.html"
     }
+
+
+    public void addUserToFavorite(Long albumId, String username) {
+        Optional<Album> albumOpt = albumService.getAlbumById(albumId);
+        if (albumOpt.isPresent()) {
+            Album album = albumOpt.get();
+            if (!album.getFavoriteUsers().contains(username)) {
+                album.getFavoriteUsers().add(username);
+            }
+            albumService.saveAlbum(album);
+        }
+    }
+
+    public void removeUserFromFavorite(Long albumId, String username) {
+        Optional<Album> albumOpt = albumService.getAlbumById(albumId);
+        if (albumOpt.isPresent()) {
+            Album album = albumOpt.get();
+            album.getFavoriteUsers().remove(username);
+            albumService.saveAlbum(album);
+        }
+    }
+
 
 }
 
