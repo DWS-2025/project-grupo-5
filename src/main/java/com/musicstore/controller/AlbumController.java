@@ -96,12 +96,18 @@ public class AlbumController {
         existingAlbum.setTitle(album.getTitle());
         existingAlbum.setArtist(album.getArtist());
         existingAlbum.setGenre(album.getGenre());
-        existingAlbum.setDescription(album.getDescription());
         existingAlbum.setTracklist(album.getTracklist());
         existingAlbum.setYear(album.getYear());
         existingAlbum.setSpotify_url(album.getSpotify_url());
         existingAlbum.setApplemusic_url(album.getApplemusic_url());
         existingAlbum.setTidal_url(album.getTidal_url());
+
+        if (existingAlbum.getTracklist() != null && !existingAlbum.getTracklist().isEmpty()) {
+            String[] tracklistArray = existingAlbum.getTracklist().split("\\r?\\n");
+            String concatenatedTracklist = String.join(" + ", tracklistArray);
+            existingAlbum.setTracklist(concatenatedTracklist);
+        } albumService.saveAlbum(existingAlbum);
+
 
 
         try {
