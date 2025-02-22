@@ -53,4 +53,8 @@ public class AlbumService {
         fileStorageService.deleteAlbum(id);  // Eliminamos el álbum por ID
     }
 
+
+
+
+
 }
