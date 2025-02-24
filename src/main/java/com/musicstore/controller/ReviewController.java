@@ -82,7 +82,7 @@ public class ReviewController {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             Review review = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (review != null && review.getUsername().equals(user.getUsername())) {
+            if (review != null && (review.getUsername().equals(user.getUsername()) || user.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
             }
         }

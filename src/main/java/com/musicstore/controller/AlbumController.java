@@ -29,56 +29,92 @@ public class AlbumController {
     @Autowired
     private ReviewService reviewService;
 
+
+
     @GetMapping
-    public String listAlbums(Model model) {
-        model.addAttribute("albums", albumService.getAllAlbums());
-        return "album/list";
+    public String listAlbums(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else {
+            model.addAttribute("albums", albumService.getAllAlbums());
+            return "album/list";
+        }
+
     }
 
     @GetMapping("/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("album", new Album());
-        return "album/form";
+    public String showCreateForm(Model model, HttpSession session) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.getUsername().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else{
+            model.addAttribute("album", new Album());
+            return "album/form";
+        }
+
     }
 
     @PostMapping
     public String createAlbum(@Valid Album album, BindingResult result,
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
-                              Model model) throws IOException {
-        if (result.hasErrors()) {
-            model.addAttribute("album", album);
-            return "form";
-        }
-        try {
-            if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
-                albumService.saveAlbumWithImage(album, album.getImageFile());
-            } else {
-                albumService.saveAlbum(album);
-            }
-        } catch (IOException e) {
-            // Handle the error appropriately
-            return "album/form";
-        }
+                              Model model, HttpSession session) throws IOException {
+        User user = (User) session.getAttribute("user");
 
-        if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
-            String[] tracklistArray = album.getTracklist().split("\\r?\\n");
-            String concatenatedTracklist = String.join(" + ", tracklistArray);
-            album.setTracklist(concatenatedTracklist);
-        } albumService.saveAlbum(album);
-
-        if (audioFile2 != null && !audioFile2.isEmpty()) {
-            albumService.saveAlbumWithAudio(album, audioFile2);
+        if (user == null || !user.getUsername().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
         } else {
-            albumService.saveAlbum(album); // Si no hay archivo de audio, solo se guarda el álbum sin el audio
-        }
 
-        return "redirect:/admin";
+            if (result.hasErrors()) {
+                model.addAttribute("album", album);
+                return "form";
+            }
+            try {
+                if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
+                    albumService.saveAlbumWithImage(album, album.getImageFile());
+                } else {
+                    albumService.saveAlbum(album);
+                }
+            } catch (IOException e) {
+                // Handle the error appropriately
+                return "album/form";
+            }
+
+            if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
+                String[] tracklistArray = album.getTracklist().split("\\r?\\n");
+                String concatenatedTracklist = String.join(" + ", tracklistArray);
+                album.setTracklist(concatenatedTracklist);
+            } albumService.saveAlbum(album);
+
+            if (audioFile2 != null && !audioFile2.isEmpty()) {
+                albumService.saveAlbumWithAudio(album, audioFile2);
+            } else {
+                albumService.saveAlbum(album); // Si no hay archivo de audio, solo se guarda el álbum sin el audio
+            }
+
+            return "redirect:/admin";
+
+        }
     }
 
     @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
-        return "album/form";
+    public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else {
+            albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
+            return "album/form";
+
+        }
     }
 
     @GetMapping("/{id}")
@@ -89,19 +125,15 @@ public class AlbumController {
             return "redirect:/";
         }
 
-        // Obtener el usuario en sesión
         User user = (User) session.getAttribute("user");
 
-        boolean isFavorite = false; // Por defecto, no es favorito
-        // Si hay usuario en sesión y no es anónimo, revisamos si el álbum está en favoritos
+        boolean isFavorite = false;
         if (user != null && !user.isAnonymous()) {
             isFavorite = userService.isAlbumInFavorites(user.getUsername(), id);
         }
 
-        // Pasar datos al modelo
         model.addAttribute("album", albumOpt.get());
-        model.addAttribute("isFavorite", isFavorite); // Pasamos el estado de favorito
-        // Obtener reseñas asociadas al álbum
+        model.addAttribute("isFavorite", isFavorite);
 
         albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
 
@@ -126,62 +158,80 @@ public class AlbumController {
             @Valid Album album,
             BindingResult result,
             @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
-            Model model) throws IOException {
+            Model model, HttpSession session) throws IOException {
 
-        if (result.hasErrors()) {
-            model.addAttribute("album", album);
-            return "form";
-        }
+        User user = (User) session.getAttribute("user");
 
-        Album existingAlbum = albumService.getAlbumById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id));
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else {
 
-        existingAlbum.setTitle(album.getTitle());
-        existingAlbum.setArtist(album.getArtist());
-        existingAlbum.setGenre(album.getGenre());
-        existingAlbum.setDescription(album.getDescription());
-        existingAlbum.setTracklist(album.getTracklist());
-        existingAlbum.setYear(album.getYear());
-        existingAlbum.setSpotify_url(album.getSpotify_url());
-        existingAlbum.setApplemusic_url(album.getApplemusic_url());
-        existingAlbum.setTidal_url(album.getTidal_url());
+            if (result.hasErrors()) {
+                model.addAttribute("album", album);
+                return "form";
+            }
 
-        if (existingAlbum.getTracklist() != null && !existingAlbum.getTracklist().isEmpty()) {
-            String[] tracklistArray = existingAlbum.getTracklist().split("\\r?\\n");
-            String concatenatedTracklist = String.join(" + ", tracklistArray);
-            existingAlbum.setTracklist(concatenatedTracklist);
-        } albumService.saveAlbum(existingAlbum);
+            Album existingAlbum = albumService.getAlbumById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id));
 
-        try {
-            if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
-                albumService.saveAlbumWithImage(existingAlbum, album.getImageFile());
+            existingAlbum.setTitle(album.getTitle());
+            existingAlbum.setArtist(album.getArtist());
+            existingAlbum.setGenre(album.getGenre());
+            existingAlbum.setDescription(album.getDescription());
+            existingAlbum.setTracklist(album.getTracklist());
+            existingAlbum.setYear(album.getYear());
+            existingAlbum.setSpotify_url(album.getSpotify_url());
+            existingAlbum.setApplemusic_url(album.getApplemusic_url());
+            existingAlbum.setTidal_url(album.getTidal_url());
+
+            if (existingAlbum.getTracklist() != null && !existingAlbum.getTracklist().isEmpty()) {
+                String[] tracklistArray = existingAlbum.getTracklist().split("\\r?\\n");
+                String concatenatedTracklist = String.join(" + ", tracklistArray);
+                existingAlbum.setTracklist(concatenatedTracklist);
+            }
+            albumService.saveAlbum(existingAlbum);
+
+            try {
+                if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
+                    albumService.saveAlbumWithImage(existingAlbum, album.getImageFile());
+                } else {
+                    albumService.saveAlbum(existingAlbum);
+                }
+            } catch (IOException e) {
+                // Handle the error appropriately
+                return "album/form";
+            }
+
+
+            if (audioFile2 != null && !audioFile2.isEmpty()) {
+                albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
             } else {
                 albumService.saveAlbum(existingAlbum);
             }
-        } catch (IOException e) {
-            // Handle the error appropriately
-            return "album/form";
+
+
+            return "redirect:/admin";
         }
-
-
-        if (audioFile2 != null && !audioFile2.isEmpty()) {
-            albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
-        } else {
-            albumService.saveAlbum(existingAlbum);
-        }
-
-
-
-        return "redirect:/admin";
     }
 
 
 
     @PostMapping("/{id}/delete")
-    public String deleteAlbum(@PathVariable Long id) {
+    public String deleteAlbum(@PathVariable Long id,  Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else {
+
         albumService.deleteAlbum(id);
         return "redirect:/";
     }
+    }
+
+
 
 
 }

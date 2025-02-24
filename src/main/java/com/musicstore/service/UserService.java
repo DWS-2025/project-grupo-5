@@ -178,6 +178,39 @@ public class UserService {
         return userOpt.map(user -> user.getFavoriteAlbumIds().contains(albumId)).orElse(false);
     }
 
+    public User updateUser(User updatedUser) {
+        if (updatedUser == null || updatedUser.getId() == null) {
+            throw new RuntimeException("User or user ID cannot be null");
+        }
 
+        List<User> users = getAllUsers();
+        int userIndex = findUserIndex(users, updatedUser.getId());
 
+        if (userIndex == -1) {
+            throw new RuntimeException("User not found with ID: " + updatedUser.getId());
+        }
+
+        // Get the existing user to preserve data that shouldn't be updated
+        User existingUser = users.get(userIndex);
+
+        // Check if the new username is already taken by another user
+        boolean usernameExists = users.stream()
+                .filter(user -> !user.getId().equals(updatedUser.getId()))
+                .anyMatch(user -> user.getUsername().equals(updatedUser.getUsername()));
+
+        if (usernameExists) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        // Preserve the password if not provided in the update
+        if (updatedUser.getPassword() == null || updatedUser.getPassword().trim().isEmpty()) {
+            updatedUser.setPassword(existingUser.getPassword());
+        }
+
+        // Update the user
+        users.set(userIndex, updatedUser);
+        saveAllUsers(users);
+
+        return updatedUser;
+    }
 }
