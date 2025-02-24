@@ -586,17 +586,9 @@
                                         <span class="tooltip">Tidal</span>
                                     </button>
                                 </form>
-
                             </div>
-
                         </div>
-
-
-
-
-
                     </div>
-
                     <div class="audio-container">
                         <strong class="audio-preview-text">Audio Preview:</strong>
                         <audio th:if="${album.audioFile}" autoplay loop controls controlsList="nodownload noremoteplayback">
@@ -619,12 +611,9 @@
                             </div>
                         </label>
                     </div>
-
                     <p th:unless="${album.audioFile}">
                         No hay audio asociado con este álbum.
                     </p>
-
-
                     <!-- Modal -->
                     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
@@ -643,12 +632,9 @@
                             </div>
                         </div>
                     </div>
-
-
                     <!-- Formulario de Favoritos siempre visible -->
                     <form th:action="@{/favorites/add}" method="post">
                     <input type="hidden" name="albumId" th:value="${album.id}"/>
-
                         <input type="hidden" name="username" th:value="${session.user != null ? session.user.username : ''}"/>
                     <!-- Si el usuario no está logueado, abre el modal -->
                     <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username == null}" style="background: none; border: none; padding: 0;">
@@ -656,40 +642,30 @@
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
                         </svg>
                     </button>
-
-
-
                     <!-- Si el usuario está logueado, el formulario se enviará normalmente -->
                         <button type="submit" class="btn-primary" th:if="${session.user != null and session.user.username != null and !#lists.contains(session.user.favoriteAlbumIds, album.id)}" style="background: none; border: none; padding: 0;">
                             <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
                             </svg>                        </button>
                     </form>
-
-
                     <form th:if="${session.user != null and session.user.username != null and #lists.contains(session.user.favoriteAlbumIds, album.id)}"
                           th:action="@{/favorites/delete}" method="post">
                         <input type="hidden" name="albumId" th:value="${album.id}"/>
                         <input type="hidden" name="username" th:value="${session.user.username}"/>
-
                         <button type="submit" class="btn" style="background: none; border: none; padding: 0;">
                             <svg class="heart heart-red" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
                             </svg>
                         </button>
-
                     </form>
-
                     <div class="me-auto">
                         <span class="badge bg-secondary" th:text="${#lists.size(album.favoriteUsers)} + ' likes'">0 likes</span>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <div class="container mt-4">
     <div class="row">
         <!-- Primer bloque a la izquierda (tracklist) -->
@@ -710,35 +686,36 @@
                 </div>
             </div>
         </div>
-
         <!-- Segundo bloque a la derecha (ocupa el resto de la fila) -->
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
                     <div class="mt-4">
                         <h4>Reviews</h4>
-
                         <div class="row mt-5">
                             <div class="col-md-12">
                                 <form th:action="@{'/reviews/' + ${album.id}}" method="post">
                                     <div class="mb-3">
-
                                         <label for="reviewContent" class="form-label">Tu reseña:</label>
                                         <textarea id="reviewContent" name="content" class="form-control" required></textarea>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="rating" class="form-label">Calificación:</label>
-                                        <select id="rating" name="rating" class="form-select" required>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5</option>
-                                        </select>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <label for="rating" class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Calificación:</label>
+                                        <div class="rating">
+                                            <input value="5" name="rating" id="star5" type="radio">
+                                            <label title="text" for="star5"></label>
+                                            <input value="4" name="rating" id="star4" type="radio">
+                                            <label title="text" for="star4"></label>
+                                            <input value="3" name="rating" id="star3" type="radio">
+                                            <label title="text" for="star3"></label>
+                                            <input value="2" name="rating" id="star2" type="radio">
+                                            <label title="text" for="star2"></label>
+                                            <input value="1" name="rating" id="star1" type="radio" required>
+                                            <label title="text" for="star1"></label>
+                                        </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Enviar reseña</button>
                                 </form>
-
                                 <section class="reviews-section">
                                     <h2>Reviews</h2>
                                     <div th:if="${#lists.isEmpty(reviews)}">
@@ -762,26 +739,47 @@
                                         </div>
                                     </div>
                                 </section>
-
-
-
-
-
                             </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<style>
+.rating:not(:checked) > input {
+    position: absolute;
+    appearance: none;
+}
 
+.rating:not(:checked) > label {
+    float: right;
+    cursor: pointer;
+    font-size: 30px;
+    color: #666;
+}
 
+.rating:not(:checked) > label:before {
+    content: '★';
+}
 
+.rating > input:checked + label:hover,
+.rating > input:checked + label:hover ~ label,
+.rating > input:checked ~ label:hover,
+.rating > input:checked ~ label:hover ~ label,
+.rating > label:hover ~ input:checked ~ label {
+    color: #e58e09;
+}
 
+.rating:not(:checked) > label:hover,
+.rating:not(:checked) > label:hover ~ label {
+    color: #ff9e0b;
+}
 
-
-    <div th:replace="~{fragments/footer :: footer}"></div>
+.rating > input:checked ~ label {
+    color: #ffa723;
+}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const audio = document.querySelector('audio');
@@ -795,6 +793,5 @@
         }
     });
 </script>
-
 </body>
 </html>
