@@ -722,6 +722,11 @@
                                     <span th:unless="${iterStat.last}">,</span>
                                 </span>
 
+
+
+                            </p>
+
+
                             <div class="d-flex gap-3">
                                 <form th:action="${album.spotify_url}" method="get" target="_blank">
                                     <button type="submit" class="spotify-button">
@@ -749,7 +754,7 @@
                                 </form>
                             </div>
 
-                            </p>
+
                         </div>
 
 
@@ -864,9 +869,9 @@
                             <div class="col-md-12">
                                 <form th:action="@{'/reviews/' + ${album.id}}" method="post">
                                     <div class="mb-3">
-                                        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'Login is needed to post a review' : ''}" required></textarea>
+                                        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'You must have an account to add a review' : ''}" required></textarea>
                                     </div>
-                                    <div class="mb-3  align-items-center">
+                                    <div class="mb-3 d-flex align-items-center">
                                         <label class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Rate:</label>
                                         <div class="rating">
                                             <input value="5" name="rating" id="star5" type="radio" th:disabled="${session.user == null}">
