@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="albumId" th:content="${album.id}">
     <title>EchoReview - Album Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
@@ -436,12 +437,30 @@
             transition: transform 0.2s ease-in-out;
             width: 100%;
             max-width: 100%;
+            position: relative;
         }
 
-        .card-review:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(255, 255, 255, 0.15);
+        .review-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
         }
+
+        .review-actions button {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .review-actions button:hover {
+            color: #1a5f42;
+        }
+
         .stars {
             display: flex;
             gap: 0.25rem;
@@ -559,6 +578,7 @@
                             <div class="d-flex gap-3">
 
 
+
                                 <form th:action="${album.spotify_url}" method="get" target="_blank">
                                     <button type="submit" class="spotify-button">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" stroke-width="0" fill="currentColor" stroke="currentColor">
@@ -567,6 +587,7 @@
                                         <span class="tooltip">Spotify</span>
                                     </button>
                                 </form>
+
 
 
                                 <form th:action="${album.applemusic_url}" method="get" target="_blank">
@@ -722,20 +743,26 @@
                                         <p>No hay reseñas disponibles para este álbum.</p>
                                     </div>
                                     <div th:each="review : ${reviews}" class="review-card">
-                                        <div class="card-review">
+                                        <div class="card-review" th:each="review : ${reviews}">
+                                            <div class="review-actions" th:if="${session.user != null && session.user.username == review.username}">
+                                                <button type="button" class="edit-review" th:data-review-id="${review.id}" th:onclick="'editReview(' + ${review.id} + ')'">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button type="button" class="delete-review" th:data-review-id="${review.id}" th:onclick="'deleteReview(' + ${review.id} + ')'">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
                                             <div class="stars">
-                                                <div th:each="n : ${#numbers.sequence(1, 5)}" class="star-container">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="star" th:classappend="${n <= review.rating ? 'filled' : ''}">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                                    <svg th:class="${i <= review.rating ? 'star filled' : 'star'}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" />
                                                     </svg>
-                                                </div>
+                                                </th:block>
                                             </div>
                                             <div class="infos">
-                                                <p class="description" th:text="${review.content}"></p>
-                                            </div>
-                                            <div class="author">
-                                                — <span th:text="${review.username}"></span>
-                                            </div>
+                                                <div class="author" th:text="${review.username}"></div>
+    <div class="description review-content" th:text="${review.content}"></div>
+</div>
                                         </div>
                                     </div>
                                 </section>
@@ -792,6 +819,72 @@
             });
         }
     });
+</script>
+</body>
+</html>
+<!-- Modal para editar reseña -->
+<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editReviewModalLabel">Editar Reseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editReviewForm" th:action="@{'/reviews/' + ${album.id} + '/edit/0'}" method="post">
+                    <div class="mb-3">
+                        <label for="editReviewContent" class="form-label">Tu reseña:</label>
+                        <textarea id="editReviewContent" name="content" class="form-control" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Calificación:</label>
+                        <div class="rating edit-rating">
+                            <input value="5" name="rating" id="editStar5" type="radio">
+                            <label title="text" for="editStar5"></label>
+                            <input value="4" name="rating" id="editStar4" type="radio">
+                            <label title="text" for="editStar4"></label>
+                            <input value="3" name="rating" id="editStar3" type="radio">
+                            <label title="text" for="editStar3"></label>
+                            <input value="2" name="rating" id="editStar2" type="radio">
+                            <label title="text" for="editStar2"></label>
+                            <input value="1" name="rating" id="editStar1" type="radio" required>
+                            <label title="text" for="editStar1"></label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" form="editReviewForm" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function editReview(reviewId) {
+    const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.card-review');
+    const content = reviewCard.querySelector('.review-content').textContent;
+    const rating = reviewCard.querySelectorAll('.star.filled').length;
+    
+    document.getElementById('editReviewContent').value = content;
+    document.querySelector(`#editReviewForm input[value="${rating}"]`).checked = true;
+    
+    const form = document.getElementById('editReviewForm');
+    form.action = form.action.replace('/edit/0', `/edit/${reviewId}`);
+    
+    new bootstrap.Modal(document.getElementById('editReviewModal')).show();
+}
+
+function deleteReview(reviewId) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta reseña?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        const albumId = document.querySelector('meta[name="albumId"]').content;
+        form.action = `/reviews/${albumId}/delete/${reviewId}`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 </script>
 </body>
 </html>

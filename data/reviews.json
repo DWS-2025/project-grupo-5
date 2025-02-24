@@ -1,21 +1,4 @@
 {
-  "2" : [ {
-    "id" : 1,
-    "albumId" : 2,
-    "userId" : 2,
-    "content" : "malisimo",
-    "rating" : 2,
-    "username" : "paul",
-    "reviews" : [ ]
-  }, {
-    "id" : 4,
-    "albumId" : 2,
-    "userId" : 7,
-    "content" : "IA West",
-    "rating" : 2,
-    "username" : "Montotito",
-    "reviews" : [ ]
-  } ],
   "5" : [ {
     "id" : 2,
     "albumId" : 5,
@@ -32,5 +15,6 @@
     "rating" : 3,
     "username" : "dsoria",
     "reviews" : [ ]
-  } ]
+  } ],
+  "2" : [ ]
 }
