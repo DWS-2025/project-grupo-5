@@ -424,6 +424,93 @@
 
         }
 
+        .card-review {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #253225;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .card-review:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(255, 255, 255, 0.15);
+        }
+        .stars {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .star {
+            height: 1.5rem;
+            width: 1.5rem;
+            color: #d1d5db;
+        }
+        .star.filled {
+            color: #fbbf24;
+        }
+        .infos {
+            margin-top: 0.75rem;
+        }
+        .author {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        .description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+        }
+        .date-time {
+            font-size: 0.875rem;
+            color: #ffffff;
+        }
+        .reviews-section {
+            margin-top: 2rem;
+        }
+        .reviews-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+        }
+        .review-form {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .review-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .review-form .form-label {
+            font-weight: 500;
+            color: #ffffff;
+        }
+        .review-form .form-select {
+            width: auto;
+            min-width: 100px;
+        }
+        .review-form .btn-primary {
+            background-color: #045704;
+            border-color: #045704;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+        .review-form .btn-primary:hover {
+            background-color: #034503;
+            border-color: #034503;
+        }
 
 
     </style>
@@ -501,8 +588,6 @@
                                 </form>
 
                             </div>
-
-
 
                         </div>
 
@@ -635,8 +720,6 @@
 
                         <div class="row mt-5">
                             <div class="col-md-12">
-                                <h2>Reseñas</h2>
-
                                 <form th:action="@{'/reviews/' + ${album.id}}" method="post">
                                     <div class="mb-3">
 
@@ -656,22 +739,29 @@
                                     <button type="submit" class="btn btn-primary">Enviar reseña</button>
                                 </form>
 
-
                                 <section class="reviews-section">
-                                    <h2>Reseñas</h2>
+                                    <h2>Reviews</h2>
                                     <div th:if="${#lists.isEmpty(reviews)}">
                                         <p>No hay reseñas disponibles para este álbum.</p>
                                     </div>
                                     <div th:each="review : ${reviews}" class="review-card">
-                                        <p><strong th:text="${review.username}">Nombre de usuario</strong></p>
-                                        <p th:text="${review.content}">Contenido de la reseña</p>
-                                        <p>Calificación: <span th:text="${review.rating}">5</span></p>
+                                        <div class="card-review">
+                                            <div class="stars">
+                                                <div th:each="n : ${#numbers.sequence(1, 5)}" class="star-container">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="star" th:classappend="${n <= review.rating ? 'filled' : ''}">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="infos">
+                                                <p class="description" th:text="${review.content}"></p>
+                                            </div>
+                                            <div class="author">
+                                                — <span th:text="${review.username}"></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </section>
-
-
-
-
 
 
 
