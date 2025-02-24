@@ -1,20 +1,4 @@
 {
-  "5" : [ {
-    "id" : 2,
-    "albumId" : 5,
-    "userId" : 2,
-    "content" : "DIS-CA-ZO",
-    "rating" : 5,
-    "username" : "paul",
-    "reviews" : [ ]
-  }, {
-    "id" : 3,
-    "albumId" : 5,
-    "userId" : 1,
-    "content" : "prefiero yhlqmdlg",
-    "rating" : 3,
-    "username" : "dsoria",
-    "reviews" : [ ]
-  } ],
+  "5" : [ ],
   "2" : [ ]
 }
