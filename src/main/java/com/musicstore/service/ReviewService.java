@@ -29,10 +29,13 @@ public class ReviewService {
         if (file.exists() && file.length() > 0) {
             try {
                 reviewsByAlbum = objectMapper.readValue(file, new TypeReference<Map<Long, List<Review>>>() {});
+                System.out.println("Reseñas cargadas correctamente");
             } catch (IOException e) {
-                throw new RuntimeException("Error loading reviews from file", e);
+                System.err.println("Error cargando reseñas: " + e.getMessage());
+                reviewsByAlbum = new HashMap<>(); // Inicializa en caso de error
             }
         } else {
+            System.out.println("Archivo de reseñas no encontrado o vacío. Inicializando.");
             reviewsByAlbum = new HashMap<>();
             saveReviewsToFile();
         }

@@ -105,13 +105,14 @@ public class AlbumController {
 
         albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
 
-        // Obtener reseñas asociadas al álbum
-        model.addAttribute("reviews", reviewService.getReviewsByAlbumId(id));
+        List<Review> reviews = (List<Review>) reviewService;
 
-        // Comprobar si el usuario está autenticado
-        if (user != null) {
-            model.addAttribute("user", user);
+        Optional<Album> album = albumService.getAlbumById(id);
+        if (album.isPresent()) {
+            model.addAttribute("album", album.get());
+            model.addAttribute("reviews", reviews);
         }
+
 
         return "album/view"; // Renderizar la vista del álbum
 

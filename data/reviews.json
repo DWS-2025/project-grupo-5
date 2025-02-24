@@ -7,5 +7,62 @@
     "rating" : 5,
     "username" : "dsoria",
     "reviews" : [ ]
+  }, {
+    "id" : 2,
+    "albumId" : 2,
+    "userId" : 2,
+    "content" : "no se",
+    "rating" : 1,
+    "username" : "paul",
+    "reviews" : [ ]
+  }, {
+    "id" : 3,
+    "albumId" : 2,
+    "userId" : 2,
+    "content" : "nrqwn5wj53qhq3",
+    "rating" : 1,
+    "username" : "paul",
+    "reviews" : [ ]
+  }, {
+    "id" : 6,
+    "albumId" : 2,
+    "userId" : 2,
+    "content" : "g34qg3q4g",
+    "rating" : 1,
+    "username" : "paul",
+    "reviews" : [ ]
+  }, {
+    "id" : 7,
+    "albumId" : 2,
+    "userId" : 2,
+    "content" : "VQWVEWVW",
+    "rating" : 1,
+    "username" : "paul",
+    "reviews" : [ ]
+  }, {
+    "id" : 8,
+    "albumId" : 2,
+    "userId" : 2,
+    "content" : "IA TE ADORO TE QUIERO TE DESEO",
+    "rating" : 4,
+    "username" : "paul",
+    "reviews" : [ ]
+  } ],
+  "5" : [ {
+    "id" : 4,
+    "albumId" : 5,
+    "userId" : 2,
+    "content" : "gqgqrwg",
+    "rating" : 1,
+    "username" : "paul",
+    "reviews" : [ ]
+  }, {
+    "id" : 5,
+    "albumId" : 5,
+    "userId" : 2,
+    "content" : "g3q4g3q4g",
+    "rating" : 1,
+    "username" : "paul",
+    "reviews" : [ ]
   } ]
 }

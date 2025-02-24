@@ -2,6 +2,7 @@ package com.musicstore.controller;
 
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.UserService;
+import com.musicstore.service.ReviewService;
 import com.musicstore.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,9 @@ public class HomeController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping("/")
     public String home(Model model, HttpSession session) {
@@ -34,7 +38,10 @@ public class HomeController {
 
     @GetMapping("/{id}")
     public String viewAlbum(@PathVariable Long id, Model model) {
-        albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
+        albumService.getAlbumById(id).ifPresent(album -> {
+            model.addAttribute("album", album);
+            model.addAttribute("reviews", reviewService.getReviewsByAlbumId(id));
+        });
         return "album/view";
     }
 

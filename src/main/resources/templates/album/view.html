@@ -422,6 +422,10 @@
         .heart-red {
             fill: #045704;
 
+        }
+
+
+
     </style>
 </head>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -649,21 +653,27 @@
                                 </form>
 
 
-                                <div>
-                                    <h3>Reseñas:</h3>
-                                    <ul>
-                                        <li th:each="review : ${reviews}">
-                                            <p>
-                                                <strong th:text="${review.username}">NombreUsuario</strong>:
-                                                <span th:text="${review.content}">Contenido de la reseña</span>
-                                            </p>
-                                            <p>Calificación: <span th:text="${review.rating}"></span>/5</p>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <section class="reviews-section">
+                                    <h2>Reseñas</h2>
+                                    <div th:if="${#lists.isEmpty(reviews)}">
+                                        <p>No hay reseñas disponibles para este álbum.</p>
+                                    </div>
+                                    <div th:each="review : ${reviews}" class="review-card">
+                                        <p><strong th:text="${review.username}">Nombre de usuario</strong></p>
+                                        <p th:text="${review.content}">Contenido de la reseña</p>
+                                        <p>Calificación: <span th:text="${review.rating}">5</span></p>
+                                    </div>
+                                </section>
 
 
-                    </div>
+
+
+
+
+
+
+
+                            </div>
                 </div>
             </div>
         </div>
