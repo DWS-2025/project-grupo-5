@@ -625,6 +625,44 @@
                     <div class="mt-4">
                         <h4>Reviews</h4>
 
+                        <div class="row mt-5">
+                            <div class="col-md-12">
+                                <h2>Reseñas</h2>
+
+                                <form th:action="@{'/reviews/' + ${album.id}}" method="post">
+                                    <div class="mb-3">
+
+                                        <label for="reviewContent" class="form-label">Tu reseña:</label>
+                                        <textarea id="reviewContent" name="content" class="form-control" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="rating" class="form-label">Calificación:</label>
+                                        <select id="rating" name="rating" class="form-select" required>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Enviar reseña</button>
+                                </form>
+
+
+                                <div>
+                                    <h3>Reseñas:</h3>
+                                    <ul>
+                                        <li th:each="review : ${reviews}">
+                                            <p>
+                                                <strong th:text="${review.username}">NombreUsuario</strong>:
+                                                <span th:text="${review.content}">Contenido de la reseña</span>
+                                            </p>
+                                            <p>Calificación: <span th:text="${review.rating}"></span>/5</p>
+                                        </li>
+                                    </ul>
+                                </div>
+
+
                     </div>
                 </div>
             </div>

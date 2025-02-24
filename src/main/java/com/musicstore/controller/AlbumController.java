@@ -1,8 +1,10 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
+import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
+import com.musicstore.service.ReviewService;
 import com.musicstore.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,8 @@ public class AlbumController {
     private AlbumService albumService;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping
     public String listAlbums(Model model) {
@@ -98,7 +101,21 @@ public class AlbumController {
         // Pasar datos al modelo
         model.addAttribute("album", albumOpt.get());
         model.addAttribute("isFavorite", isFavorite); // Pasamos el estado de favorito
-        return "view"; // Renderiza la página view.html
+        // Obtener reseñas asociadas al álbum
+
+        albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
+
+        // Obtener reseñas asociadas al álbum
+        model.addAttribute("reviews", reviewService.getReviewsByAlbumId(id));
+
+        // Comprobar si el usuario está autenticado
+        if (user != null) {
+            model.addAttribute("user", user);
+        }
+
+        return "album/view"; // Renderizar la vista del álbum
+
+
     }
 
 
