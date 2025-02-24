@@ -99,6 +99,9 @@ public class ReviewService {
     }
 
     private synchronized Long generateReviewId() {
+        if (reviewsByAlbum.isEmpty()) {
+            return 1L;
+        }
         return reviewsByAlbum.values().stream()
                 .flatMap(List::stream)
                 .mapToLong(Review::getId)
