@@ -555,6 +555,7 @@
                         </div>
                     </div>
 
+
                     <!-- Formulario de Favoritos siempre visible -->
                     <form th:action="@{/favorites/add}" method="post">
                     <input type="hidden" name="albumId" th:value="${album.id}"/>
@@ -590,6 +591,9 @@
 
                     </form>
 
+                    <div class="me-auto">
+                        <span class="badge bg-secondary" th:text="${#lists.size(album.favoriteUsers)} + ' likes'">0 likes</span>
+                    </div>
 
                 </div>
             </div>
