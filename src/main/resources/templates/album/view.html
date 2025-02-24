@@ -849,10 +849,8 @@
                                     </div>
                                     <div th:each="review : ${reviews}" class="review-card">
                                         <div class="card-review">
-                                            <div class="review-actions" th:if="${session.user != null && session.user.username == review.username}">
-                                                <button type="button" class="edit-review" th:data-review-id="${review.id}" th:onclick="'editReview(' + ${review.id} + ')'">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
+                                            <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
+                                                <button type="button" class="edit-review" th:data-review-id="${review.id}" th:if="${session.user.username == review.username}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
                                                 <button type="button" class="delete-review" th:data-review-id="${review.id}" th:onclick="'deleteReview(' + ${review.id} + ')'">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
