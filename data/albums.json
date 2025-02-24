@@ -18,9 +18,9 @@
   "artist" : "Kanye West",
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/bully.jpg",
-  "audioFile" : "bully.mp3",
+  "audioFile" : "bully2.mp3",
   "description" : "El undécimo álbum de estudio de Kanye West, BULLY, está en camino y Ye ha trabajado arduamente para crear nuevos sonidos para que los experimenten sus fans.",
-  "tracklist" : "BEAUTY AND THE BEAST + DARK MATTER (ANTI-GRAVITY) + DESIGNED FOR + FEAR + HIDE YOUR BITCH + HIGHS AND LOWS + MATTHEW + OH NO MY HOODIE, MY HOODIE + PREACHER MAN + SHOWTIME (feat. Don Toliver) + SAME SHIT (feat. Sean Leon)  + TAKE MY LAST BREATH AWAY (BESAME MAMA) + THIS IS THE GLORY (with Dr. Dre)",
+  "tracklist" : "BEAUTY AND THE BEAST + DARK MATTER (ANTI-GRAVITY) + DESIGNED FOR + FEAR + HIDE YOUR BITCH + HIGHS AND LOWS \uD83D\uDD09 + MATTHEW + OH NO MY HOODIE, MY HOODIE + PREACHER MAN + SHOWTIME (feat. Don Toliver) + SAME SHIT (feat. Sean Leon)  + TAKE MY LAST BREATH AWAY (BESAME MAMA) + THIS IS THE GLORY (with Dr. Dre)",
   "year" : 2025,
   "spotify_url" : "",
   "applemusic_url" : "",
@@ -39,7 +39,7 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/2d9BCZeAAhiZWPpbX9aPCW",
   "applemusic_url" : "https://music.apple.com/us/album/el-%C3%BAltimo-tour-del-mundo/1542102907",
   "tidal_url" : "https://tidal.com/browse/album/163650011",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ "paul" ]
 }, {
   "id" : 6,
   "title" : "I AM MUSIC",

@@ -425,11 +425,38 @@
 
         }
 
+        #editReviewModal .modal-content {
+            background-color: #252525;
+            color: #ffffff;
+        }
+
+        #editReviewModal .modal-header {
+            border-bottom: 1px solid #333;
+        }
+
+        #editReviewModal .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        #editReviewModal .modal-body {
+            background-color: #252525;
+        }
+
+        #editReviewModal .form-control {
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+        }
+
+        #editReviewModal .form-label {
+            color: #ffffff;
+        }
+
         .card-review {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background-color: #253225;
+            background-color: #252525;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             border-radius: 0.5rem;
@@ -458,7 +485,7 @@
         }
 
         .review-actions button:hover {
-            color: #1a5f42;
+            color: #252525;
         }
 
         .stars {
@@ -503,7 +530,7 @@
             margin-bottom: 1.5rem;
         }
         .review-form {
-            background-color: #f9fafb;
+            background-color: #252525;
             padding: 1.5rem;
             border-radius: 0.5rem;
             margin-bottom: 2rem;
@@ -514,30 +541,115 @@
         }
         .review-form .form-label {
             font-weight: 500;
-            color: #ffffff;
+            color: #252525;
         }
         .review-form .form-select {
             width: auto;
             min-width: 100px;
         }
         .review-form .btn-primary {
-            background-color: #045704;
-            border-color: #045704;
+            background-color: #252525;
+            border-color: #252525;
             padding: 0.5rem 1.5rem;
             font-weight: 500;
         }
         .review-form .btn-primary:hover {
-            background-color: #034503;
-            border-color: #034503;
+            background-color: #252525;
+            border-color: #252525;
         }
+
+        .rating:not(:checked) > input {
+            position: absolute;
+            appearance: none;
+        }
+
+        .rating:not(:checked) > label {
+            float: right;
+            cursor: pointer;
+            font-size: 30px;
+            color: #666;
+        }
+
+        .rating:not(:checked) > label:before {
+            content: '★';
+        }
+
+        .rating > input:checked + label:hover,
+        .rating > input:checked + label:hover ~ label,
+        .rating > input:checked ~ label:hover,
+        .rating > input:checked ~ label:hover ~ label,
+        .rating > label:hover ~ input:checked ~ label {
+            color: #e58e09;
+        }
+
+        .rating:not(:checked) > label:hover,
+        .rating:not(:checked) > label:hover ~ label {
+            color: #ff9e0b;
+        }
+
+        .rating > input:checked ~ label {
+            color: #ffa723;
+        }
+
+
+
+        /* Star Rating Component Styles */
+        .rating:not(:checked) > input {
+            position: absolute;
+            appearance: none;
+        }
+
+        .rating:not(:checked) > label {
+            cursor: pointer;
+            font-size: 30px;
+            color: #666;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .rating:not(:checked) > label:before {
+            content: '★';
+        }
+
+        .rating > input:checked + label:hover,
+        .rating > input:checked + label:hover ~ label,
+        .rating > input:checked ~ label:hover,
+        .rating > input:checked ~ label:hover ~ label,
+        .rating > label:hover ~ input:checked ~ label {
+            color: #e58e09;
+        }
+
+        .rating:not(:checked) > label:hover,
+        .rating:not(:checked) > label:hover ~ label {
+            color: #ff9e0b;
+        }
+
+        .rating > input:checked ~ label {
+            color: #ffa723;
+        }
+
+        .rating.edit-rating {
+            display: inline-flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            margin-left: 10px;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .rating.edit-rating label {
+            display: inline-flex;
+            align-items: center;
+            height: 30px;
+        }
+
+
 
 
     </style>
 </head>
 <div th:replace="~{fragments/header :: header}"></div>
-<body>
-
-
 
 <div class="container mt-5">
     <div class="row">
@@ -571,13 +683,7 @@
     </span>
                             </p>
 
-
-
-
-
                             <div class="d-flex gap-3">
-
-
 
                                 <form th:action="${album.spotify_url}" method="get" target="_blank">
                                     <button type="submit" class="spotify-button">
@@ -635,7 +741,7 @@
                     <p th:unless="${album.audioFile}">
                         No hay audio asociado con este álbum.
                     </p>
-                    <!-- Modal -->
+
                     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content bg-dark text-white">
@@ -653,17 +759,17 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Formulario de Favoritos siempre visible -->
+
                     <form th:action="@{/favorites/add}" method="post">
-                    <input type="hidden" name="albumId" th:value="${album.id}"/>
+                        <input type="hidden" name="albumId" th:value="${album.id}"/>
                         <input type="hidden" name="username" th:value="${session.user != null ? session.user.username : ''}"/>
-                    <!-- Si el usuario no está logueado, abre el modal -->
-                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username == null}" style="background: none; border: none; padding: 0;">
-                        <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-                        </svg>
-                    </button>
-                    <!-- Si el usuario está logueado, el formulario se enviará normalmente -->
+
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username == null}" style="background: none; border: none; padding: 0;">
+                            <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                        </button>
+
                         <button type="submit" class="btn-primary" th:if="${session.user != null and session.user.username != null and !#lists.contains(session.user.favoriteAlbumIds, album.id)}" style="background: none; border: none; padding: 0;">
                             <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
@@ -689,7 +795,7 @@
 </div>
 <div class="container mt-4">
     <div class="row">
-        <!-- Primer bloque a la izquierda (tracklist) -->
+
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
@@ -707,42 +813,42 @@
                 </div>
             </div>
         </div>
-        <!-- Segundo bloque a la derecha (ocupa el resto de la fila) -->
+
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
                     <div class="mt-3">
-                        <h4 style="margin-bottom: 1.5rem;">Tu Reseña:</h4>
+                        <h4 style="margin-bottom: 1.5rem;">Add a review:</h4>
                         <div class="row mt-3">
                             <div class="col-md-12">
                                 <form th:action="@{'/reviews/' + ${album.id}}" method="post">
-    <div class="mb-3">
-        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'Para poner una review debes iniciar sesión' : ''}" required></textarea>
-    </div>
-    <div class="mb-3 d-flex align-items-center">
-        <label for="rating" class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Calificación:</label>
-        <div class="rating">
-            <input value="5" name="rating" id="star5" type="radio" th:disabled="${session.user == null}">
-            <label title="text" for="star5"></label>
-            <input value="4" name="rating" id="star4" type="radio" th:disabled="${session.user == null}">
-            <label title="text" for="star4"></label>
-            <input value="3" name="rating" id="star3" type="radio" th:disabled="${session.user == null}">
-            <label title="text" for="star3"></label>
-            <input value="2" name="rating" id="star2" type="radio" th:disabled="${session.user == null}">
-            <label title="text" for="star2"></label>
-            <input value="1" name="rating" id="star1" type="radio" required th:disabled="${session.user == null}">
-            <label title="text" for="star1"></label>
-        </div>
-    </div>
-    <button type="submit" class="btn btn-primary" th:disabled="${session.user == null}">Enviar reseña</button>
-</form>
+                                    <div class="mb-3">
+                                        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'Para poner una review debes iniciar sesión' : ''}" required></textarea>
+                                    </div>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <label class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Rate:</label>
+                                        <div class="rating">
+                                            <input value="5" name="rating" id="star5" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star5"></label>
+                                            <input value="4" name="rating" id="star4" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star4"></label>
+                                            <input value="3" name="rating" id="star3" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star3"></label>
+                                            <input value="2" name="rating" id="star2" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star2"></label>
+                                            <input value="1" name="rating" id="star1" type="radio" required th:disabled="${session.user == null}">
+                                            <label for="star1"></label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" th:disabled="${session.user == null}">Save review</button>
+                                </form>
                                 <section class="reviews-section">
                                     <h2>Reviews</h2>
                                     <div th:if="${#lists.isEmpty(reviews)}">
-                                        <p>No hay reseñas disponibles para este álbum.</p>
+                                        <p>Be the first to review this album!</p>
                                     </div>
                                     <div th:each="review : ${reviews}" class="review-card">
-                                        <div class="card-review" th:each="review : ${reviews}">
+                                        <div class="card-review">
                                             <div class="review-actions" th:if="${session.user != null && session.user.username == review.username}">
                                                 <button type="button" class="edit-review" th:data-review-id="${review.id}" th:onclick="'editReview(' + ${review.id} + ')'">
                                                     <i class="bi bi-pencil"></i>
@@ -760,130 +866,123 @@
                                             </div>
                                             <div class="infos">
                                                 <div class="author" th:text="${review.username}"></div>
-    <div class="description review-content" th:text="${review.content}"></div>
-</div>
+                                                <div class="description review-content" th:text="${review.content}"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </section>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editReviewModalLabel">Edit Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editReviewForm" th:action="@{'/reviews/' + ${album.id} + '/edit/0'}" method="post">
+                            <div class="mb-3">
+                                <label for="editReviewContent" class="form-label">Your review:</label>
+                                <textarea id="editReviewContent" name="content" class="form-control" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rate:</label>
+                                <div class="rating edit-rating">
+                                    <input value="5" name="rating" id="editStar5" type="radio">
+                                    <label title="text" for="editStar5"></label>
+                                    <input value="4" name="rating" id="editStar4" type="radio">
+                                    <label title="text" for="editStar4"></label>
+                                    <input value="3" name="rating" id="editStar3" type="radio">
+                                    <label title="text" for="editStar3"></label>
+                                    <input value="2" name="rating" id="editStar2" type="radio">
+                                    <label title="text" for="editStar2"></label>
+                                    <input value="1" name="rating" id="editStar1" type="radio" required>
+                                    <label title="text" for="editStar1"></label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" form="editReviewForm" class="btn btn-primary">Save changes</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<style>
-.rating:not(:checked) > input {
-    position: absolute;
-    appearance: none;
-}
 
-.rating:not(:checked) > label {
-    float: right;
-    cursor: pointer;
-    font-size: 30px;
-    color: #666;
-}
+<div th:replace="~{fragments/footer :: footer}"></div>
 
-.rating:not(:checked) > label:before {
-    content: '★';
-}
-
-.rating > input:checked + label:hover,
-.rating > input:checked + label:hover ~ label,
-.rating > input:checked ~ label:hover,
-.rating > input:checked ~ label:hover ~ label,
-.rating > label:hover ~ input:checked ~ label {
-    color: #e58e09;
-}
-
-.rating:not(:checked) > label:hover,
-.rating:not(:checked) > label:hover ~ label {
-    color: #ff9e0b;
-}
-
-.rating > input:checked ~ label {
-    color: #ffa723;
-}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const audio = document.querySelector('audio');
-        const checkbox = document.getElementById('checkboxInput');
-
-        if (audio) {
-            audio.style.display = 'none';
-            checkbox.addEventListener('change', function() {
-                audio.muted = this.checked;
-            });
-        }
-    });
-</script>
-</body>
-</html>
-<!-- Modal para editar reseña -->
-<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editReviewModalLabel">Editar Reseña</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Delete Review Modal -->
+<div class="modal fade" id="deleteReviewModal" tabindex="-1" aria-labelledby="deleteReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="deleteReviewModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editReviewForm" th:action="@{'/reviews/' + ${album.id} + '/edit/0'}" method="post">
-                    <div class="mb-3">
-                        <label for="editReviewContent" class="form-label">Tu reseña:</label>
-                        <textarea id="editReviewContent" name="content" class="form-control" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Calificación:</label>
-                        <div class="rating edit-rating">
-                            <input value="5" name="rating" id="editStar5" type="radio">
-                            <label title="text" for="editStar5"></label>
-                            <input value="4" name="rating" id="editStar4" type="radio">
-                            <label title="text" for="editStar4"></label>
-                            <input value="3" name="rating" id="editStar3" type="radio">
-                            <label title="text" for="editStar3"></label>
-                            <input value="2" name="rating" id="editStar2" type="radio">
-                            <label title="text" for="editStar2"></label>
-                            <input value="1" name="rating" id="editStar1" type="radio" required>
-                            <label title="text" for="editStar1"></label>
-                        </div>
-                    </div>
-                </form>
+                Are you sure you want to delete this review?
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" form="editReviewForm" class="btn btn-primary">Guardar cambios</button>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteReview">Delete</button>
             </div>
         </div>
     </div>
 </div>
-<script>
-function editReview(reviewId) {
-    const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.card-review');
-    const content = reviewCard.querySelector('.review-content').textContent;
-    const rating = reviewCard.querySelectorAll('.star.filled').length;
-    
-    document.getElementById('editReviewContent').value = content;
-    document.querySelector(`#editReviewForm input[value="${rating}"]`).checked = true;
-    
-    const form = document.getElementById('editReviewForm');
-    form.action = form.action.replace('/edit/0', `/edit/${reviewId}`);
-    
-    new bootstrap.Modal(document.getElementById('editReviewModal')).show();
-}
 
-function deleteReview(reviewId) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta reseña?')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        const albumId = document.querySelector('meta[name="albumId"]').content;
-        form.action = `/reviews/${albumId}/delete/${reviewId}`;
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
-</script>
-</body>
+        <script>
+            function editReview(reviewId) {
+                const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.card-review');
+                const content = reviewCard.querySelector('.review-content').textContent;
+                const rating = reviewCard.querySelectorAll('.star.filled').length;
+
+                document.getElementById('editReviewContent').value = content;
+                document.querySelector(`#editReviewForm input[value="${rating}"]`).checked = true;
+
+                const form = document.getElementById('editReviewForm');
+                form.action = form.action.replace('/edit/0', `/edit/${reviewId}`);
+
+                new bootstrap.Modal(document.getElementById('editReviewModal')).show();
+            }
+
+            function deleteReview(reviewId) {
+                const modal = new bootstrap.Modal(document.getElementById('deleteReviewModal'));
+                const form = document.createElement('form');
+                form.method = 'POST';
+                const albumId = document.querySelector('meta[name="albumId"]').content;
+                form.action = `/reviews/${albumId}/delete/${reviewId}`;
+                
+                document.getElementById('confirmDeleteReview').onclick = function() {
+                    document.body.appendChild(form);
+                    form.submit();
+                };
+                
+                modal.show();
+            }
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const audio = document.querySelector('audio');
+                const checkbox = document.getElementById('checkboxInput');
+
+                if (audio) {
+                    audio.style.display = 'none';
+                    checkbox.addEventListener('change', function() {
+                        audio.muted = this.checked;
+                    });
+                }
+            });
+        </script>
 </html>
