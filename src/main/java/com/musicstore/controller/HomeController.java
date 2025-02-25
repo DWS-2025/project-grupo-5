@@ -35,7 +35,7 @@ public class HomeController {
             anonymousUser.setAnonymous(true);
             model.addAttribute("user", anonymousUser);
         }
-        return "album/search";
+        return "album/welcome";
     }
 
     @GetMapping("/{id}")

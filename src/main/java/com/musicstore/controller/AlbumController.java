@@ -40,7 +40,7 @@ public class AlbumController {
             return "error";
         } else {
             model.addAttribute("albums", albumService.getAllAlbums());
-            return "album/list";
+            return "album/admin";
         }
 
     }

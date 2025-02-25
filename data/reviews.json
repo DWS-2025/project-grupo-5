@@ -1,6 +1,128 @@
 {
-  "5" : [ ],
-  "2" : [ ],
-  "10" : [ ],
-  "1" : [ ]
+  "1" : [ {
+    "id" : 1,
+    "albumId" : 1,
+    "userId" : 5,
+    "content" : "Me ha gustado mucho",
+    "rating" : 5,
+    "username" : "admin",
+    "reviews" : [ ]
+  } ],
+  "7" : [ {
+    "id" : 3,
+    "albumId" : 7,
+    "userId" : 10,
+    "content" : "Uno de los mejores álbumes de hip-hop de todos los tiempos. La producción es impecable y Kanye estaba en su mejor momento.",
+    "rating" : 5,
+    "username" : "user10",
+    "reviews" : [ ]
+  } ],
+  "19" : [ {
+    "id" : 4,
+    "albumId" : 19,
+    "userId" : 10,
+    "content" : "Bad Bunny en su versión más experimental. No es para todo el mundo, pero tiene algunas joyas.",
+    "rating" : 3,
+    "username" : "user10",
+    "reviews" : [ ]
+  } ],
+  "21" : [ {
+    "id" : 5,
+    "albumId" : 21,
+    "userId" : 1,
+    "content" : "Siempre es un placer escuchar a Nino Bravo. Su voz sigue emocionando décadas después.",
+    "rating" : 5,
+    "username" : "user1",
+    "reviews" : [ ]
+  } ],
+  "24" : [ {
+    "id" : 6,
+    "albumId" : 24,
+    "userId" : 1,
+    "content" : "El mejor Melendi de su carrera. Sus letras en este álbum están llenas de nostalgia y rebeldía.",
+    "rating" : 4,
+    "username" : "user1",
+    "reviews" : [ ]
+  } ],
+  "5" : [ {
+    "id" : 7,
+    "albumId" : 5,
+    "userId" : 10,
+    "content" : "No me gusta",
+    "rating" : 1,
+    "username" : "elsudo",
+    "reviews" : [ ]
+  }, {
+    "id" : 2,
+    "albumId" : 5,
+    "userId" : 2,
+    "content" : "Un disco innovador, aunque no supera a YHLQMDLG. Aun así, Bad Bunny sigue demostrando su evolución.",
+    "rating" : 4,
+    "username" : "paul",
+    "reviews" : [ ]
+  } ],
+  "6" : [ {
+    "id" : 8,
+    "albumId" : 6,
+    "userId" : 8,
+    "content" : "i am music \uD83E\uDD18\uD83C\uDFFC",
+    "rating" : 5,
+    "username" : "raul.santamaria",
+    "reviews" : [ ]
+  } ],
+  "14" : [ {
+    "id" : 9,
+    "albumId" : 14,
+    "userId" : 11,
+    "content" : "meh",
+    "rating" : 2,
+    "username" : "misael",
+    "reviews" : [ ]
+  } ],
+  "16" : [ {
+    "id" : 10,
+    "albumId" : 16,
+    "userId" : 11,
+    "content" : "me ha gustado mucho (por eso le aprobe)",
+    "rating" : 4,
+    "username" : "misael",
+    "reviews" : [ ]
+  } ],
+  "10" : [ {
+    "id" : 11,
+    "albumId" : 10,
+    "userId" : 9,
+    "content" : "que album mas chulo \uD83D\uDE0E",
+    "rating" : 5,
+    "username" : "michel",
+    "reviews" : [ ]
+  } ],
+  "12" : [ {
+    "id" : 12,
+    "albumId" : 12,
+    "userId" : 9,
+    "content" : "que temoooooon",
+    "rating" : 5,
+    "username" : "michel",
+    "reviews" : [ ]
+  } ],
+  "22" : [ {
+    "id" : 13,
+    "albumId" : 22,
+    "userId" : 9,
+    "content" : "un verano sin tiiiiii",
+    "rating" : 4,
+    "username" : "michel",
+    "reviews" : [ ]
+  } ],
+  "23" : [ {
+    "id" : 14,
+    "albumId" : 23,
+    "userId" : 9,
+    "content" : "muy español ",
+    "rating" : 3,
+    "username" : "michel",
+    "reviews" : [ ]
+  } ]
+
 }

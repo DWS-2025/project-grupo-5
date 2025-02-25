@@ -25,7 +25,7 @@
   "spotify_url" : "",
   "applemusic_url" : "",
   "tidal_url" : "",
-  "favoriteUsers" : [ "dsoria", "paul" ]
+  "favoriteUsers" : [ "dsoria", "paul", "elsudo" ]
 }, {
   "id" : 5,
   "title" : "EL ÚLTIMO TOUR DEL MUNDO",
@@ -67,7 +67,7 @@
   "spotify_url" : "https://open.spotify.com/album/0k7ALIqqds5oGFtpMsaHLK",
   "applemusic_url" : "https://music.apple.com/gb/album/vultures-1/1760997037",
   "tidal_url" : "https://tidal.com/browse/album/418944997",
-  "favoriteUsers" : [ "paul" ]
+  "favoriteUsers" : [ "paul", "elsudo" ]
 }, {
   "id" : 8,
   "title" : "VULTURES 2",
