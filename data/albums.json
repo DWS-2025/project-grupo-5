@@ -306,4 +306,18 @@
   "applemusic_url" : "https://music.apple.com/es/album/sin-noticias-de-holanda/699839388",
   "tidal_url" : "https://listen.stage.tidal.com/album/1535260",
   "favoriteUsers" : [ ]
+}, {
+  "id" : 25,
+  "title" : "Primer Dia de Clases",
+  "artist" : "Mora",
+  "genre" : "Latino",
+  "imageUrl" : "/resources/uploads/019bf2ae67123d827b87b159d55faaf3.1000x1000x1.png",
+  "audioFile" : "pddc.mp3",
+  "description" : "",
+  "tracklist" : "Primer Día de Clases + La Receta (feat. Juliito) + Tuyo + Cuándo Será (feat. Lunay) + Volando + 512 (feat. JHAYCO) + La Carita + ¿Qué Tú Dices? (feat. Omy De Oro) + Te Conocí Perriando + A Fuego (feat. Mariah Angeliq) + Vacío + Fin del Mundo + En Un Avión (feat. Arcángel) + Desaparecer + No Digas Nada (feat. Farruko) + Pégate (Remix) (feat. JHAYCO)",
+  "year" : 2021,
+  "spotify_url" : "https://open.spotify.com/album/5r8T7S23cVDSd7a045h4N5?si=VqHUaQPmSL6V5_TPYr9sfA",
+  "applemusic_url" : "https://music.apple.com/cl/album/primer-día-de-clases/1552010780",
+  "tidal_url" : "https://tidal.com/browse/album/172087900",
+  "favoriteUsers" : [ "dsoria", "elsudo" ]
 } ]

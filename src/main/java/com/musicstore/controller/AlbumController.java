@@ -200,7 +200,8 @@ public class AlbumController {
                 }
             } catch (IOException e) {
                 // Handle the error appropriately
-                return "album/form";
+                return "album" +
+                        "/form";
             }
 
 
