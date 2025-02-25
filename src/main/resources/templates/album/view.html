@@ -37,17 +37,15 @@
                             <p class="card-text"><strong>Genre:</strong> <span th:text="${album.genre}">Genre</span></p>
                             <p class="card-text"><strong>Year:</strong> <span th:text="${album.year}">Year</span></p>
                             <p class="card-text" th:text="${album.description}">Description</p>
+                            <!--
                             <p class="card-text" style="color: white;">
                                 Usuarios a los que les gusta <span th:text="${album.title}"></span>:
                                 <span th:each="user, iterStat : ${album.favoriteUsers}">
                                     <span th:text="${user}"></span>
                                     <span th:unless="${iterStat.last}">,</span>
                                 </span>
-
-
-
                             </p>
-
+                            -->
 
                             <div class="d-flex gap-3">
                                 <form th:action="${album.spotify_url}" method="get" target="_blank">
@@ -104,9 +102,11 @@
                             </div>
                         </label>
                     </div>
+
                     <p th:unless="${album.audioFile}">
                         No hay audio asociado con este álbum.
                     </p>
+
 
                     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
@@ -125,6 +125,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <form th:action="@{/favorites/add}" method="post">
                         <input type="hidden" name="albumId" th:value="${album.id}"/>
@@ -150,10 +151,35 @@
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
                             </svg>
                         </button>
+
+                        <div class="favorite-container" data-bs-toggle="tooltip" th:title="${#strings.listJoin(album.favoriteUsers, ', ')}">
+                            <form th:if="${session.user != null && !session.user.anonymous}" th:action="${isFavorite ? '/favorites/delete' : '/favorites/add'}" method="post" class="d-inline">
+                                <input type="hidden" name="albumId" th:value="${album.id}">
+                                <button type="submit" class="btn btn-link p-0" data-bs-toggle="tooltip" data-bs-placement="top" th:title="${#strings.listJoin(album.favoriteUsers, ', ')}">
+                                    <i class="bi" th:classappend="${isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'}"></i>
+                                </button>
+                            </form>
+                            <i th:if="${session.user == null || session.user.anonymous}" class="bi bi-heart" data-bs-toggle="tooltip" data-bs-placement="top" th:title="${#strings.listJoin(album.favoriteUsers, ', ')}"></i>
+                        </div>
+
                     </form>
-                    <div class="me-auto">
+
+
+
+
+                    <div class="me-auto" data-bs-toggle="tooltip" th:title="${#strings.listJoin(album.favoriteUsers, ', ')}">
                         <span class="badge bg-secondary" th:text="${#lists.size(album.favoriteUsers)} + ' likes'">0 likes</span>
                     </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                                return new bootstrap.Tooltip(tooltipTriggerEl);
+                            });
+                        });
+                    </script>
+
 
                 </div>
 
@@ -349,6 +375,11 @@
                         audio.muted = this.checked;
                     });
                 }
+
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl)
+                })
             });
         </script>
 </html>
