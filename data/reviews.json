@@ -7,6 +7,22 @@
     "rating" : 5,
     "username" : "admin",
     "reviews" : [ ]
+  }, {
+    "id" : 15,
+    "albumId" : 1,
+    "userId" : 12,
+    "content" : "Uno de los discos más influyentes del reguetón moderno. Bad Bunny mezcla perreo clásico con sonidos frescos, demostrando su versatilidad. Temas como Safaera y Yo Perreo Sola son ya himnos del género.",
+    "rating" : 5,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 38,
+    "albumId" : 1,
+    "userId" : 16,
+    "content" : "Este álbum es una obra maestra del reguetón, con una mezcla de emociones crudas y momentos épicos. Me encanta cómo Bad Bunny fusiona sus raíces con sonidos más experimentales, llevando el género a un nivel que no había visto antes. Safaera es uno de mis temas favoritos; no me canso de escucharlo.",
+    "rating" : 5,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
   } ],
   "7" : [ {
     "id" : 3,
@@ -15,6 +31,14 @@
     "content" : "Uno de los mejores álbumes de hip-hop de todos los tiempos. La producción es impecable y Kanye estaba en su mejor momento.",
     "rating" : 5,
     "username" : "user10",
+    "reviews" : [ ]
+  }, {
+    "id" : 42,
+    "albumId" : 7,
+    "userId" : 16,
+    "content" : "La vibra de ¥$ es única, y con Vultures 1 me metí de lleno en su mundo. Es oscuro, experimental y tiene una atmósfera que me hace sentir que estoy en otro plano. A veces se hace algo denso, pero Crucify Me tiene una base que no me deja parar de escucharla.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
     "reviews" : [ ]
   } ],
   "19" : [ {
@@ -25,6 +49,14 @@
     "rating" : 3,
     "username" : "user10",
     "reviews" : [ ]
+  }, {
+    "id" : 48,
+    "albumId" : 19,
+    "userId" : 16,
+    "content" : "No es el mejor álbum de Kanye, pero aún así tiene sus momentos. La producción es más íntima, y algunas de las canciones como Ghost Town realmente me tocan. Sin embargo, no tiene la misma intensidad que otros discos, por lo que no lo pongo tanto.\r\n",
+    "rating" : 4,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
   } ],
   "21" : [ {
     "id" : 5,
@@ -34,6 +66,14 @@
     "rating" : 5,
     "username" : "user1",
     "reviews" : [ ]
+  }, {
+    "id" : 50,
+    "albumId" : 21,
+    "userId" : 16,
+    "content" : "Este álbum tiene una vibra única, con una mezcla de lo urbano y lo experimental que me atrapa. Me gusta cómo Bad Bunny juega con los ritmos y las letras, y La Canción es una de mis favoritas. Tiene ese toque profundo que me encanta.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
   } ],
   "24" : [ {
     "id" : 6,
@@ -42,6 +82,30 @@
     "content" : "El mejor Melendi de su carrera. Sus letras en este álbum están llenas de nostalgia y rebeldía.",
     "rating" : 4,
     "username" : "user1",
+    "reviews" : [ ]
+  }, {
+    "id" : 22,
+    "albumId" : 24,
+    "userId" : 12,
+    "content" : "Uno de los mejores discos de rumba-pop española. Letras cercanas, historias cotidianas y un sonido que marcó una generación. Con la Luna Llena es un clásico.",
+    "rating" : 4,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 29,
+    "albumId" : 24,
+    "userId" : 13,
+    "content" : "No hay mucha profundidad en este disco. Es directo, accesible, pero falta esa conexión genuina que lo haga memorable para EchoVibe81. Sin embargo, La Promesa le habla de una manera que no esperaba. No es el mejor álbum, pero tiene su momento.",
+    "rating" : 3,
+    "username" : "EchoVibe81",
+    "reviews" : [ ]
+  }, {
+    "id" : 34,
+    "albumId" : 24,
+    "userId" : 14,
+    "content" : "Este álbum no me dice mucho, aunque las letras son sinceras. La música no me ofrece la atmósfera relajante que busco, y aunque La Promesa tiene algo especial, no es suficiente para que lo vuelva a escuchar. Lo respeto por su honestidad, pero no es para mí.",
+    "rating" : 3,
+    "username" : "NexusVibe",
     "reviews" : [ ]
   } ],
   "5" : [ {
@@ -60,6 +124,22 @@
     "rating" : 4,
     "username" : "paul",
     "reviews" : [ ]
+  }, {
+    "id" : 17,
+    "albumId" : 5,
+    "userId" : 12,
+    "content" : "Este álbum muestra una faceta más experimental del conejo malo. Mezcla rock, trap y reguetón con una narrativa de despedida. Dákiti y La Noche de Anoche brillan en un tracklist sólido.",
+    "rating" : 4,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 40,
+    "albumId" : 5,
+    "userId" : 16,
+    "content" : "Este disco lo escuché de principio a fin y no me decepcionó. Es como una mezcla de introspección y fiesta, con una vibra única. Me encanta el contraste de sonidos y cómo logra mantener su autenticidad. Vete es sin duda uno de mis temas favoritos, tiene una atmósfera que me atrapa.\r\n",
+    "rating" : 5,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
   } ],
   "6" : [ {
     "id" : 8,
@@ -68,6 +148,14 @@
     "content" : "i am music \uD83E\uDD18\uD83C\uDFFC",
     "rating" : 5,
     "username" : "raul.santamaria",
+    "reviews" : [ ]
+  }, {
+    "id" : 41,
+    "albumId" : 6,
+    "userId" : 16,
+    "content" : "Playboi Carti tiene ese flow tan característico que me engancha cada vez. Este álbum tiene muchas canciones que me hacen mover la cabeza, aunque algunas me parecen algo repetitivas. Long Time es uno de esos tracks que siempre me pone en el mood adecuado, esa energía está al máximo.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
     "reviews" : [ ]
   } ],
   "14" : [ {
@@ -78,6 +166,14 @@
     "rating" : 2,
     "username" : "misael",
     "reviews" : [ ]
+  }, {
+    "id" : 46,
+    "albumId" : 14,
+    "userId" : 16,
+    "content" : "Este es uno de esos discos que me hace sentir parte de algo más grande. ¥$ tiene una manera de crear atmósferas oscuras y profundas que realmente me engancha. Darkness es uno de los temas que más me gusta, es tan experimental y único.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
   } ],
   "16" : [ {
     "id" : 10,
@@ -86,6 +182,14 @@
     "content" : "me ha gustado mucho (por eso le aprobe)",
     "rating" : 4,
     "username" : "misael",
+    "reviews" : [ ]
+  }, {
+    "id" : 47,
+    "albumId" : 16,
+    "userId" : 16,
+    "content" : "Este álbum es uno de esos descubrimientos que te sorprenden. Paul. tiene un estilo muy auténtico y sus letras me llegan. Aunque no es tan comercial, tiene esa profundidad y honestidad que me hace disfrutarlo. Para Siempre es una de las canciones que más me transmite.",
+    "rating" : 5,
+    "username" : "TrapWaveX",
     "reviews" : [ ]
   } ],
   "10" : [ {
@@ -96,6 +200,22 @@
     "rating" : 5,
     "username" : "michel",
     "reviews" : [ ]
+  }, {
+    "id" : 20,
+    "albumId" : 10,
+    "userId" : 12,
+    "content" : "Un álbum innovador dentro de la música latina. La producción de Tainy es impecable, fusionando reguetón, electrónica y pop con colaboraciones de lujo.\r\n",
+    "rating" : 5,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 44,
+    "albumId" : 10,
+    "userId" : 16,
+    "content" : "Tainy ha demostrado ser uno de los mejores productores del reguetón, y con Data me sorprendió. Las canciones tienen un flow muy fresco, pero hay momentos en los que me gustaría que se arriesgara más en cuanto a la experimentación. Pa' Romperla tiene ese toque que siempre me pone de buen humor.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
   } ],
   "12" : [ {
     "id" : 12,
@@ -104,6 +224,14 @@
     "content" : "que temoooooon",
     "rating" : 5,
     "username" : "michel",
+    "reviews" : [ ]
+  }, {
+    "id" : 45,
+    "albumId" : 12,
+    "userId" : 16,
+    "content" : "Este álbum tiene una vibra relajada pero también llena de emociones. Bad Bunny se siente más experimental y libre aquí, y aunque no tiene tantos hits como en otros discos, me encanta cómo se muestra vulnerable. Pa' Que Le De es una de mis canciones favoritas, tiene algo especial.",
+    "rating" : 5,
+    "username" : "TrapWaveX",
     "reviews" : [ ]
   } ],
   "22" : [ {
@@ -114,6 +242,30 @@
     "rating" : 4,
     "username" : "michel",
     "reviews" : [ ]
+  }, {
+    "id" : 21,
+    "albumId" : 22,
+    "userId" : 12,
+    "content" : "Un disco que captura la esencia del verano con ritmos tropicales y sonidos nostálgicos. Me Porto Bonito y Titi Me Preguntó son highlights de un álbum sin relleno.",
+    "rating" : 5,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 26,
+    "albumId" : 22,
+    "userId" : 13,
+    "content" : "Es como si el verano tuviera su propio álbum. La mezcla de sonidos tropicales con el reguetón, y esas pequeñas dosis de nostalgia... Me Porto Bonito tiene algo que lo hace casi perfecto. A veces le parece que hay demasiados altibajos emocionales, pero, en general, es un viaje que vale la pena.",
+    "rating" : 5,
+    "username" : "EchoVibe81",
+    "reviews" : [ ]
+  }, {
+    "id" : 31,
+    "albumId" : 22,
+    "userId" : 14,
+    "content" : "Lo que me gusta de este álbum es la atmósfera que crea, pero hay momentos en los que no logro conectar tanto. Algunas canciones suenan demasiado parecidas, y me falta algo de frescura en ellas. Aún así, disfruto de las canciones más tranquilas, como Vete.",
+    "rating" : 3,
+    "username" : "NexusVibe",
+    "reviews" : [ ]
   } ],
   "23" : [ {
     "id" : 14,
@@ -123,6 +275,167 @@
     "rating" : 3,
     "username" : "michel",
     "reviews" : [ ]
+  }, {
+    "id" : 51,
+    "albumId" : 23,
+    "userId" : 16,
+    "content" : "Este álbum es un poco más clásico para mi gusto, pero respeto la voz y el talento de Nino Bravo. Algunas canciones tienen algo nostálgico, pero no es el estilo que suelo escuchar más a menudo",
+    "rating" : 3,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
+  } ],
+  "9" : [ {
+    "id" : 16,
+    "albumId" : 9,
+    "userId" : 12,
+    "content" : "Una obra maestra del hip-hop. Kanye lleva la producción a otro nivel con instrumentales grandiosas y letras introspectivas. Runaway y Power son momentos épicos en un álbum sin fisuras.",
+    "rating" : 5,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 25,
+    "albumId" : 9,
+    "userId" : 13,
+    "content" : "Este álbum es como una montaña rusa emocional. La producción es estratosférica, pero lo que realmente conecta con EchoVibe81 son las luchas internas que Kanye comparte en cada pista. Runaway le vuela la cabeza cada vez que la escucha. Cada escucha te da una nueva perspectiva.",
+    "rating" : 5,
+    "username" : "EchoVibe81",
+    "reviews" : [ ]
+  }, {
+    "id" : 30,
+    "albumId" : 9,
+    "userId" : 14,
+    "content" : "La producción de este álbum es increíblemente rica, pero para NexusVibe, la mezcla de estilos y sonidos es lo que realmente lo hace destacar. Le gusta cómo Kanye fusiona lo épico con lo introspectivo, aunque a veces siente que las letras son un poco demasiado crudas. Runaway es su favorita, y siempre la pone cuando necesita un momento de reflexión.\r\n",
+    "rating" : 5,
+    "username" : "NexusVibe",
+    "reviews" : [ ]
+  }, {
+    "id" : 35,
+    "albumId" : 9,
+    "userId" : 15,
+    "content" : "Este es el álbum que realmente define a Kanye. Es su obra maestra, en mi opinión. La producción es inigualable y cada canción tiene algo único que me conecta con lo que está diciendo. Runaway es un himno personal, y la forma en que todo el disco se une para contar su historia es simplemente brillante. No puedo parar de escucharlo, y siempre siento que cada vez que lo hago, descubro algo nuevo.",
+    "rating" : 5,
+    "username" : "YeFan2025",
+    "reviews" : [ ]
+  } ],
+  "11" : [ {
+    "id" : 18,
+    "albumId" : 11,
+    "userId" : 12,
+    "content" : "Minimalista, caótico y adictivo. Este álbum redefine el sonido del trap con beats atmosféricos y un estilo inimitable. Shoota y R.I.P. son auténticas bombas de energía.",
+    "rating" : 4,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  } ],
+  "17" : [ {
+    "id" : 19,
+    "albumId" : 17,
+    "userId" : 12,
+    "content" : "Una evolución en el sonido de Kanye, mezclando hip-hop con sintetizadores electrónicos. Stronger y Flashing Lights siguen sonando atemporales.",
+    "rating" : 5,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 37,
+    "albumId" : 17,
+    "userId" : 15,
+    "content" : "Para mí, este es el álbum que hizo que Kanye se convirtiera en una leyenda. Desde Stronger hasta Good Life, cada pista tiene algo increíble. Es un equilibrio perfecto entre hip-hop y electrónica, y tiene una energía que no se puede replicar. Siempre me hace querer bailar y reflexionar a la vez. Es uno de esos discos que se vuelve atemporal.",
+    "rating" : 5,
+    "username" : "YeFan2025",
+    "reviews" : [ ]
+  } ],
+  "20" : [ {
+    "id" : 23,
+    "albumId" : 20,
+    "userId" : 12,
+    "content" : "Un disco monumental, con una producción inmersiva y un enfoque espiritual. Canciones como Jail y Hurricane destacan en una obra muy personal de Kanye.",
+    "rating" : 4,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 49,
+    "albumId" : 20,
+    "userId" : 16,
+    "content" : "Donda tiene un toque espiritual y una producción impresionante. Aunque tiene temas largos y algo densos, hay algo en su mensaje que me llega. Hurricane es sin duda uno de los momentos más altos del álbum, una obra maestra de la producción.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
+  } ],
+  "25" : [ {
+    "id" : 24,
+    "albumId" : 25,
+    "userId" : 12,
+    "content" : "Mora sigue demostrando su talento con un álbum lleno de reguetón melódico y sonidos innovadores. Pasajero y Modelito son auténticos hits.",
+    "rating" : 4,
+    "username" : "ShadowByte42",
+    "reviews" : [ ]
+  }, {
+    "id" : 52,
+    "albumId" : 25,
+    "userId" : 16,
+    "content" : "Mora ha creado algo realmente interesante con este álbum. Las melodías tienen una vibra relajante pero también un toque fresco que me atrapa. Hola Bebe es una de mis canciones favoritas; tiene una mezcla perfecta de sonidos.",
+    "rating" : 5,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
+  } ],
+  "15" : [ {
+    "id" : 27,
+    "albumId" : 15,
+    "userId" : 13,
+    "content" : "Cuando escucha este álbum, todo se detiene. Las melodías suaves, la voz tan sincera, y la atmósfera relajante... Llamada Perdida lo toca. No es el álbum más conocido, pero cada canción tiene ese algo único que lo convierte en un refugio personal. Simplemente un placer escuchar.",
+    "rating" : 5,
+    "username" : "EchoVibe81",
+    "reviews" : [ ]
+  }, {
+    "id" : 32,
+    "albumId" : 15,
+    "userId" : 14,
+    "content" : "Este es uno de esos álbumes que siento que fue hecho para mí. La atmósfera tranquila, las melodías suaves y las letras introspectivas son justo lo que me gusta escuchar. Llamada Perdida me pone en un trance total. Es un disco que escucho una y otra vez cuando quiero desconectar del mundo.",
+    "rating" : 5,
+    "username" : "NexusVibe",
+    "reviews" : [ ]
+  } ],
+  "13" : [ {
+    "id" : 28,
+    "albumId" : 13,
+    "userId" : 13,
+    "content" : "Hay algo en este álbum que no logra conectar del todo. Las canciones comerciales son pegajosas, pero EchoVibe81 siente que le falta esa chispa de autenticidad que hace que Drake se sienta más cercano. Aun así, Feel No Ways es una joya oculta que no se olvida.",
+    "rating" : 5,
+    "username" : "EchoVibe81",
+    "reviews" : [ ]
+  }, {
+    "id" : 33,
+    "albumId" : 13,
+    "userId" : 14,
+    "content" : "Aunque tiene sus momentos, como Feel No Ways, me cuesta conectar con este álbum en su totalidad. La parte más comercial no me engancha tanto. Prefiero cuando Drake se sumerge en lo emocional o experimental, como en sus otros discos.\r\n",
+    "rating" : 3,
+    "username" : "NexusVibe",
+    "reviews" : [ ]
+  } ],
+  "18" : [ {
+    "id" : 36,
+    "albumId" : 18,
+    "userId" : 15,
+    "content" : "Este álbum es una locura, pero eso es lo que me encanta de él. Kanye no tiene miedo de romper las reglas, y Yeezus es como una explosión de sonidos industriales, electrónicos y rap agresivo. Puede ser un poco chocante al principio, pero cada vez que lo escucho, encuentro más capas. Black Skinhead es un himno, sin duda.",
+    "rating" : 4,
+    "username" : "YeFan2025",
+    "reviews" : [ ]
+  } ],
+  "2" : [ {
+    "id" : 39,
+    "albumId" : 2,
+    "userId" : 16,
+    "content" : "Kanye tiene un estilo tan único que siempre me sorprende. Bully es un álbum que no es tan conocido, pero tiene ese toque de agresividad y originalidad que lo hace interesante. Las letras son intensas y el ritmo tiene esa energía que me gusta. Aunque no es uno de sus mejores discos, tiene piezas que valen la pena, como Spaceship.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
+  } ],
+  "8" : [ {
+    "id" : 43,
+    "albumId" : 8,
+    "userId" : 16,
+    "content" : "Lo que me gusta de este álbum es la evolución en su sonido, es más pesado que el primero, pero no pierde esa esencia experimental. No Mercy es uno de esos temas que me hace pensar que ¥$ está adelantado a su tiempo. Es un viaje sonoro del que nunca quiero salir.",
+    "rating" : 4,
+    "username" : "TrapWaveX",
+    "reviews" : [ ]
   } ]
-
 }
