@@ -36,7 +36,7 @@
     "id" : 42,
     "albumId" : 7,
     "userId" : 16,
-    "content" : "La vibra de ¥$ es única, y con Vultures 1 me metí de lleno en su mundo. Es oscuro, experimental y tiene una atmósfera que me hace sentir que estoy en otro plano. A veces se hace algo denso, pero Crucify Me tiene una base que no me deja parar de escucharla.",
+    "content" : "La vibra de Kanye y Ty es única, y con Vultures 1 me metí de lleno en su mundo. Es oscuro, experimental y tiene una atmósfera que me hace sentir que estoy en otro plano. A veces se hace algo denso, pero BACK TO ME tiene una base que no me deja parar de escucharla.",
     "rating" : 4,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -45,7 +45,7 @@
     "id" : 4,
     "albumId" : 19,
     "userId" : 10,
-    "content" : "Bad Bunny en su versión más experimental. No es para todo el mundo, pero tiene algunas joyas.",
+    "content" : "Kanye en su versión más experimental. No es para todo el mundo, pero tiene algunas joyas.",
     "rating" : 3,
     "username" : "user10",
     "reviews" : [ ]
@@ -62,7 +62,7 @@
     "id" : 5,
     "albumId" : 21,
     "userId" : 1,
-    "content" : "Siempre es un placer escuchar a Nino Bravo. Su voz sigue emocionando décadas después.",
+    "content" : "NO ME QUIERO CASAR ES UN TEMOOON",
     "rating" : 5,
     "username" : "user1",
     "reviews" : [ ]
@@ -70,7 +70,7 @@
     "id" : 50,
     "albumId" : 21,
     "userId" : 16,
-    "content" : "Este álbum tiene una vibra única, con una mezcla de lo urbano y lo experimental que me atrapa. Me gusta cómo Bad Bunny juega con los ritmos y las letras, y La Canción es una de mis favoritas. Tiene ese toque profundo que me encanta.",
+    "content" : "Este álbum tiene una vibra única, con una mezcla de lo urbano y lo experimental que me atrapa. Me gusta cómo Bad Bunny juega con los ritmos y las letras, y Mercedes Carota es una de mis favoritas.",
     "rating" : 4,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -87,7 +87,7 @@
     "id" : 22,
     "albumId" : 24,
     "userId" : 12,
-    "content" : "Uno de los mejores discos de rumba-pop española. Letras cercanas, historias cotidianas y un sonido que marcó una generación. Con la Luna Llena es un clásico.",
+    "content" : "Uno de los mejores discos de rumba-pop española. Letras cercanas, historias cotidianas y un sonido que marcó una generación. Sé Lo Que Hicísteis es un clásico.",
     "rating" : 4,
     "username" : "ShadowByte42",
     "reviews" : [ ]
@@ -95,7 +95,7 @@
     "id" : 29,
     "albumId" : 24,
     "userId" : 13,
-    "content" : "No hay mucha profundidad en este disco. Es directo, accesible, pero falta esa conexión genuina que lo haga memorable para EchoVibe81. Sin embargo, La Promesa le habla de una manera que no esperaba. No es el mejor álbum, pero tiene su momento.",
+    "content" : "No hay mucha profundidad en este disco. Es directo, accesible, pero falta esa conexión genuina que lo haga memorable para EchoVibe81. No es el mejor álbum, pero tiene su momento.",
     "rating" : 3,
     "username" : "EchoVibe81",
     "reviews" : [ ]
@@ -103,7 +103,7 @@
     "id" : 34,
     "albumId" : 24,
     "userId" : 14,
-    "content" : "Este álbum no me dice mucho, aunque las letras son sinceras. La música no me ofrece la atmósfera relajante que busco, y aunque La Promesa tiene algo especial, no es suficiente para que lo vuelva a escuchar. Lo respeto por su honestidad, pero no es para mí.",
+    "content" : "Este álbum no me dice mucho, aunque las letras son sinceras. La música no me ofrece la atmósfera relajante que busco. Lo respeto por su honestidad, pero no es para mí.",
     "rating" : 3,
     "username" : "NexusVibe",
     "reviews" : [ ]
@@ -120,8 +120,8 @@
     "id" : 2,
     "albumId" : 5,
     "userId" : 2,
-    "content" : "Un disco innovador, aunque no supera a YHLQMDLG. Aun así, Bad Bunny sigue demostrando su evolución.",
-    "rating" : 4,
+    "content" : "El segundo mejor disco de Bad Bunny.",
+    "rating" : 5,
     "username" : "paul",
     "reviews" : [ ]
   }, {
@@ -136,7 +136,7 @@
     "id" : 40,
     "albumId" : 5,
     "userId" : 16,
-    "content" : "Este disco lo escuché de principio a fin y no me decepcionó. Es como una mezcla de introspección y fiesta, con una vibra única. Me encanta el contraste de sonidos y cómo logra mantener su autenticidad. Vete es sin duda uno de mis temas favoritos, tiene una atmósfera que me atrapa.\r\n",
+    "content" : "Este disco lo escuché de principio a fin y no me decepcionó. Es como una mezcla de introspección y fiesta, con una vibra única. Me encanta el contraste de sonidos y cómo logra mantener su autenticidad. Yo Visto Así es sin duda uno de mis temas favoritos, tiene una atmósfera que me atrapa.\r\n",
     "rating" : 5,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -153,7 +153,7 @@
     "id" : 41,
     "albumId" : 6,
     "userId" : 16,
-    "content" : "Playboi Carti tiene ese flow tan característico que me engancha cada vez. Este álbum tiene muchas canciones que me hacen mover la cabeza, aunque algunas me parecen algo repetitivas. Long Time es uno de esos tracks que siempre me pone en el mood adecuado, esa energía está al máximo.",
+    "content" : "Playboi Carti tiene ese flow tan característico que me engancha cada vez. Este álbum tiene muchas canciones que me hacen mover la cabeza, aunque algunas me parecen algo repetitivas.",
     "rating" : 4,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -170,7 +170,7 @@
     "id" : 46,
     "albumId" : 14,
     "userId" : 16,
-    "content" : "Este es uno de esos discos que me hace sentir parte de algo más grande. ¥$ tiene una manera de crear atmósferas oscuras y profundas que realmente me engancha. Darkness es uno de los temas que más me gusta, es tan experimental y único.",
+    "content" : "Este es uno de esos discos que me hace sentir parte de algo más grande. Kanye tiene una manera de crear atmósferas oscuras y profundas que realmente me engancha. EVERYBODY es uno de los temas que más me gusta, es tan experimental y único.",
     "rating" : 4,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -187,7 +187,7 @@
     "id" : 47,
     "albumId" : 16,
     "userId" : 16,
-    "content" : "Este álbum es uno de esos descubrimientos que te sorprenden. Paul. tiene un estilo muy auténtico y sus letras me llegan. Aunque no es tan comercial, tiene esa profundidad y honestidad que me hace disfrutarlo. Para Siempre es una de las canciones que más me transmite.",
+    "content" : "Este álbum es uno de esos descubrimientos que te sorprenden. Paul. tiene un estilo muy auténtico y sus letras me llegan. Aunque no es tan comercial, tiene esa profundidad y honestidad que me hace disfrutarlo. Red es una de las canciones que más me transmite.",
     "rating" : 5,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -212,7 +212,7 @@
     "id" : 44,
     "albumId" : 10,
     "userId" : 16,
-    "content" : "Tainy ha demostrado ser uno de los mejores productores del reguetón, y con Data me sorprendió. Las canciones tienen un flow muy fresco, pero hay momentos en los que me gustaría que se arriesgara más en cuanto a la experimentación. Pa' Romperla tiene ese toque que siempre me pone de buen humor.",
+    "content" : "Tainy ha demostrado ser uno de los mejores productores del reguetón, y con Data me sorprendió. Las canciones tienen un flow muy fresco, pero hay momentos en los que me gustaría que se arriesgara más en cuanto a la experimentación. Mojabi Ghost tiene ese toque que siempre me pone de buen humor.",
     "rating" : 4,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -229,7 +229,7 @@
     "id" : 45,
     "albumId" : 12,
     "userId" : 16,
-    "content" : "Este álbum tiene una vibra relajada pero también llena de emociones. Bad Bunny se siente más experimental y libre aquí, y aunque no tiene tantos hits como en otros discos, me encanta cómo se muestra vulnerable. Pa' Que Le De es una de mis canciones favoritas, tiene algo especial.",
+    "content" : "Este álbum tiene una vibra relajada pero también llena de emociones. Bad Bunny se siente más experimental y libre aquí, y aunque no tiene tantos hits como en otros discos, me encanta cómo se muestra vulnerable. KETU TeCRÉ es una de mis canciones favoritas, tiene algo especial.",
     "rating" : 5,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -262,7 +262,7 @@
     "id" : 31,
     "albumId" : 22,
     "userId" : 14,
-    "content" : "Lo que me gusta de este álbum es la atmósfera que crea, pero hay momentos en los que no logro conectar tanto. Algunas canciones suenan demasiado parecidas, y me falta algo de frescura en ellas. Aún así, disfruto de las canciones más tranquilas, como Vete.",
+    "content" : "Lo que me gusta de este álbum es la atmósfera que crea, pero hay momentos en los que no logro conectar tanto. Algunas canciones suenan demasiado parecidas, y me falta algo de frescura en ellas. Aún así, disfruto de las canciones más tranquilas, como Yo No Soy Celoso.",
     "rating" : 3,
     "username" : "NexusVibe",
     "reviews" : [ ]
@@ -364,7 +364,7 @@
     "id" : 24,
     "albumId" : 25,
     "userId" : 12,
-    "content" : "Mora sigue demostrando su talento con un álbum lleno de reguetón melódico y sonidos innovadores. Pasajero y Modelito son auténticos hits.",
+    "content" : "Mora sigue demostrando su talento con un álbum lleno de reguetón melódico y sonidos innovadores. 512 y Primer Dia de Clases son auténticos hits.",
     "rating" : 4,
     "username" : "ShadowByte42",
     "reviews" : [ ]
@@ -372,7 +372,7 @@
     "id" : 52,
     "albumId" : 25,
     "userId" : 16,
-    "content" : "Mora ha creado algo realmente interesante con este álbum. Las melodías tienen una vibra relajante pero también un toque fresco que me atrapa. Hola Bebe es una de mis canciones favoritas; tiene una mezcla perfecta de sonidos.",
+    "content" : "Mora ha creado algo realmente interesante con este álbum. Las melodías tienen una vibra relajante pero también un toque fresco que me atrapa.",
     "rating" : 5,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -381,7 +381,7 @@
     "id" : 27,
     "albumId" : 15,
     "userId" : 13,
-    "content" : "Cuando escucha este álbum, todo se detiene. Las melodías suaves, la voz tan sincera, y la atmósfera relajante... Llamada Perdida lo toca. No es el álbum más conocido, pero cada canción tiene ese algo único que lo convierte en un refugio personal. Simplemente un placer escuchar.",
+    "content" : "Cuando escucha este álbum, todo se detiene. Las melodías suaves, la voz tan sincera, y la atmósfera relajante... No es el álbum más conocido, pero cada canción tiene ese algo único que lo convierte en un refugio personal. Simplemente un placer escuchar.",
     "rating" : 5,
     "username" : "EchoVibe81",
     "reviews" : [ ]
@@ -389,7 +389,7 @@
     "id" : 32,
     "albumId" : 15,
     "userId" : 14,
-    "content" : "Este es uno de esos álbumes que siento que fue hecho para mí. La atmósfera tranquila, las melodías suaves y las letras introspectivas son justo lo que me gusta escuchar. Llamada Perdida me pone en un trance total. Es un disco que escucho una y otra vez cuando quiero desconectar del mundo.",
+    "content" : "Este es uno de esos álbumes que siento que fue hecho para mí. La atmósfera tranquila, las melodías suaves y las letras introspectivas son justo lo que me gusta escuchar. Es un disco que escucho una y otra vez cuando quiero desconectar del mundo.",
     "rating" : 5,
     "username" : "NexusVibe",
     "reviews" : [ ]
@@ -424,7 +424,7 @@
     "id" : 39,
     "albumId" : 2,
     "userId" : 16,
-    "content" : "Kanye tiene un estilo tan único que siempre me sorprende. Bully es un álbum que no es tan conocido, pero tiene ese toque de agresividad y originalidad que lo hace interesante. Las letras son intensas y el ritmo tiene esa energía que me gusta. Aunque no es uno de sus mejores discos, tiene piezas que valen la pena, como Spaceship.",
+    "content" : "Kanye tiene un estilo tan único que siempre me sorprende. Bully es un álbum que no es tan conocido, pero tiene ese toque de agresividad y originalidad que lo hace interesante. Las letras son intensas y el ritmo tiene esa energía que me gusta. Aunque no es uno de sus mejores discos, tiene piezas que valen la pena, como Showtime.",
     "rating" : 4,
     "username" : "TrapWaveX",
     "reviews" : [ ]
@@ -433,7 +433,7 @@
     "id" : 43,
     "albumId" : 8,
     "userId" : 16,
-    "content" : "Lo que me gusta de este álbum es la evolución en su sonido, es más pesado que el primero, pero no pierde esa esencia experimental. No Mercy es uno de esos temas que me hace pensar que ¥$ está adelantado a su tiempo. Es un viaje sonoro del que nunca quiero salir.",
+    "content" : "Lo que me gusta de este álbum es la evolución en su sonido, es más pesado que el primero, pero no pierde esa esencia experimental. Field Trip es uno de esos temas que me hace pensar que Carti está adelantado a su tiempo. Es un viaje sonoro del que nunca quiero salir.",
     "rating" : 4,
     "username" : "TrapWaveX",
     "reviews" : [ ]
