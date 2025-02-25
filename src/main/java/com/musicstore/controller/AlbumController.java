@@ -117,41 +117,6 @@ public class AlbumController {
         }
     }
 
-    @GetMapping("/{id}")
-    public String viewAlbum(@PathVariable Long id, Model model, HttpSession session) {
-        Optional<Album> albumOpt = albumService.getAlbumById(id);
-        if (albumOpt.isEmpty()) {
-            model.addAttribute("error", "El álbum no existe.");
-            return "redirect:/";
-        }
-
-        User user = (User) session.getAttribute("user");
-
-        boolean isFavorite = false;
-        if (user != null && !user.isAnonymous()) {
-            isFavorite = userService.isAlbumInFavorites(user.getUsername(), id);
-        }
-
-        model.addAttribute("album", albumOpt.get());
-        model.addAttribute("isFavorite", isFavorite);
-
-        albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
-
-        List<Review> reviews = (List<Review>) reviewService;
-
-        Optional<Album> album = albumService.getAlbumById(id);
-        if (album.isPresent()) {
-            model.addAttribute("album", album.get());
-            model.addAttribute("reviews", reviews);
-        }
-
-
-        return "album/view"; // Renderizar la vista del álbum
-
-
-    }
-
-
     @PostMapping("/{id}")
     public String updateAlbum(
             @PathVariable Long id,
