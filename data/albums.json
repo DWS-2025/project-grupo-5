@@ -11,7 +11,7 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/5lJqux7orBlA1QzyiBGti1?si=kB_lnt2lRamgf7qdwo8Bpw",
   "applemusic_url" : "https://music.apple.com/es/album/yhlqmdlg/1500776322",
   "tidal_url" : "https://tidal.com/browse/album/132672298",
-  "favoriteUsers" : [ "dsoria" ]
+  "favoriteUsers" : [ "dsoria", "paul" ]
 }, {
   "id" : 2,
   "title" : "Bully",
@@ -67,7 +67,7 @@
   "spotify_url" : "https://open.spotify.com/album/0k7ALIqqds5oGFtpMsaHLK",
   "applemusic_url" : "https://music.apple.com/gb/album/vultures-1/1760997037",
   "tidal_url" : "https://tidal.com/browse/album/418944997",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ "paul" ]
 }, {
   "id" : 8,
   "title" : "VULTURES 2",
@@ -165,7 +165,7 @@
   "spotify_url" : "",
   "applemusic_url" : "",
   "tidal_url" : "",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ "paul" ]
 }, {
   "id" : 15,
   "title" : "Hotel Morgan",
