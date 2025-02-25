@@ -119,4 +119,6 @@ project-grupo-5/
 ```
 
 ## Contributors
-- 
+- darkxvortex
+- paaul19
+- M0ntoto
