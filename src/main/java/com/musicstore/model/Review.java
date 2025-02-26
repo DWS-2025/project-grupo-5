@@ -11,9 +11,7 @@ import java.util.List;
 @Data
 public class Review {
     private Long id;
-
     private Long albumId; // Relación con el álbum
-
     private Long userId; // Relación con el usuario que realizó la reseña
 
     @NotBlank(message = "El contenido de la reseña es obligatorio")
@@ -25,7 +23,9 @@ public class Review {
 
     private String username; // Opcional: Mostrar el nombre del usuario
 
+    // Transient fields for display purposes
+    private String albumTitle;
+    private String albumImageUrl;
+
     private List<String> Reviews = new ArrayList<>(); // IDs de álbumes favoritos
-
-
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @Controller
 @RequestMapping("/reviews")
@@ -120,7 +121,14 @@ public class ReviewController {
             return "redirect:/login";
         }
 
-        model.addAttribute("userReviews", reviewService.getReviewsByUserId(user.getId()));
-        return "user/reviews";
+        List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
+        userReviews.forEach(review -> {
+            albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
+                review.setAlbumTitle(album.getTitle());
+                review.setAlbumImageUrl(album.getImageUrl());
+            });
+        });
+        model.addAttribute("userReviews", userReviews);
+        return "reviews/my-reviews";
     }
 }
