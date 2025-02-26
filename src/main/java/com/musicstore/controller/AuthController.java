@@ -42,8 +42,21 @@ public class AuthController {
     }
 
     @PostMapping("/auth/register")
-    public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
+    public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {
         try {
+            // Check if username already exists
+            if (userService.getUserByUsername(user.getUsername()).isPresent()) {
+                model.addAttribute("error", "Este username ya existe");
+                return "error";
+            }
+
+            // Check if email already exists
+            if (userService.getAllUsers().stream().anyMatch(existingUser ->
+                    existingUser.getEmail().equalsIgnoreCase(user.getEmail()))) {
+                model.addAttribute("error", "Este correo ya está registrado");
+                return "error";
+            }
+
             userService.registerUser(user);
             redirectAttributes.addFlashAttribute("success", "Registration successful. Please login.");
             return "redirect:/login";

@@ -84,6 +84,9 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             throw new RuntimeException("Password cannot be empty");
         }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new RuntimeException("Email cannot be empty");
+        }
         return saveUser(user);
     }
 
