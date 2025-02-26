@@ -1,4 +1,4 @@
-
+/*
 body {
     background-color: #1e1e1e;
     color: white;
@@ -110,7 +110,7 @@ audio {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1a5f42; /* Nuevo color de fondo */
+    background-color: #1a5f42;
     border-radius: 50%;
     cursor: pointer;
     transition-duration: .3s;
@@ -172,7 +172,7 @@ audio {
 .album-details-container {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap; /* Esto asegura que el contenedor se ajusta adecuadamente */
+    flex-wrap: wrap;
 }
 
 .album-image {
@@ -180,17 +180,17 @@ audio {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Evita que el contenido sobresalga */
+    overflow: hidden;
     position: relative;
-    max-height: 600px; /* Limita la altura máxima */
-    border-radius: 8px; /* Bordes redondeados */
+    max-height: 600px;
+    border-radius: 8px;
 }
 
 .album-image img {
-    width: 100%; /* Ajusta el ancho a 100% */
-    height: auto; /* Mantiene la proporción de la imagen */
-    object-fit: contain; /* Asegura que la imagen no se deforme */
-    border-radius: 8px; /* Mantiene los bordes redondeados */
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 
@@ -350,7 +350,6 @@ audio {
 
 }
 
-/* for all social containers*/
 .socialContainer {
     width: 55px;
     height: 55px;
@@ -610,7 +609,6 @@ audio {
 
 
 
-/* Star Rating Component Styles */
 .rating:not(:checked) > input {
     position: absolute;
     appearance: none;

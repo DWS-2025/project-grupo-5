@@ -45,6 +45,12 @@ public class ReviewController {
 
             System.out.println("Guardando reseña del usuario: " + user.getUsername());
             reviewService.addReview(albumId, review);
+            
+            // Update album's average rating
+            albumService.getAlbumById(albumId).ifPresent(album -> {
+                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                albumService.saveAlbum(album);
+            });
         }
         return "redirect:/" + albumId;
     }
@@ -68,6 +74,12 @@ public class ReviewController {
                 existingReview.setContent(content);
                 existingReview.setRating(rating);
                 reviewService.updateReview(albumId, existingReview);
+                
+                // Update album's average rating
+                albumService.getAlbumById(albumId).ifPresent(album -> {
+                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                    albumService.saveAlbum(album);
+                });
             }
         }
         return "redirect:/" + albumId;
@@ -84,6 +96,12 @@ public class ReviewController {
             Review review = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (review != null && (review.getUsername().equals(user.getUsername()) || user.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
+                
+                // Update album's average rating
+                albumService.getAlbumById(albumId).ifPresent(album -> {
+                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                    albumService.saveAlbum(album);
+                });
             }
         }
         return "redirect:/" + albumId;

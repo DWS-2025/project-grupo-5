@@ -11,7 +11,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/5lJqux7orBlA1QzyiBGti1?si=kB_lnt2lRamgf7qdwo8Bpw",
   "applemusic_url" : "https://music.apple.com/es/album/yhlqmdlg/1500776322",
   "tidal_url" : "https://tidal.com/browse/album/132672298",
-  "favoriteUsers" : [ "paul", "ShadowByte42", "TrapWaveX", "dsoria" ]
+  "favoriteUsers" : [ "paul", "ShadowByte42", "TrapWaveX", "dsoria" ],
+  "averageRating" : 5.0
 }, {
   "id" : 2,
   "title" : "Bully ",
@@ -25,7 +26,8 @@
   "spotify_url" : "",
   "applemusic_url" : "",
   "tidal_url" : "",
-  "favoriteUsers" : [ "dsoria", "paul", "elsudo" ]
+  "favoriteUsers" : [ "dsoria", "paul", "elsudo" ],
+  "averageRating" : 4.0
 }, {
   "id" : 5,
   "title" : "EL ÚLTIMO TOUR DEL MUNDO",
@@ -39,7 +41,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/2d9BCZeAAhiZWPpbX9aPCW",
   "applemusic_url" : "https://music.apple.com/us/album/el-%C3%BAltimo-tour-del-mundo/1542102907",
   "tidal_url" : "https://tidal.com/browse/album/163650011",
-  "favoriteUsers" : [ "paul", "ShadowByte42" ]
+  "favoriteUsers" : [ "paul", "ShadowByte42" ],
+  "averageRating" : 3.75
 }, {
   "id" : 6,
   "title" : "I AM MUSIC",
@@ -53,7 +56,8 @@
   "spotify_url" : "",
   "applemusic_url" : "",
   "tidal_url" : "",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ ],
+  "averageRating" : 4.5
 }, {
   "id" : 7,
   "title" : "VULTURES 1",
@@ -67,7 +71,8 @@
   "spotify_url" : "https://open.spotify.com/album/0k7ALIqqds5oGFtpMsaHLK",
   "applemusic_url" : "https://music.apple.com/gb/album/vultures-1/1760997037",
   "tidal_url" : "https://tidal.com/browse/album/418944997",
-  "favoriteUsers" : [ "paul", "elsudo", "ShadowByte42", "TrapWaveX" ]
+  "favoriteUsers" : [ "paul", "elsudo", "ShadowByte42", "TrapWaveX" ],
+  "averageRating" : 4.5
 }, {
   "id" : 8,
   "title" : "VULTURES 2",
@@ -81,7 +86,8 @@
   "spotify_url" : "https://open.spotify.com/album/5RV2TNyjylqWJNxQyHBTeJ",
   "applemusic_url" : "https://music.apple.com/gb/album/vultures-2/1762101173",
   "tidal_url" : "https://tidal.com/browse/album/379129713",
-  "favoriteUsers" : [ "paul", "ShadowByte42" ]
+  "favoriteUsers" : [ "paul", "ShadowByte42" ],
+  "averageRating" : 4.0
 }, {
   "id" : 9,
   "title" : "My Beautiful Dark Twisted Fantasy",
@@ -95,7 +101,8 @@
   "spotify_url" : "https://open.spotify.com/album/20r762YmB5HeofjMCiPMLv",
   "applemusic_url" : "https://music.apple.com/gb/album/my-beautiful-dark-twisted-fantasy/1440742903",
   "tidal_url" : "https://tidal.com/browse/album/98712991",
-  "favoriteUsers" : [ "paul", "ShadowByte42", "EchoVibe81", "YeFan2025", "TrapWaveX" ]
+  "favoriteUsers" : [ "ShadowByte42", "EchoVibe81", "YeFan2025", "TrapWaveX", "paul" ],
+  "averageRating" : 5.0
 }, {
   "id" : 10,
   "title" : "DATA",
@@ -109,7 +116,8 @@
   "spotify_url" : "https://open.spotify.com/album/2X6WyzpxY70eUn3lnewB7d",
   "applemusic_url" : "https://music.apple.com/album/data/1709197767",
   "tidal_url" : "https://tidal.com/browse/album/318548554",
-  "favoriteUsers" : [ "paul", "ShadowByte42" ]
+  "favoriteUsers" : [ "paul", "ShadowByte42" ],
+  "averageRating" : 4.666666666666667
 }, {
   "id" : 11,
   "title" : "Die Lit",
@@ -123,7 +131,8 @@
   "spotify_url" : "https://open.spotify.com/album/7dAm8ShwJLFm9SaJ6Yc58O",
   "applemusic_url" : "https://music.apple.com/album/die-lit/1381553184",
   "tidal_url" : "https://tidal.com/browse/album/88577208",
-  "favoriteUsers" : [ "ShadowByte42", "TrapWaveX" ]
+  "favoriteUsers" : [ "ShadowByte42", "TrapWaveX" ],
+  "averageRating" : 4.0
 }, {
   "id" : 12,
   "title" : "DeBÍ TiRAR MáS FOToS",
@@ -137,7 +146,8 @@
   "spotify_url" : "https://open.spotify.com/album/5K79FLRUCSysQnVESLcTdb",
   "applemusic_url" : "https://music.apple.com/album/deb%C3%AD-tirar-m%C3%A1s-fotos/1787022393",
   "tidal_url" : "https://tidal.com/browse/album/409386860",
-  "favoriteUsers" : [ "paul" ]
+  "favoriteUsers" : [ "paul" ],
+  "averageRating" : 5.0
 }, {
   "id" : 13,
   "title" : "Views",
@@ -151,7 +161,8 @@
   "spotify_url" : "https://open.spotify.com/album/40GMAhriYJRO1rsY4YdrZb",
   "applemusic_url" : "https://music.apple.com/album/views/1440841363",
   "tidal_url" : "https://tidal.com/browse/album/60100918",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ ],
+  "averageRating" : 4.0
 }, {
   "id" : 14,
   "title" : "VULTURES 3",
@@ -165,7 +176,8 @@
   "spotify_url" : "",
   "applemusic_url" : "",
   "tidal_url" : "",
-  "favoriteUsers" : [ "paul" ]
+  "favoriteUsers" : [ "paul" ],
+  "averageRating" : 3.0
 }, {
   "id" : 15,
   "title" : "Hotel Morgan",
@@ -179,7 +191,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/6RFZkL8rPHJeoKO4NCwUjE",
   "applemusic_url" : "https://music.apple.com/in/album/hotel-morgan/1779551364",
   "tidal_url" : "https://tidal.com/browse/album/399330972",
-  "favoriteUsers" : [ "dsoria", "EchoVibe81", "NexusVibe" ]
+  "favoriteUsers" : [ "dsoria", "EchoVibe81", "NexusVibe" ],
+  "averageRating" : 5.0
 }, {
   "id" : 16,
   "title" : "me da igual lo que digas de mi",
@@ -193,7 +206,8 @@
   "spotify_url" : "https://open.spotify.com/album/3g0lxE4HDJI4UDzeUAIL0C",
   "applemusic_url" : "https://music.apple.com/album/me-da-igual-lo-que-digas-de-mi/1741707645",
   "tidal_url" : "https://tidal.com/browse/album/359186902",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ ],
+  "averageRating" : 4.5
 }, {
   "id" : 17,
   "title" : "Graduation",
@@ -207,7 +221,8 @@
   "spotify_url" : "https://open.spotify.com/album/4SZko61aMnmgvNhfhgTuD3",
   "applemusic_url" : "https://music.apple.com/album/graduation/1451901307",
   "tidal_url" : "https://tidal.com/browse/album/103805723",
-  "favoriteUsers" : [ "ShadowByte42", "YeFan2025", "TrapWaveX" ]
+  "favoriteUsers" : [ "ShadowByte42", "YeFan2025", "TrapWaveX" ],
+  "averageRating" : 5.0
 }, {
   "id" : 18,
   "title" : "Yeezus",
@@ -221,7 +236,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/7D2NdGvBHIavgLhmcwhluK?si=ECKFBi3oTFSBp_sLI66pDw",
   "applemusic_url" : "https://music.apple.com/es/album/yeezus/1440873068",
   "tidal_url" : "https://tidal.com/browse/album/20753857",
-  "favoriteUsers" : [ "paul", "YeFan2025" ]
+  "favoriteUsers" : [ "paul", "YeFan2025" ],
+  "averageRating" : 4.0
 }, {
   "id" : 19,
   "title" : "ye",
@@ -235,7 +251,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/2Ek1q2haOnxVqhvVKqMvJe?si=QaNArMfASKaZkgJFnIjQMQ",
   "applemusic_url" : "https://music.apple.com/es/album/ye/1441460375",
   "tidal_url" : "https://tidal.com/browse/album/98156343",
-  "favoriteUsers" : [ "paul" ]
+  "favoriteUsers" : [ "paul" ],
+  "averageRating" : 3.5
 }, {
   "id" : 20,
   "title" : "Donda",
@@ -249,7 +266,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/5CnpZV3q5BcESefcB3WJmz?si=gWX0aYM-RE-oxiH_b6AkdQ",
   "applemusic_url" : "https://music.apple.com/es/album/donda/1587795158",
   "tidal_url" : "https://tidal.com/browse/album/199142349",
-  "favoriteUsers" : [ "paul", "ShadowByte42" ]
+  "favoriteUsers" : [ "paul", "ShadowByte42" ],
+  "averageRating" : 4.0
 }, {
   "id" : 21,
   "title" : "nadie sabe lo que va a pasar mañana",
@@ -263,7 +281,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/4FftCsAcXXD1nFO9RFUNFO?si=XsPVkQXKQxCLHXpuA9xF5g",
   "applemusic_url" : "https://music.apple.com/us/album/nadie-sabe-lo-que-va-a-pasar-ma%C3%B1ana/1710982865",
   "tidal_url" : "https://tidal.com/browse/album/321414271",
-  "favoriteUsers" : [ "paul" ]
+  "favoriteUsers" : [ "paul" ],
+  "averageRating" : 4.5
 }, {
   "id" : 22,
   "title" : "Un Verano Sin Ti",
@@ -277,7 +296,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/3RQQmkQEvNCY4prGKE6oc5?si=C-Ya74EFRQS2NR2O9Evd0g",
   "applemusic_url" : "https://music.apple.com/es/album/un-verano-sin-ti/1622045624",
   "tidal_url" : "https://tidal.com/browse/album/227614732",
-  "favoriteUsers" : [ "paul", "ShadowByte42" ]
+  "favoriteUsers" : [ "paul", "ShadowByte42" ],
+  "averageRating" : 4.25
 }, {
   "id" : 23,
   "title" : "Super 20",
@@ -291,7 +311,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/6IXbg5QxJ4hGkrnTZo3n1B",
   "applemusic_url" : "https://music.apple.com/es/album/ni%C3%B1o-bravo-super-20/1443352446",
   "tidal_url" : "https://tidal.com/browse/album/37052751",
-  "favoriteUsers" : [ "paul", "Montotito" ]
+  "favoriteUsers" : [ "paul", "Montotito" ],
+  "averageRating" : 3.0
 }, {
   "id" : 24,
   "title" : "Sin Noticias de Holanda",
@@ -305,7 +326,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/3iQWCOqfiOEh5bXqbGD9oB",
   "applemusic_url" : "https://music.apple.com/es/album/sin-noticias-de-holanda/699839388",
   "tidal_url" : "https://listen.stage.tidal.com/album/1535260",
-  "favoriteUsers" : [ "Montotito" ]
+  "favoriteUsers" : [ "Montotito" ],
+  "averageRating" : 4.0
 }, {
   "id" : 25,
   "title" : "Primer Dia de Clases",
@@ -319,7 +341,8 @@
   "spotify_url" : "https://open.spotify.com/album/5r8T7S23cVDSd7a045h4N5?si=VqHUaQPmSL6V5_TPYr9sfA",
   "applemusic_url" : "https://music.apple.com/cl/album/primer-día-de-clases/1552010780",
   "tidal_url" : "https://tidal.com/browse/album/172087900",
-  "favoriteUsers" : [ "dsoria", "elsudo" ]
+  "favoriteUsers" : [ "dsoria", "elsudo" ],
+  "averageRating" : 4.5
 }, {
   "id" : 26,
   "title" : "PARAÍSO",
@@ -333,7 +356,8 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/7b3PrkHcWx17AQwlI2M1Uc",
   "applemusic_url" : "https://music.apple.com/us/album/para%C3%ADso/1651264307",
   "tidal_url" : "https://tidal.com/browse/album/256039328",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ ],
+  "averageRating" : 0.0
 }, {
   "id" : 27,
   "title" : "MICRODOSIS",
@@ -347,5 +371,6 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/0QLDQG7Jx78rEUDW03IhHC",
   "applemusic_url" : "https://music.apple.com/us/album/microdosis/1617073796",
   "tidal_url" : "https://tidal.com/browse/album/223247190",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ ],
+  "averageRating" : 0.0
 } ]

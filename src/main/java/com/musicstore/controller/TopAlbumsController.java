@@ -28,12 +28,10 @@ public class TopAlbumsController {
     public String showTopAlbums(@RequestParam(required = false, defaultValue = "likes") String sortBy, Model model) {
         List<Album> allAlbums = albumService.getAllAlbums();
         
-        // Update average ratings for all albums
         allAlbums.forEach(album -> {
             album.updateAverageRating(reviewService.getReviewsByAlbumId(album.getId()));
         });
     
-        // Sort albums based on the selected criteria
         List<Album> topAlbums;
         if (sortBy.equals("rating")) {
             topAlbums = allAlbums.stream()
