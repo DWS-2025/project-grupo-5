@@ -39,9 +39,9 @@
                             <span class="badge bg-primary" th:text="'#' + ${iterStat.count}"></span>
                         </div>
                         <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-danger">
-                                <i class="bi bi-heart-fill"></i>
-                                <span th:text="${album.favoriteUsers.size()}"></span>
+                            <span class="badge" th:classappend="${sortBy == 'rating' ? 'bg-warning' : 'bg-danger'}">
+                                <i class="bi" th:classappend="${sortBy == 'rating' ? 'bi-star-fill' : 'bi-heart-fill'}"></i>
+                                <span th:text="${sortBy == 'rating' ? #numbers.formatDecimal(album.averageRating, 1, 1) : album.favoriteUsers.size()}"></span>
                             </span>
                         </div>
                     </div>
