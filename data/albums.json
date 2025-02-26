@@ -291,7 +291,7 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/6IXbg5QxJ4hGkrnTZo3n1B",
   "applemusic_url" : "https://music.apple.com/es/album/ni%C3%B1o-bravo-super-20/1443352446",
   "tidal_url" : "https://tidal.com/browse/album/37052751",
-  "favoriteUsers" : [ "paul" ]
+  "favoriteUsers" : [ "paul", "Montotito" ]
 }, {
   "id" : 24,
   "title" : "Sin Noticias de Holanda",
@@ -305,7 +305,7 @@
   "spotify_url" : "https://open.spotify.com/intl-es/album/3iQWCOqfiOEh5bXqbGD9oB",
   "applemusic_url" : "https://music.apple.com/es/album/sin-noticias-de-holanda/699839388",
   "tidal_url" : "https://listen.stage.tidal.com/album/1535260",
-  "favoriteUsers" : [ ]
+  "favoriteUsers" : [ "Montotito" ]
 }, {
   "id" : 25,
   "title" : "Primer Dia de Clases",
@@ -320,4 +320,18 @@
   "applemusic_url" : "https://music.apple.com/cl/album/primer-día-de-clases/1552010780",
   "tidal_url" : "https://tidal.com/browse/album/172087900",
   "favoriteUsers" : [ "dsoria", "elsudo" ]
+}, {
+  "id" : 26,
+  "title" : "PARAÍSO",
+  "artist" : "Mora",
+  "genre" : "Urban",
+  "imageUrl" : "/resources/uploads/90745d5c5615f038aea9e0377fcb28c7.1000x1000x1.png",
+  "audioFile" : null,
+  "description" : "\"Paraíso\" es el tercer álbum de estudio del artista puertorriqueño Mora, lanzado en noviembre de 2022. Este trabajo destaca por su fusión de música urbana con elementos electrónicos, reflejando la inspiración que Mora obtuvo durante su estancia en Ibiza.\r\n",
+  "tracklist" : "BIENVENIDA AL PARAÍSO +  + DOMINGO DE BOTE +  + APA (feat. Quevedo) +  + CALENTÓN +  + COSITAS (feat. ​​Paopao) +  + EN LA ORILLA +  + MODELITO (feat. YOVNGCHIMI) +  + CASUALIDAD +  + AIRBNB (feat. De La Ghetto) +  + TÚ SABES DONDE VIVO +  + EIVISSA (feat. Danny Ocean) +  + CÓMO HAS ESTAU? +  + MALAFAMA +  + QUÉ HABILIDAD",
+  "year" : 2022,
+  "spotify_url" : "https://open.spotify.com/intl-es/album/7b3PrkHcWx17AQwlI2M1Uc",
+  "applemusic_url" : "https://music.apple.com/us/album/para%C3%ADso/1651264307",
+  "tidal_url" : "https://tidal.com/browse/album/256039328",
+  "favoriteUsers" : [ ]
 } ]
