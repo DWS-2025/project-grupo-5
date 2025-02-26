@@ -1,13 +1,5 @@
 {
   "1" : [ {
-    "id" : 1,
-    "albumId" : 1,
-    "userId" : 5,
-    "content" : "Me ha gustado mucho",
-    "rating" : 5,
-    "username" : "admin",
-    "reviews" : [ ]
-  }, {
     "id" : 15,
     "albumId" : 1,
     "userId" : 12,
