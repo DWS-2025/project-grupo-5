@@ -8,48 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/header-footer.css">
     <link rel="stylesheet" href="/css/reviews.css">
-    <style>
-        body {
-            background-color: #1e1e1e;
-            color: white;
-        }
-        .review-card {
-            background-color: #333 !important;
-            border: 1px solid #444 !important;
-            color: white !important;
-        }
-        .form-select, .form-label {
-            color: white;
-            background-color: #333;
-            border-color: #444;
-        }
-        .form-select option {
-            background-color: #333;
-            color: white;
-        }
-        .text-muted {
-            color: #aaa !important;
-        }
-        .btn-primary {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-        .alert-info {
-            background-color: #333;
-            border-color: #444;
-            color: white;
-        }
-        .review-content {
-            color: white;
-        }
-        .review-title, .review-user-name {
-            color: white;
-        }
-    </style>
+
 </head>
 <body>
     <div th:replace="~{fragments/header :: header}"></div>
@@ -85,13 +44,19 @@
                                 <h4 class="album-title mb-2" style="color: white;" th:text="${review.albumTitle}">Album Title</h4>
                                 <!-- Rating Stars -->
                                 <div class="rating mb-2">
-                                    <span th:each="star : ${#numbers.sequence(1, review.rating)}">⭐</span>
+                                    <div class="stars-display">
+                                        <span th:each="star : ${#numbers.sequence(1, 5)}" class="star" th:classappend="${star <= review.rating ? 'filled' : ''}" style="margin-right: 5px;"><i class="bi bi-star-fill"></i></span>
+                                    </div>
                                 </div>
                                 <!-- Review Text -->
                                 <p class="card-text" th:text="${review.content}">Review content goes here...</p>
                                 <!-- Review Actions -->
                                 <div class="review-actions mt-3">
-                                    <a th:href="@{/album/{id}(id=${review.albumId})}" class="btn btn-primary btn-sm">View Album</a>
+                                    <a th:href="@{/{id}(id=${review.albumId})}" class="btn btn-primary btn-sm">View Album</a>
+                                    <button type="button" class="edit-review" th:data-review-id="${review.id}" th:if="${session.user.username == review.username}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
+                                    <button type="button" class="delete-review" th:data-review-id="${review.id}" th:onclick="'deleteReview(' + ${review.id} + ')'">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +71,70 @@
         </div>
     </div>
 
+
+
+
     <div th:replace="fragments/footer :: footer"></div>
+
+    <!-- Modal for editing review -->
+    <div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editReviewModalLabel">Edit Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editReviewForm" th:action="@{'/reviews/edit/0'}" method="post">
+                        <div class="mb-3">
+                            <label for="editReviewContent" class="form-label">Your review:</label>
+                            <textarea id="editReviewContent" name="content" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rate:</label>
+                            <div class="rating edit-rating">
+                                <input value="5" name="rating" id="editStar5" type="radio">
+                                <label title="text" for="editStar5"></label>
+                                <input value="4" name="rating" id="editStar4" type="radio">
+                                <label title="text" for="editStar4"></label>
+                                <input value="3" name="rating" id="editStar3" type="radio">
+                                <label title="text" for="editStar3"></label>
+                                <input value="2" name="rating" id="editStar2" type="radio">
+                                <label title="text" for="editStar2"></label>
+                                <input value="1" name="rating" id="editStar1" type="radio" required>
+                                <label title="text" for="editStar1"></label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="editReviewForm" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for delete confirmation -->
+    <div class="modal fade" id="deleteReviewModal" tabindex="-1" aria-labelledby="deleteReviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white" style="background-color: rgb(37, 37, 37) !important;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteReviewModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this review?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteReview">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -118,29 +146,74 @@
             const sortValue = this.value;
             // Add sorting logic here or make an AJAX call to server
         });
+        
+        function editReview(reviewId) {
+            const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.review-card');
+            const content = reviewCard.querySelector('.card-text').textContent;
+            const rating = reviewCard.querySelectorAll('.star.filled').length;
 
-        // Delete review function
+            document.getElementById('editReviewContent').value = content;
+            
+            // Set the rating in the modal
+            const ratingInputs = document.querySelectorAll('#editReviewModal input[name="rating"]');
+            ratingInputs.forEach(input => {
+                if (parseInt(input.value) === rating) {
+                    input.checked = true;
+                }
+            });
+
+            const form = document.getElementById('editReviewForm');
+            const albumId = reviewCard.querySelector('.btn-primary').getAttribute('href').substring(1);
+            form.action = `/reviews/${albumId}/edit/${reviewId}`;
+
+            const editModal = new bootstrap.Modal(document.getElementById('editReviewModal'));
+            editModal.show();
+        }
+
+        function updateStars(rating) {
+            const stars = document.querySelectorAll('#editReviewModal .star');
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    star.style.color = '#fbbf24';
+                } else {
+                    star.style.color = '#d1d5db';
+                }
+            });
+        }
+
+        document.querySelectorAll('#editReviewModal .star').forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = parseInt(star.getAttribute('data-rating'));
+                document.getElementById('editRating').value = rating;
+                updateStars(rating);
+            });
+
+            star.addEventListener('mouseover', () => {
+                const rating = parseInt(star.getAttribute('data-rating'));
+                updateStars(rating);
+            });
+
+            star.addEventListener('mouseout', () => {
+                const currentRating = parseInt(document.getElementById('editRating').value) || 0;
+                updateStars(currentRating);
+            });
+        });
+
         function deleteReview(reviewId) {
-            if (confirm('Are you sure you want to delete this review?')) {
-                fetch(`/api/reviews/${reviewId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        alert('Error deleting review');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error deleting review');
-                });
-            }
+            const modal = new bootstrap.Modal(document.getElementById('deleteReviewModal'));
+            const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.review-card');
+            const viewAlbumBtn = reviewCard.querySelector('.btn-primary');
+            const albumId = viewAlbumBtn.getAttribute('href').substring(1); // Remove the leading slash
+
+            document.getElementById('confirmDeleteReview').onclick = function() {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/reviews/${albumId}/delete/${reviewId}`;
+                document.body.appendChild(form);
+                form.submit();
+            };
+
+            modal.show();
         }
     </script>
-</body>
-</html>
