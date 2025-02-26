@@ -122,3 +122,4 @@ project-grupo-5/
 - darkxvortex
 - paaul19
 - M0ntoto
+- noegomezz
