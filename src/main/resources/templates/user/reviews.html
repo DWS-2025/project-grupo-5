@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reviews - EchoReview</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/header-footer.css">
+    <link rel="stylesheet" href="/css/reviews.css">
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .review-card {
+            background-color: #333 !important;
+            border: 1px solid #444 !important;
+            color: white !important;
+        }
+        .form-select, .form-label {
+            color: white;
+            background-color: #333;
+            border-color: #444;
+        }
+        .form-select option {
+            background-color: #333;
+            color: white;
+        }
+        .text-muted {
+            color: #aaa !important;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .alert-info {
+            background-color: #333;
+            border-color: #444;
+            color: white;
+        }
+        .review-content {
+            color: white;
+        }
+        .review-title, .review-user-name {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container mt-4">
+        <h2 class="mb-4">Reviews by ShadowByte42</h2>
+
+        <!-- Reviews List -->
+        <div class="row">
+            <div class="col-12">
+                <!-- Sort Options -->
+                <div class="mb-3">
+                    <label for="sortOption" class="form-label">Sort by:</label>
+                    <select class="form-select w-auto" id="sortOption">
+                        <option value="date-desc">Most Recent</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="rating-desc">Highest Rating</option>
+                        <option value="rating-asc">Lowest Rating</option>
+                    </select>
+                </div>
+
+                <!-- Reviews Container -->
+                <div class="reviews-container">
+                    <div th:each="review : ${userReviews}" class="review-card" style="border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div class="review-content">
+                            <div class="row">
+                                <!-- Review Content -->
+                                <div class="col-md-12">
+                                    <!-- Rating Stars -->
+                                    <div class="rating mb-2">
+                                        <span th:each="star : ${#numbers.sequence(1, review.rating)}">
+                                            ⭐
+                                        </span>
+                                    </div>
+
+                                    <!-- Review Text -->
+                                    <p class="card-text" th:text="${review.content}">Review content goes here...</p>
+
+                                    <!-- Review Actions -->
+                                    <div class="review-actions mt-3">
+                                        <a th:href="@{'/' + ${review.albumId}}" class="btn btn-primary btn-sm">View Album</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- No Reviews Message -->
+                    <div th:if="${#lists.isEmpty(userReviews)}" class="alert alert-info">
+                        No reviews found for ShadowByte42.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript for review management -->
+    <script>
+        // Sort reviews based on selected option
+        document.getElementById('sortOption').addEventListener('change', function() {
+            const sortValue = this.value;
+            // Add sorting logic here or make an AJAX call to server
+        });
+
+        // Delete review function
+        function deleteReview(reviewId) {
+            if (confirm('Are you sure you want to delete this review?')) {
+                fetch(`/api/reviews/${reviewId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Error deleting review');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting review');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

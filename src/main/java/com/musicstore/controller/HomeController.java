@@ -47,13 +47,13 @@ public class HomeController {
     @GetMapping("/{id}")
     public String viewAlbum(@PathVariable Long id, Model model) {
 
-        if(albumService.getAlbumById(id).isEmpty()){
-            model.addAttribute("error", "Album not found");
-            return "error";
-        } else{
+                if(albumService.getAlbumById(id).isEmpty()){
+                    model.addAttribute("error", "Album not found");
+                    return "error";
+                } else{
 
-        albumService.getAlbumById(id).ifPresent(album -> {
-            model.addAttribute("album", album);
+                    albumService.getAlbumById(id).ifPresent(album -> {
+                        model.addAttribute("album", album);
             model.addAttribute("reviews", reviewService.getReviewsByAlbumId(id));
         });
         return "album/view";

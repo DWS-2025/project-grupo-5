@@ -112,4 +112,15 @@ public class ReviewController {
         model.addAttribute("reviews", reviewService.getReviewsByAlbumId(albumId));
         return "reviews/list";
     }
+
+    @GetMapping("/my-reviews")
+    public String getUserReviews(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("userReviews", reviewService.getReviewsByUserId(user.getId()));
+        return "user/reviews";
+    }
 }

@@ -101,7 +101,24 @@ public class ReviewService {
         return -1;
     }
 
-    private synchronized Long generateReviewId() {
+    public List<Review> getReviewsByUserId(Long userId) {
+        if (userId == null || reviewsByAlbum == null) {
+            return new ArrayList<>();
+        }
+        
+        List<Review> userReviews = new ArrayList<>();
+        for (List<Review> albumReviews : reviewsByAlbum.values()) {
+            if (albumReviews != null) {
+                userReviews.addAll(albumReviews.stream()
+                        .filter(review -> review.getUserId() != null && review.getUserId().equals(userId))
+                        .toList());
+            }
+        }
+
+        return userReviews;
+    }
+
+    private Long generateReviewId() {
         if (reviewsByAlbum.isEmpty()) {
             return 1L;
         }

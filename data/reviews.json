@@ -15,6 +15,14 @@
     "rating" : 5,
     "username" : "TrapWaveX",
     "reviews" : [ ]
+  }, {
+    "id" : 53,
+    "albumId" : 1,
+    "userId" : 1,
+    "content" : "Bueno\r\n",
+    "rating" : 5,
+    "username" : "dsoria",
+    "reviews" : [ ]
   } ],
   "7" : [ {
     "id" : 3,
@@ -419,6 +427,14 @@
     "content" : "Kanye tiene un estilo tan único que siempre me sorprende. Bully es un álbum que no es tan conocido, pero tiene ese toque de agresividad y originalidad que lo hace interesante. Las letras son intensas y el ritmo tiene esa energía que me gusta. Aunque no es uno de sus mejores discos, tiene piezas que valen la pena, como Showtime.",
     "rating" : 4,
     "username" : "TrapWaveX",
+    "reviews" : [ ]
+  }, {
+    "id" : 54,
+    "albumId" : 2,
+    "userId" : 1,
+    "content" : "to guapoooo",
+    "rating" : 4,
+    "username" : "dsoria",
     "reviews" : [ ]
   } ],
   "8" : [ {
