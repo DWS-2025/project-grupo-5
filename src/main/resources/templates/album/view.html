@@ -934,8 +934,6 @@
                                     <button type="submit" class="btn btn-primary" th:disabled="${session.user == null}">Save review</button>
 
                                 </form>
-                                <p title="Este es un texto emergente pequeño">Pasa el ratón por aquí</p>
-
                                 <div class="review-card2">
                                     <div class="stats-wrapper">
                                         <p class="heading">Rating</p>
@@ -985,7 +983,7 @@
                                         </div>
                                     </div>
                                     <div class="stats-wrapper"
-                                         th:attr="title='Usuarios a los que les gusta: ' + ${album.favoriteUsers}" >
+                                         th:attr="title=${'Usuarios a los que les gusta: ' + #strings.arrayJoin(album.favoriteUsers, ', ')}">
                                         <p class="heading">Likes</p>
 
                                         <div class="bottom-wrapper">
