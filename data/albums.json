@@ -328,10 +328,24 @@
   "imageUrl" : "/resources/uploads/90745d5c5615f038aea9e0377fcb28c7.1000x1000x1.png",
   "audioFile" : null,
   "description" : "\"Paraíso\" es el tercer álbum de estudio del artista puertorriqueño Mora, lanzado en noviembre de 2022. Este trabajo destaca por su fusión de música urbana con elementos electrónicos, reflejando la inspiración que Mora obtuvo durante su estancia en Ibiza.\r\n",
-  "tracklist" : "BIENVENIDA AL PARAÍSO +  + DOMINGO DE BOTE +  + APA (feat. Quevedo) +  + CALENTÓN +  + COSITAS (feat. ​​Paopao) +  + EN LA ORILLA +  + MODELITO (feat. YOVNGCHIMI) +  + CASUALIDAD +  + AIRBNB (feat. De La Ghetto) +  + TÚ SABES DONDE VIVO +  + EIVISSA (feat. Danny Ocean) +  + CÓMO HAS ESTAU? +  + MALAFAMA +  + QUÉ HABILIDAD",
+  "tracklist" : "BIENVENIDA AL PARAÍSO + DOMINGO DE BOTE + APA (feat. Quevedo) + CALENTÓN + COSITAS (feat. ​​Paopao) + EN LA ORILLA + MODELITO (feat. YOVNGCHIMI) + CASUALIDAD + AIRBNB (feat. De La Ghetto) + TÚ SABES DONDE VIVO + EIVISSA (feat. Danny Ocean) + CÓMO HAS ESTAU? + MALAFAMA + QUÉ HABILIDAD",
   "year" : 2022,
   "spotify_url" : "https://open.spotify.com/intl-es/album/7b3PrkHcWx17AQwlI2M1Uc",
   "applemusic_url" : "https://music.apple.com/us/album/para%C3%ADso/1651264307",
   "tidal_url" : "https://tidal.com/browse/album/256039328",
+  "favoriteUsers" : [ ]
+}, {
+  "id" : 27,
+  "title" : "MICRODOSIS",
+  "artist" : "Mora",
+  "genre" : "Urban",
+  "imageUrl" : "/resources/uploads/a4af721758b67745a66042a5dcf45c83.1000x1000x1.png",
+  "audioFile" : null,
+  "description" : "\"Microdosis\" es el segundo álbum de estudio del cantante y rapero puertorriqueño Mora, lanzado el 1 de abril de 2022 a través de Rimas Entertainment. El álbum consta de 15 temas y cuenta con colaboraciones de destacados artistas como Jhay Cortez, Sech, Elena Rose, Zion y Feid. La producción estuvo a cargo de reconocidos productores como Súbelo NEO, Taiko, Foreign Teck y Smash David. \"Microdosis\" ofrece una fusión única de ritmos y letras que capturan la esencia de la música contemporánea en español, llevando al oyente a través de un viaje musical que explora diversos géneros y sentimientos.",
+  "tracklist" : "Bad Trip :( + 2010 + MEMORIAS (feat. JHAYCO) + ROBERT DE NIRO + PECADO + LINDOR + TUS LÁGRIMAS (feat. Sech) + ESCALOFRÍOS + PLAYA PRIVADA (feat. ELENA ROSE) + LEJOS DE TI + QSY + TU AMIGO (feat. Zion) + ORO ROSADO + LA INOCENTE (feat. Feid) + OJOS COLORAU",
+  "year" : 2022,
+  "spotify_url" : "https://open.spotify.com/intl-es/album/0QLDQG7Jx78rEUDW03IhHC",
+  "applemusic_url" : "https://music.apple.com/us/album/microdosis/1617073796",
+  "tidal_url" : "https://tidal.com/browse/album/223247190",
   "favoriteUsers" : [ ]
 } ]
