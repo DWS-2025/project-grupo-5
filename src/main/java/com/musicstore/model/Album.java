@@ -45,11 +45,24 @@ public class Album {
 
     private List<String> favoriteUsers = new ArrayList<>();
 
+    private Double averageRating = 0.0;
+
     public void setId(Long id) {
         this.id = id;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void updateAverageRating(List<Review> reviews) {
+        if (reviews == null || reviews.isEmpty()) {
+            this.averageRating = 0.0;
+            return;
+        }
+        double sum = reviews.stream()
+                .mapToInt(Review::getRating)
+                .sum();
+        this.averageRating = sum / reviews.size();
     }
 }
