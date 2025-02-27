@@ -540,16 +540,6 @@
     "albumTitle" : null,
     "albumImageUrl" : null,
     "reviews" : [ ]
-  }, {
-    "id" : 55,
-    "albumId" : 2,
-    "userId" : 7,
-    "content" : "Esto va a tener mas IA que mi trabajo de DMS",
-    "rating" : 3,
-    "username" : "Montotito",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
-    "reviews" : [ ]
   } ],
   "8" : [ {
     "id" : 43,

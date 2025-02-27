@@ -64,7 +64,7 @@
 
                     <!-- No Reviews Message -->
                     <div th:if="${#lists.isEmpty(userReviews)}" class="alert alert-info">
-                        No reviews found for ShadowByte42.
+                        No reviews found for <span th:text="${session.user.username}">user</span>.
                     </div>
                 </div>
             </div>
