@@ -47,6 +47,14 @@ public class UserService {
                 .findFirst();
     }
 
+
+    public Optional<User> getUserById(Long id) {
+        return getAllUsers().stream()
+                .filter(user -> user.getId().equals(id))
+                .findFirst();
+    }
+
+
     public User saveUser(User user) {
         List<User> users = getAllUsers();
         if (user.getId() == null) {
@@ -114,11 +122,11 @@ public class UserService {
         }
     }
 
-    public void addFavoriteAlbum(String username, Long albumId, HttpSession session) {
+    public void addFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
         List<User> users = getAllUsers();
 
         Optional<User> optionalUser = users.stream()
-                .filter(user -> user.getUsername().equals(username))
+                .filter(user -> user.getId().equals(userId)) // Buscar por ID en vez de username
                 .findFirst();
 
         if (optionalUser.isPresent()) {
@@ -134,9 +142,10 @@ public class UserService {
                 session.setAttribute("user", user);
             }
         } else {
-            throw new IllegalArgumentException("Usuario no encontrado: " + username);
+            throw new IllegalArgumentException("Usuario no encontrado: " + userId);
         }
     }
+
 
 
     public List<Long> getFavoriteAlbums(String username) {
@@ -148,11 +157,11 @@ public class UserService {
     }
 
 
-    public void deleteFavoriteAlbum(String username, Long albumId, HttpSession session) {
+    public void deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
         List<User> users = getAllUsers();
 
         Optional<User> optionalUser = users.stream()
-                .filter(user -> user.getUsername().equals(username))
+                .filter(user -> user.getId().equals(userId))  // Filtramos por el ID del usuario
                 .findFirst();
 
         if (optionalUser.isPresent()) {
@@ -171,9 +180,10 @@ public class UserService {
                 throw new IllegalArgumentException("El álbum no está en los favoritos de este usuario.");
             }
         } else {
-            throw new IllegalArgumentException("Usuario no encontrado: " + username);
+            throw new IllegalArgumentException("Usuario no encontrado: " + userId);  // Cambié aquí también
         }
     }
+
 
 
     public boolean isAlbumInFavorites(String username, Long albumId) {

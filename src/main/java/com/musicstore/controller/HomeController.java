@@ -1,6 +1,7 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
+import com.musicstore.model.Review;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.UserService;
 import com.musicstore.service.ReviewService;
@@ -15,8 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
-
-
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -46,19 +47,30 @@ public class HomeController {
 
     @GetMapping("/{id}")
     public String viewAlbum(@PathVariable Long id, Model model) {
+        if(albumService.getAlbumById(id).isEmpty()){
+            model.addAttribute("error", "Album not found");
+            return "error";
+        }
 
-                if(albumService.getAlbumById(id).isEmpty()){
-                    model.addAttribute("error", "Album not found");
-                    return "error";
-                } else{
-
-                    albumService.getAlbumById(id).ifPresent(album -> {
-                        model.addAttribute("album", album);
-            model.addAttribute("reviews", reviewService.getReviewsByAlbumId(id));
+        albumService.getAlbumById(id).ifPresent(album -> {
+            model.addAttribute("album", album);
+            List<String> usernames = album.getFavoriteUsers().stream()
+                    .map(userId -> userService.getUserById(Long.parseLong(userId))
+                            .map(User::getUsername)
+                            .orElse("Unknown User"))
+                    .collect(Collectors.toList());
+            model.addAttribute("favoriteUsernames", usernames);
+            
+            // Get reviews and map user IDs to usernames
+            List<Review> reviews = reviewService.getReviewsByAlbumId(id);
+            reviews.forEach(review -> {
+                userService.getUserById(review.getUserId())
+                        .ifPresent(user -> review.setUsername(user.getUsername()));
+            });
+            model.addAttribute("reviews", reviews);
         });
         return "album/view";
-    } }
-
+    }
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");

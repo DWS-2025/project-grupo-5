@@ -33,12 +33,13 @@ public class FavoriteController {
         try {
             // Obtén el usuario actual de la sesión
             User user = (User) session.getAttribute("user");
-            if (user == null || user.getUsername() == null) {
+            if (user == null || user.getId() == null) {
                 model.addAttribute("error", "No se ha iniciado sesión.");
                 return "error";
             }
 
-            String username = user.getUsername();
+            Long auxUserId = user.getId();
+
 
             // Buscar el álbum
             Optional<Album> albumOptional = albumService.getAlbumById(albumId);
@@ -50,14 +51,12 @@ public class FavoriteController {
             Album album = albumOptional.get();
 
             // Añadir el álbum a los favoritos del usuario (usando el servicio)
-            userService.addFavoriteAlbum(username, albumId, session);
+            userService.addFavoriteAlbum(auxUserId, albumId, session);
 
-
-            if (!album.getFavoriteUsers().contains(username)) {
-                album.getFavoriteUsers().add(username);
+            if (!album.getFavoriteUsers().contains(auxUserId.toString())) {
+                album.getFavoriteUsers().add(auxUserId.toString());
                 albumService.saveAlbum(album); // Guardar los cambios
             }
-
 
             return "redirect:/" + albumId; // Redirige a la página de favoritos del usuario
         } catch (Exception e) {
@@ -67,6 +66,7 @@ public class FavoriteController {
     }
 
 
+
     @PostMapping("/delete")
     public String deleteFavorite(@RequestParam Long albumId,
                                  HttpSession session,
@@ -74,19 +74,12 @@ public class FavoriteController {
         try {
             // Obtén el usuario actual de la sesión
             User user = (User) session.getAttribute("user");
-            if (user == null || user.getUsername() == null) {
+            if (user == null || user.getId() == null) {
                 model.addAttribute("error", "No se ha iniciado sesión.");
                 return "error";
             }
 
-            String username = user.getUsername();
-
-            // Verificar si el usuario existe (opcional, ya que está en sesión)
-            Optional<User> userOptional = userService.getUserByUsername(username);
-            if (userOptional.isEmpty()) {
-                model.addAttribute("error", "El usuario no existe: " + username);
-                return "error";
-            }
+            Long userId = user.getId();  // Usamos el id en lugar del username
 
             // Buscar el álbum
             Optional<Album> albumOptional = albumService.getAlbumById(albumId);
@@ -98,11 +91,11 @@ public class FavoriteController {
             Album album = albumOptional.get();
 
             // Eliminar el álbum de los favoritos del usuario (usando el servicio)
-            userService.deleteFavoriteAlbum(username, albumId, session);
+            userService.deleteFavoriteAlbum(userId, albumId, session);
 
             // Eliminar el usuario de la lista de favoritos del álbum (si está presente)
-            if (album.getFavoriteUsers().contains(username)) {
-                album.getFavoriteUsers().remove(username);
+            if (album.getFavoriteUsers().contains(userId.toString())) {
+                album.getFavoriteUsers().remove(userId.toString());
                 albumService.saveAlbum(album); // Guardamos el álbum actualizado
             }
 
@@ -112,6 +105,7 @@ public class FavoriteController {
             return "error"; // Renderiza página con el mensaje de error
         }
     }
+
 
 
 
