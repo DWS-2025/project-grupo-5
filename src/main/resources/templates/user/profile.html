@@ -86,11 +86,6 @@
         .main-footer p {
             margin: 0;
         }
-
-        body {
-            background-color: #1e1e1e;
-            color: white;
-        }
         #viewToggle {
             background-color: #1a5f42;
             color: white;
@@ -316,6 +311,14 @@
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Delete Account
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

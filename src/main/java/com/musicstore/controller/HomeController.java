@@ -121,4 +121,38 @@ public class HomeController {
         return "redirect:/login";
     }
 
+
+    @PostMapping("/profile/delete")
+    public String deleteAccount(HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Get all reviews by this user
+        List<Review> userReviews = reviewService.getReviewsByUserId(currentUser.getId());
+
+        // Collect all affected album IDs before deleting reviews
+        List<Long> affectedAlbumIds = userReviews.stream()
+                .map(Review::getAlbumId)
+                .distinct()
+                .toList();
+
+        // Delete the user account (this will also delete all reviews and update favorites)
+        userService.deleteUser(currentUser.getUsername());
+
+        // Update average ratings for all affected albums
+        for (Long albumId : affectedAlbumIds) {
+            albumService.getAlbumById(albumId).ifPresent(album -> {
+                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                albumService.saveAlbum(album);
+            });
+        }
+
+        // Invalidate session
+        session.invalidate();
+
+        return "redirect:/login";
+    }
+
 }

@@ -2,10 +2,12 @@ package com.musicstore.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.musicstore.model.Album;
+import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +18,56 @@ import java.util.Optional;
 public class UserService {
     private final String FILE_PATH = "data/users.json";
     private final ObjectMapper objectMapper;
+    @Autowired
+    private ReviewService reviewService;
+    @Autowired
+    private AlbumService albumService;
+
+    public void deleteUser(String username) {
+        List<User> users = getAllUsers();
+        Optional<User> userToDelete = getUserByUsername(username);
+
+        if (userToDelete.isPresent()) {
+            User user = userToDelete.get();
+            // Get all reviews by this user and delete them one by one
+            List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
+
+            // Collect all affected album IDs before deleting reviews
+            List<Long> affectedAlbumIds = userReviews.stream()
+                .map(Review::getAlbumId)
+                .distinct()
+                .toList();
+
+            // Delete all reviews first
+            for (Review review : userReviews) {
+                reviewService.deleteReview(review.getAlbumId(), review.getId());
+            }
+
+            // Then update the average ratings of all affected albums
+            for (Long albumId : affectedAlbumIds) {
+                albumService.getAlbumById(albumId).ifPresent(album -> {
+                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                    albumService.saveAlbum(album);
+                });
+            }
+
+            // Remove user ID from all albums' favoriteUsers lists
+            List<Album> allAlbums = albumService.getAllAlbums();
+            for (Album album : allAlbums) {
+                if (album.getFavoriteUsers().contains(user.getId().toString())) {
+                    album.getFavoriteUsers().remove(user.getId().toString());
+                    albumService.saveAlbum(album);
+                }
+            }
+
+            // Then remove the user
+            users.removeIf(user1 -> user1.getUsername().equals(username));
+            saveAllUsers(users);
+
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
 
     public UserService() {
         this.objectMapper = new ObjectMapper();
