@@ -106,12 +106,18 @@ header {
 }
 
 /* From Uiverse.io by alexruix */
+.search-container {
+    margin-left: auto;
+    margin-right: 0.1rem;
+    width: 200px;
+}
+
 .group {
     display: flex;
     line-height: 28px;
     align-items: center;
     position: relative;
-    max-width: 190px;
+    width: 100%;
 }
 
 .input {
