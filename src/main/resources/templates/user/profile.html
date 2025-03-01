@@ -325,5 +325,20 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notification = document.getElementById('errorNotification');
+            if (notification) {
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.add('hide');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 400);
+                }, 5000);
+            }
+        });
+    </script>
+
 </body>
 </html>

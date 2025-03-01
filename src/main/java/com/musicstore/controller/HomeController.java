@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -82,14 +83,40 @@ public class HomeController {
     }
 
     @PostMapping("/profile/update")
-    public String profileUpdate(@ModelAttribute User updatedUser, HttpSession session) {
+    public String profileUpdate(@ModelAttribute User updatedUser, String currentPassword, String newPassword, String confirmPassword, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser != null) {
+            // Verify current password
+            if (!userService.authenticateUser(currentUser.getUsername(), currentPassword).isPresent()) {
+                model.addAttribute("error", "Current Password is incorrect");
+                model.addAttribute("user", currentUser);
+                return "error";
+            }
+
+            // Handle password update if new password is provided
+            if (newPassword != null && !newPassword.trim().isEmpty()) {
+                if (!newPassword.equals(confirmPassword)) {
+                    model.addAttribute("error", "New passwords do not match");
+                    model.addAttribute("user", currentUser);
+                    return "user/profile";
+                }
+                updatedUser.setPassword(newPassword);
+            } else {
+                updatedUser.setPassword(currentUser.getPassword());
+            }
+
             updatedUser.setId(currentUser.getId());
             updatedUser.setFavoriteAlbumIds(currentUser.getFavoriteAlbumIds());
-            User updated = userService.updateUser(updatedUser);
-            session.setAttribute("user", updated);
-            return "redirect:/profile";
+            
+            try {
+                User updated = userService.updateUser(updatedUser);
+                session.setAttribute("user", updated);
+                return "redirect:/profile";
+            } catch (RuntimeException e) {
+                model.addAttribute("error", e.getMessage());
+                model.addAttribute("user", currentUser);
+                return "user/profile";
+            }
         }
         return "redirect:/login";
     }
