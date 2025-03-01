@@ -13,7 +13,7 @@
             <span th:text="${session.user.username}" style="color: white;"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile</a></li>
+            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile Settings</a></li>
               <li><a class="dropdown-item" href="/reviews/my-reviews"><i class="bi bi-star"></i> Personal Reviews</a></li>
             <li th:if="${session.user.admin}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
             <li><hr class="dropdown-divider"></li>
