@@ -34,6 +34,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model, HttpSession session) {
+
         model.addAttribute("albums", albumService.getAllAlbums());
         User user = (User) session.getAttribute("user");
         if (user != null) {
