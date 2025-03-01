@@ -571,6 +571,7 @@ audio {
     margin-top: 0.75rem;
 }
 .author {
+    text-decoration: none;
     font-size: 1rem;
     font-weight: 600;
     color: #ffffff;
@@ -722,5 +723,8 @@ audio {
 
 }
 
+.infos .author:hover {
+    color: #ffffff;
+}
 
 

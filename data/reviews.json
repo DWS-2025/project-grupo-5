@@ -6,8 +6,8 @@
     "content" : "Uno de los discos más influyentes del reguetón moderno. Bad Bunny mezcla perreo clásico con sonidos frescos, demostrando su versatilidad. Temas como Safaera y Yo Perreo Sola son ya himnos del género.",
     "rating" : 5,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "YHLQMDLG",
+    "albumImageUrl" : "/resources/uploads/yhlqmdlg.png",
     "reviews" : [ ]
   }, {
     "id" : 38,
@@ -16,8 +16,8 @@
     "content" : "Este álbum es una obra maestra del reguetón, con una mezcla de emociones crudas y momentos épicos. Me encanta cómo Bad Bunny fusiona sus raíces con sonidos más experimentales, llevando el género a un nivel que no había visto antes. Safaera es uno de mis temas favoritos; no me canso de escucharlo.",
     "rating" : 5,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "YHLQMDLG",
+    "albumImageUrl" : "/resources/uploads/yhlqmdlg.png",
     "reviews" : [ ]
   }, {
     "id" : 53,
@@ -26,8 +26,8 @@
     "content" : "Bueno\r\n",
     "rating" : 5,
     "username" : "dsoria",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "YHLQMDLG",
+    "albumImageUrl" : "/resources/uploads/yhlqmdlg.png",
     "reviews" : [ ]
   } ],
   "7" : [ {
@@ -37,8 +37,8 @@
     "content" : "Uno de los mejores álbumes de hip-hop de todos los tiempos. La producción es impecable y Kanye estaba en su mejor momento.",
     "rating" : 5,
     "username" : "user10",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "VULTURES 1",
+    "albumImageUrl" : "/resources/uploads/vultures 1.png",
     "reviews" : [ ]
   }, {
     "id" : 42,
@@ -47,8 +47,8 @@
     "content" : "La vibra de Kanye y Ty es única, y con Vultures 1 me metí de lleno en su mundo. Es oscuro, experimental y tiene una atmósfera que me hace sentir que estoy en otro plano. A veces se hace algo denso, pero BACK TO ME tiene una base que no me deja parar de escucharla.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "VULTURES 1",
+    "albumImageUrl" : "/resources/uploads/vultures 1.png",
     "reviews" : [ ]
   } ],
   "19" : [ {
@@ -58,8 +58,8 @@
     "content" : "Kanye en su versión más experimental. No es para todo el mundo, pero tiene algunas joyas.",
     "rating" : 3,
     "username" : "user10",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "ye",
+    "albumImageUrl" : "/resources/uploads/ye.png",
     "reviews" : [ ]
   }, {
     "id" : 48,
@@ -68,8 +68,8 @@
     "content" : "No es el mejor álbum de Kanye, pero aún así tiene sus momentos. La producción es más íntima, y algunas de las canciones como Ghost Town realmente me tocan. Sin embargo, no tiene la misma intensidad que otros discos, por lo que no lo pongo tanto.\r\n",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "ye",
+    "albumImageUrl" : "/resources/uploads/ye.png",
     "reviews" : [ ]
   } ],
   "21" : [ {
@@ -79,8 +79,8 @@
     "content" : "NO ME QUIERO CASAR ES UN TEMOOON",
     "rating" : 5,
     "username" : "user1",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "nadie sabe lo que va a pasar mañana",
+    "albumImageUrl" : "/resources/uploads/nslqvapm.jpg",
     "reviews" : [ ]
   }, {
     "id" : 50,
@@ -89,8 +89,8 @@
     "content" : "Este álbum tiene una vibra única, con una mezcla de lo urbano y lo experimental que me atrapa. Me gusta cómo Bad Bunny juega con los ritmos y las letras, y Mercedes Carota es una de mis favoritas.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "nadie sabe lo que va a pasar mañana",
+    "albumImageUrl" : "/resources/uploads/nslqvapm.jpg",
     "reviews" : [ ]
   } ],
   "24" : [ {
@@ -100,8 +100,8 @@
     "content" : "El mejor Melendi de su carrera. Sus letras en este álbum están llenas de nostalgia y rebeldía.",
     "rating" : 4,
     "username" : "user1",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Sin Noticias de Holanda",
+    "albumImageUrl" : "/resources/uploads/ab67616d0000b27352ce1370223e498d7da83dfe.jpeg",
     "reviews" : [ ]
   }, {
     "id" : 22,
@@ -110,8 +110,8 @@
     "content" : "Uno de los mejores discos de rumba-pop española. Letras cercanas, historias cotidianas y un sonido que marcó una generación. Sé Lo Que Hicísteis es un clásico.",
     "rating" : 4,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Sin Noticias de Holanda",
+    "albumImageUrl" : "/resources/uploads/ab67616d0000b27352ce1370223e498d7da83dfe.jpeg",
     "reviews" : [ ]
   }, {
     "id" : 29,
@@ -141,8 +141,8 @@
     "content" : "No me gusta",
     "rating" : 1,
     "username" : "elsudo",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "EL ÚLTIMO TOUR DEL MUNDO",
+    "albumImageUrl" : "/resources/uploads/eutdm.png",
     "reviews" : [ ]
   }, {
     "id" : 17,
@@ -151,8 +151,8 @@
     "content" : "Este álbum muestra una faceta más experimental del conejo malo. Mezcla rock, trap y reguetón con una narrativa de despedida. Dákiti y La Noche de Anoche brillan en un tracklist sólido.",
     "rating" : 4,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "EL ÚLTIMO TOUR DEL MUNDO",
+    "albumImageUrl" : "/resources/uploads/eutdm.png",
     "reviews" : [ ]
   }, {
     "id" : 40,
@@ -161,8 +161,8 @@
     "content" : "Este disco lo escuché de principio a fin y no me decepcionó. Es como una mezcla de introspección y fiesta, con una vibra única. Me encanta el contraste de sonidos y cómo logra mantener su autenticidad. Yo Visto Así es sin duda uno de mis temas favoritos, tiene una atmósfera que me atrapa.\r\n",
     "rating" : 5,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "EL ÚLTIMO TOUR DEL MUNDO",
+    "albumImageUrl" : "/resources/uploads/eutdm.png",
     "reviews" : [ ]
   }, {
     "id" : 56,
@@ -192,8 +192,8 @@
     "content" : "Playboi Carti tiene ese flow tan característico que me engancha cada vez. Este álbum tiene muchas canciones que me hacen mover la cabeza, aunque algunas me parecen algo repetitivas.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "I AM MUSIC",
+    "albumImageUrl" : "/resources/uploads/i am music.jpg",
     "reviews" : [ ]
   } ],
   "14" : [ {
@@ -213,8 +213,8 @@
     "content" : "Este es uno de esos discos que me hace sentir parte de algo más grande. Kanye tiene una manera de crear atmósferas oscuras y profundas que realmente me engancha. EVERYBODY es uno de los temas que más me gusta, es tan experimental y único.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "VULTURES 3",
+    "albumImageUrl" : "/resources/uploads/vultures 3.png",
     "reviews" : [ ]
   } ],
   "16" : [ {
@@ -234,8 +234,8 @@
     "content" : "Este álbum es uno de esos descubrimientos que te sorprenden. Paul. tiene un estilo muy auténtico y sus letras me llegan. Aunque no es tan comercial, tiene esa profundidad y honestidad que me hace disfrutarlo. Red es una de las canciones que más me transmite.",
     "rating" : 5,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "me da igual lo que digas de mi",
+    "albumImageUrl" : "/resources/uploads/Screenshot 2025-02-20 at 14.39.29.png",
     "reviews" : [ ]
   } ],
   "10" : [ {
@@ -255,8 +255,8 @@
     "content" : "Un álbum innovador dentro de la música latina. La producción de Tainy es impecable, fusionando reguetón, electrónica y pop con colaboraciones de lujo.\r\n",
     "rating" : 5,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "DATA",
+    "albumImageUrl" : "/resources/uploads/data.png",
     "reviews" : [ ]
   }, {
     "id" : 44,
@@ -265,8 +265,8 @@
     "content" : "Tainy ha demostrado ser uno de los mejores productores del reguetón, y con Data me sorprendió. Las canciones tienen un flow muy fresco, pero hay momentos en los que me gustaría que se arriesgara más en cuanto a la experimentación. Mojabi Ghost tiene ese toque que siempre me pone de buen humor.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "DATA",
+    "albumImageUrl" : "/resources/uploads/data.png",
     "reviews" : [ ]
   } ],
   "12" : [ {
@@ -286,8 +286,8 @@
     "content" : "Este álbum tiene una vibra relajada pero también llena de emociones. Bad Bunny se siente más experimental y libre aquí, y aunque no tiene tantos hits como en otros discos, me encanta cómo se muestra vulnerable. KETU TeCRÉ es una de mis canciones favoritas, tiene algo especial.",
     "rating" : 5,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "DeBÍ TiRAR MáS FOToS",
+    "albumImageUrl" : "/resources/uploads/dtmf.jpg",
     "reviews" : [ ]
   } ],
   "22" : [ {
@@ -307,8 +307,8 @@
     "content" : "Un disco que captura la esencia del verano con ritmos tropicales y sonidos nostálgicos. Me Porto Bonito y Titi Me Preguntó son highlights de un álbum sin relleno.",
     "rating" : 5,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Un Verano Sin Ti",
+    "albumImageUrl" : "/resources/uploads/uvst.jpg",
     "reviews" : [ ]
   }, {
     "id" : 26,
@@ -348,8 +348,8 @@
     "content" : "Este álbum es un poco más clásico para mi gusto, pero respeto la voz y el talento de Nino Bravo. Algunas canciones tienen algo nostálgico, pero no es el estilo que suelo escuchar más a menudo",
     "rating" : 3,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Super 20",
+    "albumImageUrl" : "/resources/uploads/1200x1200bb.jpg",
     "reviews" : [ ]
   } ],
   "9" : [ {
@@ -359,8 +359,8 @@
     "content" : "Una obra maestra del hip-hop. Kanye lleva la producción a otro nivel con instrumentales grandiosas y letras introspectivas. Runaway y Power son momentos épicos en un álbum sin fisuras.",
     "rating" : 5,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "My Beautiful Dark Twisted Fantasy",
+    "albumImageUrl" : "/resources/uploads/mbdtf.jpg",
     "reviews" : [ ]
   }, {
     "id" : 25,
@@ -400,8 +400,8 @@
     "content" : "Minimalista, caótico y adictivo. Este álbum redefine el sonido del trap con beats atmosféricos y un estilo inimitable. Shoota y R.I.P. son auténticas bombas de energía.",
     "rating" : 4,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Die Lit",
+    "albumImageUrl" : "/resources/uploads/die lit.jpg",
     "reviews" : [ ]
   } ],
   "17" : [ {
@@ -411,8 +411,8 @@
     "content" : "Una evolución en el sonido de Kanye, mezclando hip-hop con sintetizadores electrónicos. Stronger y Flashing Lights siguen sonando atemporales.",
     "rating" : 5,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Graduation",
+    "albumImageUrl" : "/resources/uploads/graduation.png",
     "reviews" : [ ]
   }, {
     "id" : 37,
@@ -432,8 +432,8 @@
     "content" : "Un disco monumental, con una producción inmersiva y un enfoque espiritual. Canciones como Jail y Hurricane destacan en una obra muy personal de Kanye.",
     "rating" : 4,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Donda",
+    "albumImageUrl" : "/resources/uploads/donda.png",
     "reviews" : [ ]
   }, {
     "id" : 49,
@@ -442,8 +442,8 @@
     "content" : "Donda tiene un toque espiritual y una producción impresionante. Aunque tiene temas largos y algo densos, hay algo en su mensaje que me llega. Hurricane es sin duda uno de los momentos más altos del álbum, una obra maestra de la producción.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Donda",
+    "albumImageUrl" : "/resources/uploads/donda.png",
     "reviews" : [ ]
   } ],
   "25" : [ {
@@ -453,8 +453,8 @@
     "content" : "Mora sigue demostrando su talento con un álbum lleno de reguetón melódico y sonidos innovadores. 512 y Primer Dia de Clases son auténticos hits.",
     "rating" : 4,
     "username" : "ShadowByte42",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Primer Dia de Clases",
+    "albumImageUrl" : "/resources/uploads/019bf2ae67123d827b87b159d55faaf3.1000x1000x1.png",
     "reviews" : [ ]
   }, {
     "id" : 52,
@@ -463,8 +463,8 @@
     "content" : "Mora ha creado algo realmente interesante con este álbum. Las melodías tienen una vibra relajante pero también un toque fresco que me atrapa.",
     "rating" : 5,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Primer Dia de Clases",
+    "albumImageUrl" : "/resources/uploads/019bf2ae67123d827b87b159d55faaf3.1000x1000x1.png",
     "reviews" : [ ]
   } ],
   "15" : [ {
@@ -527,8 +527,8 @@
     "content" : "Kanye tiene un estilo tan único que siempre me sorprende. Bully es un álbum que no es tan conocido, pero tiene ese toque de agresividad y originalidad que lo hace interesante. Las letras son intensas y el ritmo tiene esa energía que me gusta. Aunque no es uno de sus mejores discos, tiene piezas que valen la pena, como Showtime.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Bully ",
+    "albumImageUrl" : "/resources/uploads/bully.jpg",
     "reviews" : [ ]
   }, {
     "id" : 54,
@@ -537,8 +537,8 @@
     "content" : "to guapoooo",
     "rating" : 4,
     "username" : "dsoria",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Bully ",
+    "albumImageUrl" : "/resources/uploads/bully.jpg",
     "reviews" : [ ]
   } ],
   "8" : [ {
@@ -548,8 +548,8 @@
     "content" : "Lo que me gusta de este álbum es la evolución en su sonido, es más pesado que el primero, pero no pierde esa esencia experimental. Field Trip es uno de esos temas que me hace pensar que Carti está adelantado a su tiempo. Es un viaje sonoro del que nunca quiero salir.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "VULTURES 2",
+    "albumImageUrl" : "/resources/uploads/vultures 2.png",
     "reviews" : [ ]
   } ],
   "26" : [ ],

@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class HomeController {
 
     @GetMapping("/{id}")
     public String viewAlbum(@PathVariable Long id, Model model) {
-        if(albumService.getAlbumById(id).isEmpty()){
+        if (albumService.getAlbumById(id).isEmpty()) {
             model.addAttribute("error", "Album not found");
             return "error";
         }
@@ -62,7 +63,7 @@ public class HomeController {
                             .orElse("Unknown User"))
                     .collect(Collectors.toList());
             model.addAttribute("favoriteUsernames", usernames);
-            
+
             // Get reviews and map user IDs to usernames
             List<Review> reviews = reviewService.getReviewsByAlbumId(id);
             reviews.forEach(review -> {
@@ -73,6 +74,7 @@ public class HomeController {
         });
         return "album/view";
     }
+
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -108,7 +110,7 @@ public class HomeController {
 
             updatedUser.setId(currentUser.getId());
             updatedUser.setFavoriteAlbumIds(currentUser.getFavoriteAlbumIds());
-            
+
             try {
                 User updated = userService.updateUser(updatedUser);
                 session.setAttribute("user", updated);
@@ -156,4 +158,47 @@ public class HomeController {
         return "redirect:/login";
     }
 
-}
+    @GetMapping("/profile/{username}")
+    public String viewProfile(@PathVariable String username, Model model, HttpSession session) {
+        // Get the current logged-in user if any
+        User currentUser = (User) session.getAttribute("user");
+        model.addAttribute("currentUser", currentUser);
+
+        Optional<User> userOpt = userService.getUserByUsername(username);
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "User not found");
+            return "error"; // Muestra la página de error en vez de continuar
+        }
+
+        User profileUser = userOpt.get();
+        model.addAttribute("profileUser", profileUser);
+
+// Obtener álbumes favoritos del usuario
+        List<Album> favoriteAlbums = profileUser.getFavoriteAlbumIds().stream()
+                .map(albumId -> albumService.getAlbumById(albumId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        Collections.reverse(favoriteAlbums);
+        favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
+        model.addAttribute("favoriteAlbums", favoriteAlbums);
+
+// Obtener y asociar las reviews con los álbumes correspondientes
+        List<Review> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
+        userReviews.forEach(review -> {
+            albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
+                review.setAlbumTitle(album.getTitle());
+                review.setAlbumImageUrl(album.getImageUrl());
+            });
+        });
+
+        Collections.reverse(userReviews);
+        userReviews = userReviews.stream().limit(5).collect(Collectors.toList());
+        model.addAttribute("userReviews", userReviews);
+
+        return "user/profile-view";
+        }
+
+    }
+

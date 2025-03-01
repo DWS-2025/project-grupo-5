@@ -308,7 +308,7 @@
                                                 </th:block>
                                             </div>
                                             <div class="infos">
-                                                <div class="author" th:text="${review.username}"></div>
+                                                <a th:href="@{/profile/{username}(username=${review.username})}" class="author" th:text="${review.username}"></a>
                                                 <div class="description review-content" th:text="${review.content}"></div>
                                             </div>
                                         </div>

@@ -5,15 +5,23 @@
      <!-- <a href="/admin"><i class="bi bi-house-fill"></i> Temp ADMIN</a> -->
       <a href="/"><i class="bi bi-house-fill"></i> Home</a>
         <a href="/top-albums"><i class="bi bi-stars"></i> Top Albums</a>
-      <a href="/favorites"><i class="bi bi-heart-fill"></i> Your Favorite Albums</a>
-      <div th:if="${session.user != null}" class="user-section">
+        <a th:if="${session.user != null}" th:href="@{/favorites/{username}(username=${session.user.username})}">
+            <i class="bi bi-heart-fill"></i> Your Favorite Albums
+        </a>
+
+        <a th:if="${session.user == null}" th:href="@{/favorites/error}">
+            <i class="bi bi-heart-fill"></i> Your Favorite Albums
+        </a>
+
+        <div th:if="${session.user != null}" class="user-section">
         <div class="dropdown d-inline-block">
           <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-person-circle" style="color: #1a5f42;"></i>
             <span th:text="${session.user.username}" style="color: white;"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile Settings</a></li>
+              <li><a class="dropdown-item" th:href="@{/profile/{username}(username=${session.user.username})}"><i class="bi bi-person"></i> Your Profile</a></li>
+              <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile Settings</a></li>
               <li><a class="dropdown-item" href="/reviews/my-reviews"><i class="bi bi-star"></i> Personal Reviews</a></li>
             <li th:if="${session.user.admin}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
             <li><hr class="dropdown-divider"></li>

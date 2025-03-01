@@ -1,5 +1,6 @@
 package com.musicstore.controller;
 
+import com.musicstore.model.Album;
 import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
@@ -10,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/reviews")
@@ -46,7 +51,7 @@ public class ReviewController {
 
             System.out.println("Guardando reseña del usuario: " + user.getUsername());
             reviewService.addReview(albumId, review);
-            
+
             // Update album's average rating
             albumService.getAlbumById(albumId).ifPresent(album -> {
                 album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
@@ -75,7 +80,7 @@ public class ReviewController {
                 existingReview.setContent(content);
                 existingReview.setRating(rating);
                 reviewService.updateReview(albumId, existingReview);
-                
+
                 // Update album's average rating
                 albumService.getAlbumById(albumId).ifPresent(album -> {
                     album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
@@ -97,7 +102,7 @@ public class ReviewController {
             Review review = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (review != null && (review.getUsername().equals(user.getUsername()) || user.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
-                
+
                 // Update album's average rating
                 albumService.getAlbumById(albumId).ifPresent(album -> {
                     album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
@@ -121,14 +126,73 @@ public class ReviewController {
             return "redirect:/login";
         }
 
-        List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
+        try {
+            List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
+            userReviews.forEach(review -> {
+                try {
+                    albumService.getAlbumById(review.getAlbumId()).ifPresentOrElse(
+                            album -> {
+                                review.setAlbumTitle(album.getTitle());
+                                review.setAlbumImageUrl(album.getImageUrl());
+                            },
+                            () -> {
+                                review.setAlbumTitle("Album not found");
+                                review.setAlbumImageUrl("");
+                            }
+                    );
+                } catch (Exception e) {
+                    review.setAlbumTitle("Error loading album");
+                    review.setAlbumImageUrl("");
+                }
+            });
+            model.addAttribute("userReviews", userReviews);
+            return "reviews/my-reviews";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading reviews: " + e.getMessage());
+            return "error";
+        }
+    }
+
+    @GetMapping("/user/{username}")
+    public String viewReviews(@PathVariable String username, Model model, HttpSession session) {
+        // Obtener el usuario logueado, si existe
+        User currentUser = (User) session.getAttribute("user");
+        model.addAttribute("currentUser", currentUser);
+
+        Optional<User> userOpt = userService.getUserByUsername(username);
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "User not found");
+            return "error"; // Página de error si no se encuentra el usuario
+        }
+
+        User profileUser = userOpt.get();
+        model.addAttribute("profileUser", profileUser);
+
+        List<Album> favoriteAlbums = profileUser.getFavoriteAlbumIds().stream()
+                .map(albumId -> albumService.getAlbumById(albumId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        Collections.reverse(favoriteAlbums);
+        favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
+        model.addAttribute("favoriteAlbums", favoriteAlbums);
+
+        List<Review> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
         userReviews.forEach(review -> {
             albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
                 review.setAlbumTitle(album.getTitle());
                 review.setAlbumImageUrl(album.getImageUrl());
             });
         });
+
+        Collections.reverse(userReviews);
+        userReviews = userReviews.stream().limit(5).collect(Collectors.toList());
         model.addAttribute("userReviews", userReviews);
-        return "reviews/my-reviews";
+
+        return "reviews/user-review";
     }
+
 }
+
+

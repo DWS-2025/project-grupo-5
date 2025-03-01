@@ -28,7 +28,8 @@ public class ReviewService {
         File file = new File(FILE_PATH);
         if (file.exists() && file.length() > 0) {
             try {
-                reviewsByAlbum = objectMapper.readValue(file, new TypeReference<Map<Long, List<Review>>>() {});
+                reviewsByAlbum = objectMapper.readValue(file, new TypeReference<Map<Long, List<Review>>>() {
+                });
                 System.out.println("Reseñas cargadas correctamente");
             } catch (IOException e) {
                 System.err.println("Error cargando reseñas: " + e.getMessage());
@@ -105,7 +106,7 @@ public class ReviewService {
         if (userId == null || reviewsByAlbum == null) {
             return new ArrayList<>();
         }
-        
+
         List<Review> userReviews = new ArrayList<>();
         for (List<Review> albumReviews : reviewsByAlbum.values()) {
             if (albumReviews != null) {
@@ -117,6 +118,7 @@ public class ReviewService {
 
         return userReviews;
     }
+
     public void deleteReviewsByUser(String username) {
         // Iterate through all albums and their reviews
         for (List<Review> albumReviews : reviewsByAlbum.values()) {
@@ -136,4 +138,6 @@ public class ReviewService {
                 .max()
                 .orElse(0L) + 1;
     }
+
+
 }

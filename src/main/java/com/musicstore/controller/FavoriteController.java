@@ -109,27 +109,29 @@ public class FavoriteController {
 
 
 
-    @GetMapping
-    public String showFavorites(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user"); // Obtenemos el usuario en sesión
-        if (user == null || user.getUsername() == null) {
-            model.addAttribute("error", "No se ha iniciado sesión o falta el nombre de usuario.");
-            return "error"; // O redirige a la página de login
+    @GetMapping("/{username}")
+    public String showFavorites(@PathVariable String username, HttpSession session, Model model) {
+        // Get the requested user's favorite albums
+        List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
+        if (favoriteAlbumIds == null) {
+            model.addAttribute("error", "Usuario no encontrado.");
+            return "error";
         }
 
-        String username = user.getUsername();
-
-        // Obtener álbumes favoritos del usuario
-        List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
         List<Album> favoriteAlbums = favoriteAlbumIds.stream()
                 .map(albumId -> albumService.getAlbumById(albumId).orElse(null))
-                .filter(album -> album != null) // Filtrar álbumes nulos
+                .filter(album -> album != null)
                 .collect(Collectors.toList());
 
-        // Agregar datos al modelo
+        // Get the current logged-in user (if any)
+        User currentUser = (User) session.getAttribute("user");
+        boolean isOwnProfile = currentUser != null && currentUser.getUsername().equals(username);
+
+        // Add data to the model
         model.addAttribute("username", username);
         model.addAttribute("favoriteAlbums", favoriteAlbums);
-        return "album/favorites"; // Renderizar la vista HTML "favorites.html"
+        model.addAttribute("isOwnProfile", isOwnProfile);
+        return "album/favorites";
     }
 
 
@@ -153,6 +155,10 @@ public class FavoriteController {
         }
     }
 
-
+    @GetMapping("/error")
+    public String error(Model model) {
+        model.addAttribute("error", "You must be logged in to access this page.");
+        return "error";
+    }
 }
 
