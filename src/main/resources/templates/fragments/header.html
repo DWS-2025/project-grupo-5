@@ -16,7 +16,8 @@
         <div th:if="${session.user != null}" class="user-section">
         <div class="dropdown d-inline-block">
           <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person-circle" style="color: #1a5f42;"></i>
+            <img th:if="${session.user.imageUrl != null}" th:src="${session.user.imageUrl}" alt="Profile Picture" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 4px;">
+            <i th:unless="${session.user.imageUrl != null}" class="bi bi-person-circle" style="color: #1a5f42;"></i>
             <span th:text="${session.user.username}" style="color: white;"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
