@@ -42,7 +42,7 @@
 
                             <!-- Check if user is logged in before showing edit or delete options -->
                             <div th:if="${currentUser != null}" class="review-actions mt-3">
-                                <a th:href="@{/{id}(id=${review.albumId})}" class="btn btn-primary btn-sm">View Album</a>
+                                <a th:href="@{/{id}(id=${review.albumId})}"></a>
                                 <button type="button" class="edit-review" th:data-review-id="${review.id}" th:if="${currentUser.username == review.username}" th:onclick="'editReview(' + ${review.id} + ')'">
                                     <i class="bi bi-pencil"></i>
                                 </button>
