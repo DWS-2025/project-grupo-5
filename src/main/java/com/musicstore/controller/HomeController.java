@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -193,13 +194,29 @@ public class HomeController {
         Optional<User> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
             model.addAttribute("error", "User not found");
-            return "error"; // Muestra la página de error en vez de continuar
+            return "error";
         }
 
         User profileUser = userOpt.get();
         model.addAttribute("profileUser", profileUser);
 
-// Obtener álbumes favoritos del usuario
+        // Get followers and following usernames with their profile images
+        Map<String, String> followersUsers = profileUser.getFollowers().stream()
+                .map(id -> userService.getUserById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(User::getUsername, User::getImageUrl, (a, b) -> a));
+
+        Map<String, String> followingUsers = profileUser.getFollowing().stream()
+                .map(id -> userService.getUserById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(User::getUsername, User::getImageUrl, (a, b) -> a));
+
+        model.addAttribute("followersUsers", followersUsers);
+        model.addAttribute("followingUsers", followingUsers);
+
+        // Get favorite albums
         List<Album> favoriteAlbums = profileUser.getFavoriteAlbumIds().stream()
                 .map(albumId -> albumService.getAlbumById(albumId))
                 .filter(Optional::isPresent)
@@ -210,7 +227,7 @@ public class HomeController {
         favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
         model.addAttribute("favoriteAlbums", favoriteAlbums);
 
-// Obtener y asociar las reviews con los álbumes correspondientes
+        // Get reviews and associate them with albums
         List<Review> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
         userReviews.forEach(review -> {
             albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
@@ -224,7 +241,6 @@ public class HomeController {
         model.addAttribute("userReviews", userReviews);
 
         return "user/profile-view";
-        }
-
+    }
     }
 
