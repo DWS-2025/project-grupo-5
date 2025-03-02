@@ -34,5 +34,9 @@ public class User {
     @JsonIgnore
     private MultipartFile imageFile;
 
+    private List<Long> followers = new ArrayList<>();
+    private List<Long> following = new ArrayList<>();
+
+
 
 }

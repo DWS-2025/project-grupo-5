@@ -62,6 +62,15 @@ public class UserService {
                 }
             }
 
+            // Remove follow/follower relationships
+            for (User otherUser : users) {
+                // Remove the user from others' followers list
+                otherUser.getFollowers().removeIf(followerId -> followerId.equals(user.getId()));
+                // Remove the user from others' following list
+                otherUser.getFollowing().removeIf(followingId -> followingId.equals(user.getId()));
+            }
+            saveAllUsers(users); // Save the updated follow/follower relationships
+
             // Then remove the user
             users.removeIf(user1 -> user1.getUsername().equals(username));
             saveAllUsers(users);
@@ -311,5 +320,49 @@ public class UserService {
         saveAllUsers(users);
 
         return updatedUser;
+    }
+
+    public void followUser(Long followerId, Long targetUserId) {
+        if (followerId.equals(targetUserId)) {
+            throw new RuntimeException("Users cannot follow themselves");
+        }
+
+        List<User> users = getAllUsers();
+        User follower = getUserById(followerId)
+                .orElseThrow(() -> new RuntimeException("Follower user not found"));
+        User target = getUserById(targetUserId)
+                .orElseThrow(() -> new RuntimeException("Target user not found"));
+
+        if (!follower.getFollowing().contains(targetUserId)) {
+            follower.getFollowing().add(targetUserId);
+            target.getFollowers().add(followerId);
+
+            // Update both users
+            updateUser(follower);
+            updateUser(target);
+        }
+    }
+
+    public void unfollowUser(Long followerId, Long targetUserId) {
+        List<User> users = getAllUsers();
+        User follower = getUserById(followerId)
+                .orElseThrow(() -> new RuntimeException("Follower user not found"));
+        User target = getUserById(targetUserId)
+                .orElseThrow(() -> new RuntimeException("Target user not found"));
+
+        if (follower.getFollowing().contains(targetUserId)) {
+            follower.getFollowing().remove(targetUserId);
+            target.getFollowers().remove(followerId);
+
+            // Update both users
+            updateUser(follower);
+            updateUser(target);
+        }
+    }
+
+    public boolean isFollowing(Long followerId, Long targetUserId) {
+        return getUserById(followerId)
+                .map(user -> user.getFollowing().contains(targetUserId))
+                .orElse(false);
     }
 }

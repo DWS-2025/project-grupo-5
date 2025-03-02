@@ -77,8 +77,40 @@
                 <i class="bi bi-heart-fill ms-3 me-1" style="color: #ff4d4d;"></i>
                 <span th:text="${#lists.size(favoriteAlbums)}"></span>
             </span>
+
+
+            <div class="d-flex align-items-center" style="font-size: 1.2rem; color: #888;">
+                <div class="text-center me-4">
+                    <div>
+                        <i class="bi bi-people-fill me-1"></i>
+                        <span th:text="${#lists.size(profileUser.followers)}">0</span>
+                    </div>
+                    <small style="color: #666;">Followers</small>
+                </div>
+                <div class="text-center">
+                    <div>
+                        <i class="bi bi-person-fill-add me-1"></i>
+                        <span th:text="${#lists.size(profileUser.following)}">0</span>
+                    </div>
+                    <small style="color: #666;">Following</small>
+                </div>
+            </div>
+
+            <div class="ms-auto" th:if="${session.user != null && session.user.username != username}">
+                <button class="btn btn-success follow-btn" style="background-color: #1a5f42;" onclick="toggleFollow(true)">
+                    <i class="bi bi-person-plus-fill me-1"></i> Follow
+                </button>
+                <button class="btn btn-outline-danger unfollow-btn" onclick="toggleFollow(false)">
+                    <i class="bi bi-person-dash-fill me-1"></i> Unfollow
+                </button>
+            </div>
+
+
+
+
         </h1>
     </div>
+
 
     <div class="row">
         <!-- Recent Likes Section -->
@@ -119,7 +151,6 @@
                                 <span th:text="${review.rating}"></span>/5 ⭐
                             </small>
                         </div>
-
                     </a>
                 </div>
                 <div th:if="${#lists.isEmpty(userReviews)}" class="text-muted text-center py-3">
@@ -137,6 +168,52 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function toggleFollow(isFollow) {
+    const targetUsername = window.location.pathname.split('/').pop();
+    const endpoint = isFollow ? '/user/follow' : '/user/unfollow';
+
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content')
+        },
+        body: JSON.stringify({
+            username: targetUsername
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            // Refresh the page to update all UI elements
+            window.location.reload();
+        } else {
+            throw new Error('Failed to update follow status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Initialize button visibility based on follow status
+document.addEventListener('DOMContentLoaded', function() {
+    const followBtn = document.querySelector('.follow-btn');
+    const unfollowBtn = document.querySelector('.unfollow-btn');
+    
+    if (followBtn && unfollowBtn) {
+        fetch(`/user/is-following/${window.location.pathname.split('/').pop()}`)
+            .then(response => response.json())
+            .then(data => {
+                followBtn.style.display = data.isFollowing ? 'none' : 'inline-block';
+                unfollowBtn.style.display = data.isFollowing ? 'inline-block' : 'none';
+            })
+            .catch(error => {
+                console.error('Error checking follow status:', error);
+            });
+    }
+});
+</script>
 </body>
 
 </html>

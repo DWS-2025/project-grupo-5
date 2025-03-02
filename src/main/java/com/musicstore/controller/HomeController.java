@@ -174,6 +174,8 @@ public class HomeController {
             });
         }
 
+
+
         // Invalidate session
         session.invalidate();
 
