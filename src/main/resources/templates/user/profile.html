@@ -288,7 +288,7 @@
             <h2 class="text-center mb-4">Profile Settings</h2>
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{/profile/update}" method="post" th:object="${user}">
+                    <form th:action="@{/profile/update}" method="post" th:object="${user}" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" th:field="*{username}" required>
@@ -311,6 +311,13 @@
                         </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label">Profile Photo</label>
+                            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+                            <input type="hidden" th:field="*{imageUrl}">
                         </div>
                     </form>
                     <hr class="my-4">

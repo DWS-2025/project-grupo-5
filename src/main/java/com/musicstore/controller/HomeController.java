@@ -6,16 +6,16 @@ import com.musicstore.service.AlbumService;
 import com.musicstore.service.UserService;
 import com.musicstore.service.ReviewService;
 import com.musicstore.model.User;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -86,7 +86,15 @@ public class HomeController {
     }
 
     @PostMapping("/profile/update")
-    public String profileUpdate(@ModelAttribute User updatedUser, String currentPassword, String newPassword, String confirmPassword, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String profileUpdate(
+            @ModelAttribute User updatedUser,
+            String currentPassword,
+            String newPassword,
+            String confirmPassword,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+            HttpSession session,
+            Model model
+    ) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser != null) {
             // Verify current password
@@ -112,8 +120,22 @@ public class HomeController {
             updatedUser.setFavoriteAlbumIds(currentUser.getFavoriteAlbumIds());
 
             try {
-                User updated = userService.updateUser(updatedUser);
-                session.setAttribute("user", updated);
+                // Handle profile image upload if provided
+                if (imageFile != null && !imageFile.isEmpty()) {
+                    try {
+                        userService.saveUserWithProfileImage(updatedUser, imageFile);
+                    } catch (IOException e) {
+                        model.addAttribute("error", "Error uploading profile image");
+                        model.addAttribute("user", currentUser);
+                        return "user/profile";
+                    }
+                } else {
+                    // If no new image, keep the existing one
+                    updatedUser.setImageUrl(currentUser.getImageUrl());
+                    userService.updateUser(updatedUser);
+                }
+
+                session.setAttribute("user", updatedUser);
                 return "redirect:/profile";
             } catch (RuntimeException e) {
                 model.addAttribute("error", e.getMessage());

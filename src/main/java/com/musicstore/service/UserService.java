@@ -8,6 +8,8 @@ import com.musicstore.model.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -241,6 +243,38 @@ public class UserService {
     public boolean isAlbumInFavorites(String username, Long albumId) {
         Optional<User> userOpt = getUserByUsername(username);
         return userOpt.map(user -> user.getFavoriteAlbumIds().contains(albumId)).orElse(false);
+    }
+
+    public void saveUserWithProfileImage(User user, MultipartFile profileImage) throws IOException {
+        if (profileImage == null || profileImage.isEmpty()) {
+            throw new RuntimeException("Profile image cannot be null or empty");
+        }
+
+        // Validate file type
+        String contentType = profileImage.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new RuntimeException("Only image files are allowed");
+        }
+
+        // Generate a unique filename
+        String originalFilename = profileImage.getOriginalFilename();
+        String fileExtension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
+        String filename = "user_" + user.getId() + "_" + System.currentTimeMillis() + fileExtension;
+
+        // Create images directory if it doesn't exist
+        String projectDir = System.getProperty("user.dir");
+        File uploadDir = new File(projectDir + "/src/main/resources/static/images");
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        // Save the file
+        File destFile = new File(uploadDir.getAbsolutePath() + File.separator + filename);
+        profileImage.transferTo(destFile);
+
+        // Update user with image URL
+        user.setImageUrl("/images/" + filename);
+        updateUser(user);
     }
 
     public User updateUser(User updatedUser) {

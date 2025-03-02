@@ -65,9 +65,12 @@
 <div class="container mt-4">
     <!-- Profile Header -->
     <div class="profile-section">
-        <h1 class="username-title">
-            <i class="bi bi-person-circle"></i>
-            <span th:text=" '@' + ${username}"></span>
+        <h1 class="username-title d-flex align-items-center">
+            <div class="me-3" style="width: 50px; height: 50px;">
+                <img th:if="${profileUser?.imageUrl != null}" th:src="${profileUser.imageUrl}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
+                <i th:unless="${profileUser?.imageUrl != null}" class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
+            </div>
+            <span th:text="'@' + ${username}"></span>
             <span class="ms-3" style="font-size: 1.5rem; color: #888;">
                 <i class="bi bi-star-fill me-1" style="color: #ffd700;"></i>
                 <span th:text="${#lists.size(userReviews)}"></span>
