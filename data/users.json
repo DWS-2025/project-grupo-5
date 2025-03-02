@@ -15,9 +15,9 @@
   "password" : "1234",
   "email" : "paul@paul.com",
   "favoriteAlbumIds" : [ 10, 18, 19, 21, 22, 23, 8, 20, 5, 1, 9, 12, 2 ],
-  "imageUrl" : "/images/user_2_1740915884819.jpg",
+  "imageUrl" : "/images/user_2_1740931959080.png",
   "followers" : [ ],
-  "following" : [ 1 ],
+  "following" : [ 1, 15 ],
   "admin" : false,
   "anonymous" : false
 }, {
@@ -159,7 +159,7 @@
   "email" : "YeFan2025@email.com",
   "favoriteAlbumIds" : [ 9, 17, 18 ],
   "imageUrl" : "/images/user_15_1740915186278.jpg",
-  "followers" : [ ],
+  "followers" : [ 2 ],
   "following" : [ ],
   "admin" : false,
   "anonymous" : false

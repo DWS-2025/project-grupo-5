@@ -22,7 +22,12 @@ public class Review {
     private int rating; // Calificación del álbum (1-5)
 
     private String username; // Opcional: Mostrar el nombre del usuario
-
+    private String userImageUrl;
+    
+    public void setUserImageUrl(String imageUrl) {
+        this.userImageUrl = imageUrl;
+    }
+    
     // Transient fields for display purposes
     private String albumTitle;
     private String albumImageUrl;

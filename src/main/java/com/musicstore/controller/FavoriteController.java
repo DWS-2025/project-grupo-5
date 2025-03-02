@@ -1,6 +1,7 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
+import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.UserService;
@@ -123,6 +124,13 @@ public class FavoriteController {
                 .filter(album -> album != null)
                 .collect(Collectors.toList());
 
+        // Get the user information (including the profile image)
+        Optional<User> userOpt = userService.getUserByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            model.addAttribute("userProfileImage", user.getImageUrl()); // Add user profile image URL
+        }
+
         // Get the current logged-in user (if any)
         User currentUser = (User) session.getAttribute("user");
         boolean isOwnProfile = currentUser != null && currentUser.getUsername().equals(username);
@@ -133,6 +141,7 @@ public class FavoriteController {
         model.addAttribute("isOwnProfile", isOwnProfile);
         return "album/favorites";
     }
+
 
 
     public void addUserToFavorite(Long albumId, String username) {

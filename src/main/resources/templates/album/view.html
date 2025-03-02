@@ -224,8 +224,8 @@
                     </form>
 
 
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -285,6 +285,7 @@
 
 
                                 </div>
+                            
 
 
                                 <section class="reviews-section">
@@ -307,10 +308,28 @@
                                                     </svg>
                                                 </th:block>
                                             </div>
-                                            <div class="infos">
-                                                <a th:href="@{/profile/{username}(username=${review.username})}" class="author" th:text="${review.username}"></a>
-                                                <div class="description review-content" th:text="${review.content}"></div>
+
+                                            <div class="infos d-flex flex-column">
+                                                <!-- Contenedor de la imagen y el nombre de usuario -->
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-2" style="width: 40px; height: 40px;">
+                                                        <a th:href="@{/profile/{username}(username=${review.username})}">
+                                                            <img th:if="${review.userImageUrl != null}" th:src="${review.userImageUrl}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
+                                                            <i th:unless="${review.userImageUrl != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="username" style="font-weight: bold;">
+                                                        <a th:href="@{/profile/{username}(username=${review.username})}" class="author" th:text="${review.username}"></a>
+                                                    </div>
+                                                </div>
+                                                <!-- Contenedor del contenido, debajo del nombre de usuario -->
+                                                <div class="description review-content mt-2" th:text="${review.content}"></div>
                                             </div>
+
+
+
+
+
                                         </div>
                                     </div>
                                 </section>

@@ -76,10 +76,12 @@
 </span>
 
             <span class="ms-3" style="font-size: 1.5rem; color: white;">
-                <i class="bi bi-star-fill me-1" style="color: #ffd700;"></i>
-                <span th:text="${#lists.size(userReviews)}"></span>
-                <i class="bi bi-heart-fill ms-3 me-1" style="color: #ff4d4d;"></i>
+                <i class="bi bi-heart-fill me-1" style="color: #ff4d4d;"></i>
                 <span th:text="${#lists.size(favoriteAlbums)}"></span>
+
+                <i class="bi bi-star-fill ms-3 me-1" style="color: #ffd700;"></i>
+                <span th:text="${#lists.size(userReviews)}"></span>
+
             </span>
 
             <div class="ms-auto d-flex align-items-center">
@@ -191,7 +193,7 @@
         <div class="col-md-6">
             <div class="activity-section">
                 <h2 class="section-title">
-                    <i class="bi bi-heart-fill"></i>
+                    <i class="bi bi-star-fill"></i>
                     <span style="color: white;">Recent Reviews</span>
                 </h2>                <div th:each="review : ${userReviews}" class="album-mini-card-container">
                     <a th:href="@{/{id}(id=${review.albumId})}" class="album-mini-card">

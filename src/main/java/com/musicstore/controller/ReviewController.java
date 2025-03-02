@@ -168,6 +168,10 @@ public class ReviewController {
         User profileUser = userOpt.get();
         model.addAttribute("profileUser", profileUser);
 
+        // Añadir la URL de la imagen de perfil al modelo
+        String profileImageUrl = profileUser.getImageUrl();
+        model.addAttribute("profileImageUrl", profileImageUrl);
+
         List<Album> favoriteAlbums = profileUser.getFavoriteAlbumIds().stream()
                 .map(albumId -> albumService.getAlbumById(albumId))
                 .filter(Optional::isPresent)
@@ -192,6 +196,7 @@ public class ReviewController {
 
         return "reviews/user-review";
     }
+
 
 }
 
