@@ -62,6 +62,15 @@ public class UserService {
                 }
             }
 
+            // Remove follow/follower relationships
+            for (User otherUser : users) {
+                // Remove the user from others' followers list
+                otherUser.getFollowers().removeIf(followerId -> followerId.equals(user.getId()));
+                // Remove the user from others' following list
+                otherUser.getFollowing().removeIf(followingId -> followingId.equals(user.getId()));
+            }
+            saveAllUsers(users); // Save the updated follow/follower relationships
+
             // Then remove the user
             users.removeIf(user1 -> user1.getUsername().equals(username));
             saveAllUsers(users);
