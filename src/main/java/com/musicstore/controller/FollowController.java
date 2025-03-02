@@ -25,7 +25,7 @@ public class FollowController {
         }
 
         try {
-            userService.followUser(currentUser.getId(), targetUserId);
+            userService.followUser(currentUser.getId(), targetUserId, session);
             // Update the session with the modified user
             session.setAttribute("user", userService.getUserById(currentUser.getId()).orElse(currentUser));
             return "redirect:/profile/" + userService.getUserById(targetUserId)
@@ -47,7 +47,7 @@ public class FollowController {
         }
 
         try {
-            userService.unfollowUser(currentUser.getId(), targetUserId);
+            userService.unfollowUser(currentUser.getId(), targetUserId, session);
             // Update the session with the modified user
             session.setAttribute("user", userService.getUserById(currentUser.getId()).orElse(currentUser));
             return "redirect:/profile/" + userService.getUserById(targetUserId)

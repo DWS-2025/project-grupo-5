@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Fragment for follow/unfollow button -->
+    <div th:fragment="follow-button(targetUserId)">
+        <div th:if="${session.user != null and session.user.id != targetUserId}">
+            <form th:if="${!@userService.isFollowing(session.user.id, targetUserId)}"
+                  th:action="@{/follow/add/} + ${targetUserId}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-success">Follow</button>
+            </form>
+            <form th:if="${@userService.isFollowing(session.user.id, targetUserId)}"
+                  th:action="@{/follow/remove/} + ${targetUserId}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-secondary">Unfollow</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

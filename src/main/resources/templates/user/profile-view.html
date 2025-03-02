@@ -97,12 +97,7 @@
             </div>
 
             <div class="ms-auto" th:if="${session.user != null && session.user.username != username}">
-                <button class="btn btn-success follow-btn" style="background-color: #1a5f42;" onclick="toggleFollow(true)">
-                    <i class="bi bi-person-plus-fill me-1"></i> Follow
-                </button>
-                <button class="btn btn-outline-danger unfollow-btn" onclick="toggleFollow(false)">
-                    <i class="bi bi-person-dash-fill me-1"></i> Unfollow
-                </button>
+                <div th:replace="~{user/follow-button :: follow-button(${profileUser.id})}"></div>
             </div>
 
 

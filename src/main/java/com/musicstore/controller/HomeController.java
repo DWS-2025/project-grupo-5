@@ -118,6 +118,8 @@ public class HomeController {
 
             updatedUser.setId(currentUser.getId());
             updatedUser.setFavoriteAlbumIds(currentUser.getFavoriteAlbumIds());
+            updatedUser.setFollowers(currentUser.getFollowers());
+            updatedUser.setFollowing(currentUser.getFollowing());
 
             try {
                 // Handle profile image upload if provided

@@ -27,7 +27,7 @@ public class UserController {
             User targetUser = userService.getUserByUsername(targetUsername)
                     .orElseThrow(() -> new RuntimeException("Target user not found"));
 
-            userService.followUser(currentUser.getId(), targetUser.getId());
+            userService.followUser(currentUser.getId(), targetUser.getId(), session);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -46,7 +46,7 @@ public class UserController {
             User targetUser = userService.getUserByUsername(targetUsername)
                     .orElseThrow(() -> new RuntimeException("Target user not found"));
 
-            userService.unfollowUser(currentUser.getId(), targetUser.getId());
+            userService.unfollowUser(currentUser.getId(), targetUser.getId(), session);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

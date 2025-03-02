@@ -309,16 +309,19 @@
                             <label for="confirmPassword" class="form-label">Confirm New Password</label>
                             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
                         </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                        </div>
-
 
                         <div class="mb-3">
                             <label for="imageFile" class="form-label">Profile Photo</label>
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
                             <input type="hidden" th:field="*{imageUrl}">
                         </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+
+
+
                     </form>
                     <hr class="my-4">
                     <div class="text-center">

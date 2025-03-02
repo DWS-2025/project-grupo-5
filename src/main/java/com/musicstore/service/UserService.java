@@ -298,6 +298,7 @@ public class UserService {
             throw new RuntimeException("User not found with ID: " + updatedUser.getId());
         }
 
+
         // Get the existing user to preserve data that shouldn't be updated
         User existingUser = users.get(userIndex);
 
@@ -322,7 +323,7 @@ public class UserService {
         return updatedUser;
     }
 
-    public void followUser(Long followerId, Long targetUserId) {
+    public void followUser(Long followerId, Long targetUserId, HttpSession session) {
         if (followerId.equals(targetUserId)) {
             throw new RuntimeException("Users cannot follow themselves");
         }
@@ -340,10 +341,13 @@ public class UserService {
             // Update both users
             updateUser(follower);
             updateUser(target);
+
+            // Update session with the updated follower user
+            session.setAttribute("user", follower);
         }
     }
 
-    public void unfollowUser(Long followerId, Long targetUserId) {
+    public void unfollowUser(Long followerId, Long targetUserId, HttpSession session) {
         List<User> users = getAllUsers();
         User follower = getUserById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower user not found"));
@@ -357,6 +361,9 @@ public class UserService {
             // Update both users
             updateUser(follower);
             updateUser(target);
+
+            // Update session with the updated follower user
+            session.setAttribute("user", follower);
         }
     }
 
