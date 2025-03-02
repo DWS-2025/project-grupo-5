@@ -179,7 +179,7 @@ public class UserService {
 
     private void saveAllUsers(List<User> users) {
         try {
-            objectMapper.writeValue(new File(FILE_PATH), users);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_PATH), users);
         } catch (IOException e) {
             throw new RuntimeException("Could not save users", e);
         }
