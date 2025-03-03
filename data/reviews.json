@@ -39,7 +39,7 @@
     "content" : "durisimo",
     "rating" : 5,
     "username" : "paul",
-    "userImageUrl" : null,
+    "userImageUrl" : "/images/user_2_1740931959080.png",
     "albumTitle" : "YHLQMDLG",
     "albumImageUrl" : "/resources/uploads/yhlqmdlg.png",
     "reviews" : [ ]
@@ -135,17 +135,6 @@
     "albumTitle" : null,
     "albumImageUrl" : null,
     "reviews" : [ ]
-  }, {
-    "id" : 58,
-    "albumId" : 24,
-    "userId" : 1,
-    "content" : "Me ha gustado",
-    "rating" : 4,
-    "username" : "dsoria",
-    "userImageUrl" : null,
-    "albumTitle" : "Sin Noticias de Holanda",
-    "albumImageUrl" : "/resources/uploads/ab67616d0000b27352ce1370223e498d7da83dfe.jpeg",
-    "reviews" : [ ]
   } ],
   "5" : [ {
     "id" : 7,
@@ -199,9 +188,9 @@
     "content" : "i am music \uD83E\uDD18\uD83C\uDFFC",
     "rating" : 5,
     "username" : "raul.santamaria",
-    "userImageUrl" : null,
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "userImageUrl" : "/images/default.jpg",
+    "albumTitle" : "I AM MUSIC",
+    "albumImageUrl" : "/resources/uploads/i am music.jpg",
     "reviews" : [ ]
   }, {
     "id" : 41,
@@ -210,7 +199,7 @@
     "content" : "Playboi Carti tiene ese flow tan característico que me engancha cada vez. Este álbum tiene muchas canciones que me hacen mover la cabeza, aunque algunas me parecen algo repetitivas.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "userImageUrl" : null,
+    "userImageUrl" : "/images/default.jpg",
     "albumTitle" : "I AM MUSIC",
     "albumImageUrl" : "/resources/uploads/i am music.jpg",
     "reviews" : [ ]
@@ -427,8 +416,8 @@
     "rating" : 5,
     "username" : "YeFan2025",
     "userImageUrl" : "/images/user_15_1740915186278.jpg",
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "My Beautiful Dark Twisted Fantasy",
+    "albumImageUrl" : "/resources/uploads/mbdtf.jpg",
     "reviews" : [ ]
   } ],
   "11" : [ {
@@ -462,8 +451,8 @@
     "rating" : 5,
     "username" : "YeFan2025",
     "userImageUrl" : null,
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Graduation",
+    "albumImageUrl" : "/resources/uploads/graduation.png",
     "reviews" : [ ]
   } ],
   "20" : [ {
@@ -566,8 +555,8 @@
     "rating" : 4,
     "username" : "YeFan2025",
     "userImageUrl" : null,
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "Yeezus",
+    "albumImageUrl" : "/resources/uploads/yeezus.png",
     "reviews" : [ ]
   } ],
   "2" : [ {
@@ -588,9 +577,9 @@
     "content" : "chulo",
     "rating" : 4,
     "username" : "dsoria",
-    "userImageUrl" : null,
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "userImageUrl" : "/images/user_1_1740915496751.jpg",
+    "albumTitle" : "Bully ",
+    "albumImageUrl" : "/resources/uploads/bully.jpg",
     "reviews" : [ ]
   } ],
   "8" : [ {

@@ -16,7 +16,7 @@
 
 <div class="container mt-4">
     <div class="d-flex align-items-center mb-4">
-        <!-- Imagen de perfil al lado del nombre -->
+        <!-- Profile image next to username -->
         <div class="me-2" style="width: 55px; height: 55px;">
             <img th:if="${profileImageUrl != null}" th:src="${profileImageUrl}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
             <i th:unless="${profileImageUrl != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>

@@ -23,7 +23,7 @@ public class FavoriteController {
     @Autowired
     private AlbumService albumService;
 
-    // Añadir un álbum a favoritos
+    // Add album to favorites
 
     @PostMapping("/add")
     public String addFavorite(@RequestParam Long albumId,
@@ -33,7 +33,7 @@ public class FavoriteController {
             // Obtain the user in the actual session
             User user = (User) session.getAttribute("user");
             if (user == null || user.getId() == null) {
-                model.addAttribute("error", "No se ha iniciado sesión.");
+                model.addAttribute("error", "No session started.");
                 return "error";
             }
 
@@ -42,7 +42,7 @@ public class FavoriteController {
             // Search album
             Optional<Album> albumOptional = albumService.getAlbumById(albumId);
             if (albumOptional.isEmpty()) {
-                model.addAttribute("error", "Álbum no encontrado.");
+                model.addAttribute("error", "Album not found.");
                 return "error";
             }
 
@@ -71,7 +71,7 @@ public class FavoriteController {
             // Obtain the user in the actual session
             User user = (User) session.getAttribute("user");
             if (user == null || user.getId() == null) {
-                model.addAttribute("error", "No se ha iniciado sesión.");
+                model.addAttribute("error", "No session started.");
                 return "error";
             }
 
@@ -80,7 +80,7 @@ public class FavoriteController {
             // Search album
             Optional<Album> albumOptional = albumService.getAlbumById(albumId);
             if (albumOptional.isEmpty()) {
-                model.addAttribute("error", "Álbum no encontrado.");
+                model.addAttribute("error", "Album not found.");
                 return "error";
             }
 

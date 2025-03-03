@@ -6,9 +6,9 @@
   "favoriteAlbumIds" : [ 15, 2, 25, 1 ],
   "imageUrl" : "/images/user_1_1740915496751.jpg",
   "followers" : [ 2 ],
-  "following" : [ 2 ],
-  "anonymous" : false,
-  "admin" : false
+  "following" : [ 2, 15, 8 ],
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 2,
   "username" : "paul",
@@ -18,8 +18,8 @@
   "imageUrl" : "/images/user_2_1740931959080.png",
   "followers" : [ 1 ],
   "following" : [ 1, 15 ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 3,
   "username" : "noebomez",
@@ -29,8 +29,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 4,
   "username" : "1111",
@@ -40,8 +40,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 5,
   "username" : "admin",
@@ -51,8 +51,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : true
+  "admin" : true,
+  "anonymous" : false
 }, {
   "id" : 6,
   "username" : "4r42w",
@@ -62,8 +62,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 7,
   "username" : "Montotito",
@@ -73,8 +73,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 8,
   "username" : "raul.santamaria",
@@ -82,10 +82,10 @@
   "email" : "deigo@agfawf.com",
   "favoriteAlbumIds" : [ ],
   "imageUrl" : "/images/default.jpg",
-  "followers" : [ ],
+  "followers" : [ 1 ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 9,
   "username" : "michel",
@@ -95,8 +95,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 10,
   "username" : "elsudo",
@@ -106,8 +106,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 11,
   "username" : "misael",
@@ -117,8 +117,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 12,
   "username" : "ShadowByte42",
@@ -128,8 +128,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 13,
   "username" : "EchoVibe81",
@@ -139,8 +139,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 14,
   "username" : "NexusVibe",
@@ -150,8 +150,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 15,
   "username" : "YeFan2025",
@@ -159,10 +159,10 @@
   "email" : "YeFan2025@email.com",
   "favoriteAlbumIds" : [ 9, 17, 18 ],
   "imageUrl" : "/images/user_15_1740915186278.jpg",
-  "followers" : [ 2 ],
+  "followers" : [ 2, 1 ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 16,
   "username" : "TrapWaveX",
@@ -172,8 +172,8 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 }, {
   "id" : 17,
   "username" : "ewok",
@@ -183,6 +183,6 @@
   "imageUrl" : "/images/default.jpg",
   "followers" : [ ],
   "following" : [ ],
-  "anonymous" : false,
-  "admin" : false
+  "admin" : false,
+  "anonymous" : false
 } ]
