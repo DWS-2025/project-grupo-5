@@ -1,7 +1,6 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
-import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.UserService;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +30,7 @@ public class FavoriteController {
                               HttpSession session,
                               Model model) {
         try {
-            // Obtén el usuario actual de la sesión
+            // Obtain the user in the actual session
             User user = (User) session.getAttribute("user");
             if (user == null || user.getId() == null) {
                 model.addAttribute("error", "No se ha iniciado sesión.");
@@ -41,8 +39,7 @@ public class FavoriteController {
 
             Long auxUserId = user.getId();
 
-
-            // Buscar el álbum
+            // Search album
             Optional<Album> albumOptional = albumService.getAlbumById(albumId);
             if (albumOptional.isEmpty()) {
                 model.addAttribute("error", "Álbum no encontrado.");
@@ -51,38 +48,36 @@ public class FavoriteController {
 
             Album album = albumOptional.get();
 
-            // Añadir el álbum a los favoritos del usuario (usando el servicio)
+            // Add album to the favorites section of the user
             userService.addFavoriteAlbum(auxUserId, albumId, session);
 
             if (!album.getFavoriteUsers().contains(auxUserId.toString())) {
                 album.getFavoriteUsers().add(auxUserId.toString());
-                albumService.saveAlbum(album); // Guardar los cambios
+                albumService.saveAlbum(album); // Save changes
             }
 
-            return "redirect:/" + albumId; // Redirige a la página de favoritos del usuario
+            return "redirect:/" + albumId; // Redirect to the favorites page
         } catch (Exception e) {
             model.addAttribute("error", "Ocurrió un error al añadir el álbum a favoritos: " + e.getMessage());
-            return "error"; // Renderiza página con el mensaje de error
+            return "error"; // Render the error page
         }
     }
-
-
 
     @PostMapping("/delete")
     public String deleteFavorite(@RequestParam Long albumId,
                                  HttpSession session,
                                  Model model) {
         try {
-            // Obtén el usuario actual de la sesión
+            // Obtain the user in the actual session
             User user = (User) session.getAttribute("user");
             if (user == null || user.getId() == null) {
                 model.addAttribute("error", "No se ha iniciado sesión.");
                 return "error";
             }
 
-            Long userId = user.getId();  // Usamos el id en lugar del username
+            Long userId = user.getId();
 
-            // Buscar el álbum
+            // Search album
             Optional<Album> albumOptional = albumService.getAlbumById(albumId);
             if (albumOptional.isEmpty()) {
                 model.addAttribute("error", "Álbum no encontrado.");
@@ -91,29 +86,28 @@ public class FavoriteController {
 
             Album album = albumOptional.get();
 
-            // Eliminar el álbum de los favoritos del usuario (usando el servicio)
+            // Delete the album of the user favorites
             userService.deleteFavoriteAlbum(userId, albumId, session);
 
-            // Eliminar el usuario de la lista de favoritos del álbum (si está presente)
+            // Delete the user of the list in the album
             if (album.getFavoriteUsers().contains(userId.toString())) {
                 album.getFavoriteUsers().remove(userId.toString());
-                albumService.saveAlbum(album); // Guardamos el álbum actualizado
+                albumService.saveAlbum(album); // Save the album
             }
 
-            return "redirect:/" + albumId; // Redirige a la página de favoritos del usuario
+            return "redirect:/" + albumId; // Render the favorites page
         } catch (Exception e) {
             model.addAttribute("error", "Ocurrió un error al eliminar el álbum de favoritos: " + e.getMessage());
-            return "error"; // Renderiza página con el mensaje de error
+            return "error"; // Render the error page
         }
     }
 
-
-
-
     @GetMapping("/{username}")
     public String showFavorites(@PathVariable String username, HttpSession session, Model model) {
+
         // Get the requested user's favorite albums
         List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
+
         if (favoriteAlbumIds == null) {
             model.addAttribute("error", "Usuario no encontrado.");
             return "error";
@@ -140,34 +134,6 @@ public class FavoriteController {
         model.addAttribute("favoriteAlbums", favoriteAlbums);
         model.addAttribute("isOwnProfile", isOwnProfile);
         return "album/favorites";
-    }
-
-
-
-    public void addUserToFavorite(Long albumId, String username) {
-        Optional<Album> albumOpt = albumService.getAlbumById(albumId);
-        if (albumOpt.isPresent()) {
-            Album album = albumOpt.get();
-            if (!album.getFavoriteUsers().contains(username)) {
-                album.getFavoriteUsers().add(username);
-            }
-            albumService.saveAlbum(album);
-        }
-    }
-
-    public void removeUserFromFavorite(Long albumId, String username) {
-        Optional<Album> albumOpt = albumService.getAlbumById(albumId);
-        if (albumOpt.isPresent()) {
-            Album album = albumOpt.get();
-            album.getFavoriteUsers().remove(username);
-            albumService.saveAlbum(album);
-        }
-    }
-
-    @GetMapping("/error")
-    public String error(Model model) {
-        model.addAttribute("error", "You must be logged in to access this page.");
-        return "error";
     }
 }
 

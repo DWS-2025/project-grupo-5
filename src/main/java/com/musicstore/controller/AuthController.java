@@ -35,25 +35,20 @@ public class AuthController {
                 });
     }
 
-    @GetMapping("/auth/register")
-    public String registerForm(Model model) {
-        model.addAttribute("user", new User());
-        return "auth/register";
-    }
 
     @PostMapping("/auth/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {
         try {
             // Check if username already exists
             if (userService.getUserByUsername(user.getUsername()).isPresent()) {
-                model.addAttribute("error", "Este username ya existe");
+                model.addAttribute("error", "Username already in use");
                 return "error";
             }
 
             // Check if email already exists
             if (userService.getAllUsers().stream().anyMatch(existingUser ->
                     existingUser.getEmail().equalsIgnoreCase(user.getEmail()))) {
-                model.addAttribute("error", "Este correo ya está registrado");
+                model.addAttribute("error", "Email already in use");
                 return "error";
             }
 
