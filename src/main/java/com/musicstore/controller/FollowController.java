@@ -17,6 +17,7 @@ public class FollowController {
 
     @PostMapping("/add/{targetUserId}")
     public String followUser(@PathVariable Long targetUserId, HttpSession session, Model model) {
+
         User currentUser = (User) session.getAttribute("user");
         
         if (currentUser == null) {
@@ -39,6 +40,7 @@ public class FollowController {
 
     @PostMapping("/remove/{targetUserId}")
     public String unfollowUser(@PathVariable Long targetUserId, HttpSession session, Model model) {
+
         User currentUser = (User) session.getAttribute("user");
         
         if (currentUser == null) {
