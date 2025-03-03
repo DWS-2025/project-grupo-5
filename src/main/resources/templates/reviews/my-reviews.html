@@ -26,7 +26,7 @@
 
                 <!-- Reviews Container -->
                 <div class="reviews-container">
-                    <div th:each="review : ${userReviews}" class="review-card" style="border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div th:each="review : ${userReviews}" class="review-card" style="border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;" th:onclick="'window.location.href=\'' + @{/{id}(id=${review.albumId})} + '\''">
                         <div class="review-content" style="display: flex; gap: 20px;">
                             <!-- Album Image on the Left -->
                             <div class="album-image" style="flex: 0 0 150px;">
@@ -46,9 +46,8 @@
                                 <p class="card-text" th:text="${review.content}">Review content goes here...</p>
                                 <!-- Review Actions -->
                                 <div class="review-actions mt-3">
-                                    <a th:href="@{/{id}(id=${review.albumId})}" class="btn btn-primary btn-sm">View Album</a>
-                                    <button type="button" class="edit-review" th:data-review-id="${review.id}" th:if="${session.user.username == review.username}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
-                                    <button type="button" class="delete-review" th:data-review-id="${review.id}" th:onclick="'deleteReview(' + ${review.id} + ')'">
+                                    <button type="button" class="edit-review" th:data-review-id="${review.id}" th:if="${session.user.username == review.username}" th:onclick="'event.stopPropagation(); editReview(' + ${review.id} + ')'" style="z-index: 1;"><i class="bi bi-pencil"></i></button>
+                                    <button type="button" class="delete-review" th:data-review-id="${review.id}" th:onclick="'event.stopPropagation(); deleteReview(' + ${review.id} + ')'" style="z-index: 1;">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>

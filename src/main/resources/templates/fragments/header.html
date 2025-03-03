@@ -9,7 +9,7 @@
             <i class="bi bi-heart-fill"></i> Your Favorite Albums
         </a>
 
-        <a th:if="${session.user == null}" th:href="@{/favorites/error}">
+        <a th:if="${session.user == null}" th:href="@{/login}">
             <i class="bi bi-heart-fill"></i> Your Favorite Albums
         </a>
 
@@ -17,7 +17,7 @@
             <i class="bi bi-star-fill"></i> Your Reviews
         </a>
 
-        <a th:if="${session.user == null}" th:href="@{/favorites/error}">
+        <a th:if="${session.user == null}" th:href="@{/login}">
             <i class="bi bi-star-fill"></i> Your Reviews
         </a>
 
