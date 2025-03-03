@@ -99,15 +99,6 @@ public class FileStorageService {
                 .orElse(0L) + 1;
     }
 
-    private int findAlbumIndex(List<Album> albums, Long id) {
-        for (int i = 0; i < albums.size(); i++) {
-            if (albums.get(i).getId().equals(id)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     private void saveAllAlbums(List<Album> albums) {
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_PATH), albums);

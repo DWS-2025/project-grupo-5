@@ -115,17 +115,7 @@ public class ReviewService {
                         .toList());
             }
         }
-
         return userReviews;
-    }
-
-    public void deleteReviewsByUser(String username) {
-        // Iterate through all albums and their reviews
-        for (List<Review> albumReviews : reviewsByAlbum.values()) {
-            // Remove all reviews by the specified user
-            albumReviews.removeIf(review -> review.getUsername().equals(username));
-        }
-        saveReviewsToFile();
     }
 
     private Long generateReviewId() {
@@ -138,6 +128,4 @@ public class ReviewService {
                 .max()
                 .orElse(0L) + 1;
     }
-
-
 }

@@ -91,47 +91,25 @@
     "reviews" : [ ]
   } ],
   "21" : [ {
-    "id" : 5,
-    "albumId" : 21,
-    "userId" : 1,
-    "content" : "NO ME QUIERO CASAR ES UN TEMOOON",
-    "rating" : 5,
-    "username" : "user1",
-    "userImageUrl" : null,
-    "albumTitle" : "nadie sabe lo que va a pasar mañana",
-    "albumImageUrl" : "/resources/uploads/nslqvapm.jpg",
-    "reviews" : [ ]
-  }, {
     "id" : 50,
     "albumId" : 21,
     "userId" : 16,
     "content" : "Este álbum tiene una vibra única, con una mezcla de lo urbano y lo experimental que me atrapa. Me gusta cómo Bad Bunny juega con los ritmos y las letras, y Mercedes Carota es una de mis favoritas.",
     "rating" : 4,
     "username" : "TrapWaveX",
-    "userImageUrl" : null,
+    "userImageUrl" : "/images/default.jpg",
     "albumTitle" : "nadie sabe lo que va a pasar mañana",
     "albumImageUrl" : "/resources/uploads/nslqvapm.jpg",
     "reviews" : [ ]
   } ],
   "24" : [ {
-    "id" : 6,
-    "albumId" : 24,
-    "userId" : 1,
-    "content" : "El mejor Melendi de su carrera. Sus letras en este álbum están llenas de nostalgia y rebeldía.",
-    "rating" : 4,
-    "username" : "user1",
-    "userImageUrl" : null,
-    "albumTitle" : "Sin Noticias de Holanda",
-    "albumImageUrl" : "/resources/uploads/ab67616d0000b27352ce1370223e498d7da83dfe.jpeg",
-    "reviews" : [ ]
-  }, {
     "id" : 22,
     "albumId" : 24,
     "userId" : 12,
     "content" : "Uno de los mejores discos de rumba-pop española. Letras cercanas, historias cotidianas y un sonido que marcó una generación. Sé Lo Que Hicísteis es un clásico.",
     "rating" : 4,
     "username" : "ShadowByte42",
-    "userImageUrl" : null,
+    "userImageUrl" : "/images/default.jpg",
     "albumTitle" : "Sin Noticias de Holanda",
     "albumImageUrl" : "/resources/uploads/ab67616d0000b27352ce1370223e498d7da83dfe.jpeg",
     "reviews" : [ ]
@@ -142,7 +120,7 @@
     "content" : "El mejor disco de la historia de la música, nada más que decir, el mejor del mundo.",
     "rating" : 5,
     "username" : "EchoVibe81",
-    "userImageUrl" : null,
+    "userImageUrl" : "/images/default.jpg",
     "albumTitle" : null,
     "albumImageUrl" : null,
     "reviews" : [ ]
@@ -153,9 +131,20 @@
     "content" : "Este álbum no me dice mucho, aunque las letras son sinceras. La música no me ofrece la atmósfera relajante que busco. Lo respeto por su honestidad, pero no es para mí.",
     "rating" : 3,
     "username" : "NexusVibe",
-    "userImageUrl" : null,
+    "userImageUrl" : "/images/default.jpg",
     "albumTitle" : null,
     "albumImageUrl" : null,
+    "reviews" : [ ]
+  }, {
+    "id" : 58,
+    "albumId" : 24,
+    "userId" : 1,
+    "content" : "Me ha gustado",
+    "rating" : 4,
+    "username" : "dsoria",
+    "userImageUrl" : null,
+    "albumTitle" : "Sin Noticias de Holanda",
+    "albumImageUrl" : "/resources/uploads/ab67616d0000b27352ce1370223e498d7da83dfe.jpeg",
     "reviews" : [ ]
   } ],
   "5" : [ {
@@ -593,15 +582,15 @@
     "albumImageUrl" : "/resources/uploads/bully.jpg",
     "reviews" : [ ]
   }, {
-    "id" : 54,
+    "id" : 59,
     "albumId" : 2,
     "userId" : 1,
-    "content" : "to guapoooo",
+    "content" : "chulo",
     "rating" : 4,
     "username" : "dsoria",
-    "userImageUrl" : "/images/user_1_1740915496751.jpg",
-    "albumTitle" : "Bully ",
-    "albumImageUrl" : "/resources/uploads/bully.jpg",
+    "userImageUrl" : null,
+    "albumTitle" : null,
+    "albumImageUrl" : null,
     "reviews" : [ ]
   } ],
   "8" : [ {

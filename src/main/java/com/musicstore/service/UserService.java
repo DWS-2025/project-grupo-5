@@ -110,13 +110,11 @@ public class UserService {
                 .findFirst();
     }
 
-
     public Optional<User> getUserById(Long id) {
         return getAllUsers().stream()
                 .filter(user -> user.getId().equals(id))
                 .findFirst();
     }
-
 
     public User saveUser(User user) {
         List<User> users = getAllUsers();
@@ -207,8 +205,6 @@ public class UserService {
         }
     }
 
-
-
     public List<Long> getFavoriteAlbums(String username) {
         Optional<User> userOpt = getUserByUsername(username);
         if (userOpt.isPresent()) {
@@ -216,7 +212,6 @@ public class UserService {
         }
         return new ArrayList<>();
     }
-
 
     public void deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
         List<User> users = getAllUsers();
@@ -240,13 +235,6 @@ public class UserService {
         } else {
             throw new IllegalArgumentException("Usuario no encontrado: " + userId);
         }
-    }
-
-
-
-    public boolean isAlbumInFavorites(String username, Long albumId) {
-        Optional<User> userOpt = getUserByUsername(username);
-        return userOpt.map(user -> user.getFavoriteAlbumIds().contains(albumId)).orElse(false);
     }
 
     public void saveUserWithProfileImage(User user, MultipartFile profileImage) throws IOException {
@@ -292,7 +280,6 @@ public class UserService {
         if (userIndex == -1) {
             throw new RuntimeException("User not found with ID: " + updatedUser.getId());
         }
-
 
         // Get the existing user to preserve data that shouldn't be updated
         User existingUser = users.get(userIndex);
