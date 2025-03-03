@@ -1,11 +1,8 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
-import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
-import com.musicstore.service.ReviewService;
-import com.musicstore.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,25 +13,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import jakarta.servlet.http.HttpSession;
 
-import java.util.List;
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/admin")
-public class AlbumController {
+public class AdminController {
     @Autowired
     private AlbumService albumService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ReviewService reviewService;
-
-
 
     @GetMapping
     public String listAlbums(Model model, HttpSession session) {
+
         User user = (User) session.getAttribute("user");
-        
+
         if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
@@ -42,11 +31,7 @@ public class AlbumController {
             model.addAttribute("albums", albumService.getAllAlbums());
             return "album/admin";
         }
-
     }
-
-
-
 
     @GetMapping("/new")
     public String showCreateForm(Model model, HttpSession session) {
@@ -60,13 +45,13 @@ public class AlbumController {
             model.addAttribute("album", new Album());
             return "album/form";
         }
-
     }
 
     @PostMapping
     public String createAlbum(@Valid Album album, BindingResult result,
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
                               Model model, HttpSession session) throws IOException {
+
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.getUsername().equals("admin")) {
@@ -78,6 +63,7 @@ public class AlbumController {
                 model.addAttribute("album", album);
                 return "form";
             }
+
             try {
                 if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
                     albumService.saveAlbumWithImage(album, album.getImageFile());
@@ -90,6 +76,7 @@ public class AlbumController {
             }
 
             if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
+                // Convert the tracklist. When introduce with enters, will separate the diferents tracks with a "+".
                 String[] tracklistArray = album.getTracklist().split("\\r?\\n");
                 String concatenatedTracklist = String.join(" + ", tracklistArray);
                 album.setTracklist(concatenatedTracklist);
@@ -98,25 +85,25 @@ public class AlbumController {
             if (audioFile2 != null && !audioFile2.isEmpty()) {
                 albumService.saveAlbumWithAudio(album, audioFile2);
             } else {
-                albumService.saveAlbum(album); // Si no hay archivo de audio, solo se guarda el álbum sin el audio
+                // If there is no audio, it will save the album without audio.
+                albumService.saveAlbum(album);
             }
-
             return "redirect:/admin";
-
         }
     }
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
+
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
+            // It handel all the exceptions.
             albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
             return "album/form";
-
         }
     }
 
@@ -158,6 +145,7 @@ public class AlbumController {
                 String concatenatedTracklist = String.join(" + ", tracklistArray);
                 existingAlbum.setTracklist(concatenatedTracklist);
             }
+
             albumService.saveAlbum(existingAlbum);
 
             try {
@@ -172,22 +160,18 @@ public class AlbumController {
                         "x/form";
             }
 
-
             if (audioFile2 != null && !audioFile2.isEmpty()) {
                 albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
             } else {
                 albumService.saveAlbum(existingAlbum);
             }
-
-
             return "redirect:/admin";
         }
     }
 
-
-
     @PostMapping("/{id}/delete")
     public String deleteAlbum(@PathVariable Long id,  Model model, HttpSession session) {
+
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
@@ -196,11 +180,7 @@ public class AlbumController {
         } else {
 
         albumService.deleteAlbum(id);
-        return "redirect:/";
+        return "redirect:/admin";
+        }
     }
-    }
-
-
-
-
 }
