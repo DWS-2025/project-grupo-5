@@ -52,22 +52,4 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @GetMapping("/is-following/{username}")
-    public ResponseEntity<?> isFollowing(@PathVariable String username, HttpSession session) {
-        try {
-            User currentUser = (User) session.getAttribute("user");
-            if (currentUser == null) {
-                return ResponseEntity.status(401).body("User not authenticated");
-            }
-
-            User targetUser = userService.getUserByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Target user not found"));
-
-            boolean isFollowing = userService.isFollowing(currentUser.getId(), targetUser.getId());
-            return ResponseEntity.ok().body(Map.of("isFollowing", isFollowing));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 }

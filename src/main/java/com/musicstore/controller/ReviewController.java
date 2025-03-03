@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +37,7 @@ public class ReviewController {
         if (user != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 System.err.println("Datos inválidos. Reseña no guardada.");
-                return "redirect:/" + albumId + "?error=invalidReview";
+                return "redirect:/" + albumId;
             }
 
             Review review = new Review();
@@ -71,7 +70,7 @@ public class ReviewController {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
-                return "redirect:/" + albumId + "?error=invalidReview";
+                return "redirect:/" + albumId;
             }
 
             Review existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
@@ -112,45 +111,6 @@ public class ReviewController {
         return "redirect:/" + albumId;
     }
 
-    @GetMapping("/{albumId}")
-    public String getReviewsByAlbumId(@PathVariable Long albumId, Model model) {
-        model.addAttribute("reviews", reviewService.getReviewsByAlbumId(albumId));
-        return "reviews/list";
-    }
-
-    @GetMapping("/my-reviews")
-    public String getUserReviews(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        try {
-            List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
-            userReviews.forEach(review -> {
-                try {
-                    albumService.getAlbumById(review.getAlbumId()).ifPresentOrElse(
-                            album -> {
-                                review.setAlbumTitle(album.getTitle());
-                                review.setAlbumImageUrl(album.getImageUrl());
-                            },
-                            () -> {
-                                review.setAlbumTitle("Album not found");
-                                review.setAlbumImageUrl("");
-                            }
-                    );
-                } catch (Exception e) {
-                    review.setAlbumTitle("Error loading album");
-                    review.setAlbumImageUrl("");
-                }
-            });
-            model.addAttribute("userReviews", userReviews);
-            return "reviews/my-reviews";
-        } catch (Exception e) {
-            model.addAttribute("error", "Error loading reviews: " + e.getMessage());
-            return "error";
-        }
-    }
 
     @GetMapping("/user/{username}")
     public String viewReviews(@PathVariable String username, Model model, HttpSession session) {
