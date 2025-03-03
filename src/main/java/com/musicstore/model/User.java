@@ -27,7 +27,7 @@ public class User {
     
     private boolean isAdmin = false;
 
-    private List<Long> favoriteAlbumIds = new ArrayList<>(); // IDs de álbumes favoritos
+    private List<Long> favoriteAlbumIds = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";
 
@@ -36,7 +36,4 @@ public class User {
 
     private List<Long> followers = new ArrayList<>();
     private List<Long> following = new ArrayList<>();
-
-
-
 }

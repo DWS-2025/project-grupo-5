@@ -89,11 +89,10 @@
         albumCards.forEach(card => {
             const albumTitle = card.textContent.toLowerCase();
 
-            // Mostrar/ocultar basado en la coincidencia
             if (albumTitle.includes(searchInput)) {
-                card.style.display = ""; // Restablecer la visibilidad
+                card.style.display = "";
             } else {
-                card.style.display = "none"; // Ocultar elemento
+                card.style.display = "none";
             }
         });
     }

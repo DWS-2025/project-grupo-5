@@ -28,7 +28,7 @@
     <div class="row">
         <div class="col-12">
             <div class="reviews-container">
-                <div th:each="review : ${userReviews}" class="review-card" style="border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" th:data-album-url="@{/{id}(id=${review.albumId})}">
+                <div th:each="review : ${userReviews}" class="review-card" style="border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" th:data-album-url="@{/{id}(id=${review.albumId})}" th:data-album-id="${review.albumId}">
                     <div class="review-content" style="display: flex; gap: 20px; cursor: pointer;">
                         <!-- Album Image on the Left -->
                         <div class="album-image" style="flex: 0 0 150px;">
@@ -157,68 +157,49 @@
     });
 
     function editReview(reviewId) {
-        const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.review-card');
+        const reviewCard = document.querySelector(`.review-card [data-review-id="${reviewId}"]`).closest('.review-card');
         const content = reviewCard.querySelector('.card-text').textContent;
         const rating = reviewCard.querySelectorAll('.star.filled').length;
+        const albumId = reviewCard.getAttribute('data-album-id');
 
         document.getElementById('editReviewContent').value = content;
 
         // Set the rating in the modal
-        const ratingInputs = document.querySelectorAll('#editReviewModal input[name="rating"]');
-        ratingInputs.forEach(input => {
+        document.querySelectorAll('#editReviewModal input[name="rating"]').forEach(input => {
             if (parseInt(input.value) === rating) {
                 input.checked = true;
             }
         });
 
         const form = document.getElementById('editReviewForm');
-        const albumId = reviewCard.querySelector('.btn-primary').getAttribute('href').substring(1);
         form.action = `/reviews/${albumId}/edit/${reviewId}`;
 
         const editModal = new bootstrap.Modal(document.getElementById('editReviewModal'));
         editModal.show();
     }
 
-    function updateStars(rating) {
-        const stars = document.querySelectorAll('#editReviewModal .star');
-        stars.forEach(star => {
-            const starRating = parseInt(star.getAttribute('data-rating'));
-            if (starRating <= rating) {
-                star.style.color = '#fbbf24';
-            } else {
-                star.style.color = '#d1d5db';
-            }
-        });
-    }
-
-    document.querySelectorAll('#editReviewModal .star').forEach(star => {
-        star.addEventListener('click', () => {
-            const rating = parseInt(star.getAttribute('data-rating'));
-            document.getElementById('editRating').value = rating;
-            updateStars(rating);
-        });
-
-        star.addEventListener('mouseover', () => {
-            const rating = parseInt(star.getAttribute('data-rating'));
-            updateStars(rating);
-        });
-
-        star.addEventListener('mouseout', () => {
-            const currentRating = parseInt(document.getElementById('editRating').value) || 0;
-            updateStars(currentRating);
-        });
-    });
-
     function deleteReview(reviewId) {
+        const reviewCard = document.querySelector(`.review-card [data-review-id="${reviewId}"]`).closest('.review-card');
+        const albumId = reviewCard.getAttribute('data-album-id');
         const modal = new bootstrap.Modal(document.getElementById('deleteReviewModal'));
-        const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.review-card');
-        const viewAlbumBtn = reviewCard.querySelector('.btn-primary');
-        const albumId = viewAlbumBtn.getAttribute('href').substring(1); // Remove the leading slash
 
         document.getElementById('confirmDeleteReview').onclick = function() {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = `/reviews/${albumId}/delete/${reviewId}`;
+
+            // Add CSRF token if needed
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+            
+            if (csrfToken && csrfHeader) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_csrf';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+            }
+
             document.body.appendChild(form);
             form.submit();
         };
@@ -226,4 +207,3 @@
         modal.show();
     }
 </script>
-

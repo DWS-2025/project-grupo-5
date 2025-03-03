@@ -33,7 +33,7 @@ public class ReviewService {
                 System.out.println("Reseñas cargadas correctamente");
             } catch (IOException e) {
                 System.err.println("Error cargando reseñas: " + e.getMessage());
-                reviewsByAlbum = new HashMap<>(); // Inicializa en caso de error
+                reviewsByAlbum = new HashMap<>();
             }
         } else {
             System.out.println("Archivo de reseñas no encontrado o vacío. Inicializando.");

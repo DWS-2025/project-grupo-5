@@ -40,8 +40,8 @@
     "rating" : 5,
     "username" : "paul",
     "userImageUrl" : null,
-    "albumTitle" : null,
-    "albumImageUrl" : null,
+    "albumTitle" : "YHLQMDLG",
+    "albumImageUrl" : "/resources/uploads/yhlqmdlg.png",
     "reviews" : [ ]
   } ],
   "7" : [ {
@@ -195,10 +195,10 @@
     "id" : 56,
     "albumId" : 5,
     "userId" : 2,
-    "content" : "El segundo mejor album de bad bunnyy",
+    "content" : "El segundo mejor album de bad bunny",
     "rating" : 5,
     "username" : "paul",
-    "userImageUrl" : "/images/user_2_1740915884819.jpg",
+    "userImageUrl" : "/images/user_2_1740931959080.png",
     "albumTitle" : "EL ÚLTIMO TOUR DEL MUNDO",
     "albumImageUrl" : "/resources/uploads/eutdm.png",
     "reviews" : [ ]

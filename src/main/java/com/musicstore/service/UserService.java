@@ -189,7 +189,7 @@ public class UserService {
         List<User> users = getAllUsers();
 
         Optional<User> optionalUser = users.stream()
-                .filter(user -> user.getId().equals(userId)) // Buscar por ID en vez de username
+                .filter(user -> user.getId().equals(userId))
                 .findFirst();
 
         if (optionalUser.isPresent()) {
@@ -198,10 +198,8 @@ public class UserService {
             if (!user.getFavoriteAlbumIds().contains(albumId)) {
                 user.getFavoriteAlbumIds().add(albumId);
 
-                // Guarda los cambios en la base de datos
                 saveAllUsers(users);
 
-                // ⚠️ ACTUALIZA LA SESIÓN PARA QUE EL CAMBIO SE VEA EN LA VISTA
                 session.setAttribute("user", user);
             }
         } else {
@@ -224,26 +222,23 @@ public class UserService {
         List<User> users = getAllUsers();
 
         Optional<User> optionalUser = users.stream()
-                .filter(user -> user.getId().equals(userId))  // Filtramos por el ID del usuario
+                .filter(user -> user.getId().equals(userId))
                 .findFirst();
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            // Elimina el álbum si está en la lista de favoritos
             if (user.getFavoriteAlbumIds().contains(albumId)) {
-                user.getFavoriteAlbumIds().remove(albumId); // Elimina el álbum de favoritos
+                user.getFavoriteAlbumIds().remove(albumId);
 
-                // Guarda todos los usuarios con los cambios actualizados
                 saveAllUsers(users);
 
-                // ⚠️ ACTUALIZA LA SESIÓN PARA QUE EL CAMBIO SE VEA EN LA VISTA
                 session.setAttribute("user", user);
             } else {
                 throw new IllegalArgumentException("El álbum no está en los favoritos de este usuario.");
             }
         } else {
-            throw new IllegalArgumentException("Usuario no encontrado: " + userId);  // Cambié aquí también
+            throw new IllegalArgumentException("Usuario no encontrado: " + userId);
         }
     }
 

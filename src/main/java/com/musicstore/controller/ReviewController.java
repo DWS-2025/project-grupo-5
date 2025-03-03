@@ -33,8 +33,7 @@ public class ReviewController {
             @PathVariable Long albumId,
             @RequestParam String content,
             @RequestParam int rating,
-            HttpSession session
-    ) {
+            HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
@@ -155,20 +154,18 @@ public class ReviewController {
 
     @GetMapping("/user/{username}")
     public String viewReviews(@PathVariable String username, Model model, HttpSession session) {
-        // Obtener el usuario logueado, si existe
         User currentUser = (User) session.getAttribute("user");
         model.addAttribute("currentUser", currentUser);
 
         Optional<User> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
             model.addAttribute("error", "User not found");
-            return "error"; // Página de error si no se encuentra el usuario
+            return "error";
         }
 
         User profileUser = userOpt.get();
         model.addAttribute("profileUser", profileUser);
 
-        // Añadir la URL de la imagen de perfil al modelo
         String profileImageUrl = profileUser.getImageUrl();
         model.addAttribute("profileImageUrl", profileImageUrl);
 

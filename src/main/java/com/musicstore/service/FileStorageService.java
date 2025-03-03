@@ -49,24 +49,20 @@ public class FileStorageService {
     }
 
     public Album saveAlbum(Album album) {
-        List<Album> albums = getAllAlbums(); // Obtiene la lista actual de álbumes
+        List<Album> albums = getAllAlbums();
 
-        // Busca el álbum existente por ID
         Optional<Album> existingAlbum = albums.stream()
                 .filter(a -> a.getId().equals(album.getId()))
                 .findFirst();
 
         if (existingAlbum.isPresent()) {
-            // Si el álbum ya existe, actualiza sus datos
             int index = albums.indexOf(existingAlbum.get());
-            albums.set(index, album); // Reemplaza el álbum existente con los datos nuevos
+            albums.set(index, album);
         } else {
-            // Si el álbum no existe, genera un nuevo ID y lo agrega a la lista
             album.setId(generateId(albums));
             albums.add(album);
         }
 
-        // Guarda todos los álbumes en el archivo JSON
         saveAllAlbums(albums);
         return album;
     }
@@ -74,23 +70,19 @@ public class FileStorageService {
 
     public void deleteAlbum(Long id) {
         try {
-            // Leer el archivo JSON y convertirlo a una lista de álbumes
             File file = new File(FILE_PATH);
             if (!file.exists()) {
                 System.out.println("El archivo no existe en la ruta: " + FILE_PATH);
-                return;  // Si el archivo no existe, no procedemos
+                return;
             }
 
-            // Leer los álbumes desde el archivo
             List<Album> albums = objectMapper.readValue(file, new TypeReference<List<Album>>() {});
 
-            // Eliminar el álbum que coincide con el ID
             boolean removed = albums.removeIf(album -> album.getId().equals(id));
 
-            // Si el álbum fue eliminado, lo guardamos de nuevo
             if (removed) {
                 System.out.println("Álbum con ID " + id + " ha sido eliminado.");
-                saveAllAlbums(albums);  // Guardamos la lista actualizada
+                saveAllAlbums(albums);
             } else {
                 System.out.println("No se encontró el álbum con ID " + id);
             }
@@ -118,7 +110,6 @@ public class FileStorageService {
 
     private void saveAllAlbums(List<Album> albums) {
         try {
-            // Escribe todos los álbumes en el archivo JSON
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_PATH), albums);
         } catch (IOException e) {
             throw new RuntimeException("Error al guardar el archivo JSON: " + e.getMessage());
