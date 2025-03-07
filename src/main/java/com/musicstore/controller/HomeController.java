@@ -24,6 +24,9 @@ public class HomeController {
     private UserService userService;
 
     @Autowired
+    private UserService artistService;
+
+    @Autowired
     private ReviewService reviewService;
 
     @GetMapping("/")
