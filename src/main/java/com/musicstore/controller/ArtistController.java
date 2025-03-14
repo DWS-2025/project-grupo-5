@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/artists")
+@RequestMapping("/admin/artists")
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
@@ -60,7 +60,6 @@ public class ArtistController {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
-
         model.addAttribute("artist", new Artist());
         return "artist/form";
     }
