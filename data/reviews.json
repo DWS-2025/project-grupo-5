@@ -595,5 +595,17 @@
     "reviews" : [ ]
   } ],
   "26" : [ ],
-  "27" : [ ]
+  "27" : [ ],
+  "28" : [ {
+    "id" : 60,
+    "albumId" : 28,
+    "userId" : 5,
+    "content" : "hola",
+    "rating" : 5,
+    "username" : "admin",
+    "userImageUrl" : "/images/default.jpg",
+    "albumTitle" : "La flaca",
+    "albumImageUrl" : "/resources/uploads/albumprueba.jpeg",
+    "reviews" : [ ]
+  } ]
 }

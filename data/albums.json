@@ -373,4 +373,19 @@
   "tidal_url" : "https://tidal.com/browse/album/223247190",
   "favoriteUsers" : [ ],
   "averageRating" : 0.0
+}, {
+  "id" : 28,
+  "title" : "La flaca",
+  "artist" : "wertyuio",
+  "genre" : "wertyui",
+  "imageUrl" : "/resources/uploads/albumprueba.jpeg",
+  "audioFile" : "audioprueba.mp3",
+  "description" : "hola ",
+  "tracklist" : "rtyuio + ertyuio + ertyuio + rtyui",
+  "year" : 2000,
+  "spotify_url" : "https://open.spotify.com/intl-es/album/0QLDQG7Jx78rEUDW03IhHC",
+  "applemusic_url" : "",
+  "tidal_url" : "",
+  "favoriteUsers" : [ ],
+  "averageRating" : 5.0
 } ]
