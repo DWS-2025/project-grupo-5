@@ -25,6 +25,10 @@ public class ArtistService {
     @Autowired
     private AlbumService albumService;
 
+    public ArtistService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     public void deleteArtistByName(String artistName) {
         List<Artist> artists = getAllArtists();
         Optional<Artist> artistToDelete = getArtistByName(artistName);
@@ -38,11 +42,6 @@ public class ArtistService {
         } else {
             throw new RuntimeException("Artist not found");
         }
-    }
-
-    public ArtistService() {
-        this.objectMapper = new ObjectMapper();
-        createFileIfNotExists();
     }
 
     private void createFileIfNotExists() {
