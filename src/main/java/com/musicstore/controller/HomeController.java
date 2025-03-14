@@ -3,6 +3,7 @@ package com.musicstore.controller;
 
 import com.musicstore.model.Review;
 import com.musicstore.service.AlbumService;
+import com.musicstore.service.ArtistService;
 import com.musicstore.service.UserService;
 import com.musicstore.service.ReviewService;
 import com.musicstore.model.User;
@@ -24,7 +25,7 @@ public class HomeController {
     private UserService userService;
 
     @Autowired
-    private UserService artistService;
+    private ArtistService artistService;
 
     @Autowired
     private ReviewService reviewService;
@@ -33,6 +34,7 @@ public class HomeController {
     public String home(Model model, HttpSession session) {
 
         model.addAttribute("albums", albumService.getAllAlbums());
+        model.addAttribute("artist", artistService.getAllArtists());
         User user = (User) session.getAttribute("user");
 
         if (user != null) {
