@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artists • EchoReviews</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/header-footer.css">
+    <link rel="stylesheet" href="/css/search.css">
+    <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex gap-2">
+            <a href="/" class="btn btn-primary">Albums</a>
+            <a href="/artists" class="btn btn-primary active">Artists</a>
+        </div>
+        <div class="d-flex gap-2">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search artists..." oninput="filterArtists()">
+            <button id="viewToggle" class="btn btn-outline-primary" onclick="toggleView()">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </button>
+        </div>
+    </div>
+    <h2 id="sectionTitle" class="mb-4">Popular Artists</h2>
+    <div id="artistsGrid" class="row row-cols-1 row-cols-md-3 g-4">
+        <div th:each="artist : ${artists}" class="col" th:data-id="${artist.id}" th:data-name="${artist.name}">
+            <a th:href="@{/artists/{id}(id=${artist.id})}" class="text-decoration-none">
+                <div class="card h-100">
+                    <img th:src="${artist.imageUrl}" class="card-img-top" alt="Artist Photo">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${artist.name}">Artist Name</h5>
+                        <p class="card-text" th:if="${artist.description}" th:text="${artist.description}">Artist Description</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    function filterArtists() {
+        const searchInput = document.getElementById("searchInput").value.toLowerCase();
+        const artistCards = document.querySelectorAll("#artistsGrid .col");
+
+        artistCards.forEach(card => {
+            const artistName = card.textContent.toLowerCase();
+            if (artistName.includes(searchInput)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    function toggleView() {
+        const grid = document.getElementById('artistsGrid');
+        const button = document.getElementById('viewToggle');
+        const currentCols = grid.classList.contains('row-cols-md-3') ? 3 : 5;
+
+        if (currentCols === 3) {
+            grid.classList.replace('row-cols-md-3', 'row-cols-md-5');
+            button.innerHTML = '<i class="bi bi-grid-fill"></i>';
+        } else {
+            grid.classList.replace('row-cols-md-5', 'row-cols-md-3');
+            button.innerHTML = '<i class="bi bi-grid-3x3-gap-fill"></i>';
+        }
+    }
+</script>
+</body>
+</html>

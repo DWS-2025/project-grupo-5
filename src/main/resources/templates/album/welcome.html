@@ -20,8 +20,8 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex gap-2">
-            <button id="sortByAlbum" class="btn btn-primary" onclick="sortAlbums('id')">Albums</button>
-            <button id="sortByArtist" class="btn btn-primary" onclick="sortAlbums('artist')">Artist</button>
+            <button id="sortByAlbum" class="btn btn-primary active" onclick="sortAlbums('id')">Albums</button>
+            <a href="/artists" class="btn btn-primary">Artists</a>
         </div>
         <div class="d-flex gap-2">
             <input type="text" id="searchInput" class="form-control" placeholder="Search albums..." oninput="filterAlbums()">
