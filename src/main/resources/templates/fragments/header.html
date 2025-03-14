@@ -5,19 +5,19 @@
       <a href="/"><i class="bi bi-house-fill"></i> Home</a>
         <a href="/top-albums"><i class="bi bi-stars"></i> Top Albums</a>
         <a th:if="${session.user != null}" th:href="@{/favorites/{username}(username=${session.user.username})}">
-            <i class="bi bi-heart-fill"></i> Your Favorite Albums
+            <i class="bi bi-heart-fill"></i>  Favorite
         </a>
 
         <a th:if="${session.user == null}" th:href="@{/login}">
-            <i class="bi bi-heart-fill"></i> Your Favorite Albums
+            <i class="bi bi-heart-fill"></i>  Favorite
         </a>
 
         <a th:if="${session.user != null}" th:href="@{/reviews/user/{username}(username=${session.user.username})}">
-            <i class="bi bi-star-fill"></i> Your Reviews
+            <i class="bi bi-star-fill"></i>  Reviews
         </a>
 
         <a th:if="${session.user == null}" th:href="@{/login}">
-            <i class="bi bi-star-fill"></i> Your Reviews
+            <i class="bi bi-star-fill"></i>  Reviews
         </a>
 
 

@@ -25,58 +25,18 @@ public class ArtistService {
     @Autowired
     private AlbumService albumService;
 
-    public void deleteArtist(String Artistname) {
-        List<User> users = getAllUsers();
-        Optional<User> userToDelete = getUserByUsername(username);
+    public void deleteArtistByName(String artistName) {
+        List<Artist> artists = getAllArtists();
+        Optional<Artist> artistToDelete = getArtistByName(artistName);
 
-        if (userToDelete.isPresent()) {
-            User user = userToDelete.get();
-            // Get all reviews by this user and delete them one by one
-            List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
-
-            // Collect all affected album IDs before deleting reviews
-            List<Long> affectedAlbumIds = userReviews.stream()
-                    .map(Review::getAlbumId)
-                    .distinct()
-                    .toList();
-
-            // Delete all reviews first
-            for (Review review : userReviews) {
-                reviewService.deleteReview(review.getAlbumId(), review.getId());
-            }
-
-            // Then update the average ratings of all affected albums
-            for (Long albumId : affectedAlbumIds) {
-                albumService.getAlbumById(albumId).ifPresent(album -> {
-                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbum(album);
-                });
-            }
-
-            // Remove user ID from all albums' favoriteUsers lists
-            List<Album> allAlbums = albumService.getAllAlbums();
-            for (Album album : allAlbums) {
-                if (album.getFavoriteUsers().contains(user.getId().toString())) {
-                    album.getFavoriteUsers().remove(user.getId().toString());
-                    albumService.saveAlbum(album);
-                }
-            }
-
-            // Remove follow/follower relationships
-            for (User otherUser : users) {
-                // Remove the user from others' followers list
-                otherUser.getFollowers().removeIf(followerId -> followerId.equals(user.getId()));
-                // Remove the user from others' following list
-                otherUser.getFollowing().removeIf(followingId -> followingId.equals(user.getId()));
-            }
-            saveAllUsers(users); // Save the updated follow/follower relationships
-
-            // Then remove the user
-            users.removeIf(user1 -> user1.getUsername().equals(username));
-            saveAllUsers(users);
-
+        if (artistToDelete.isPresent()) {
+            Artist artist = artistToDelete.get();
+            
+            // Remove the artist from the list
+            artists.removeIf(a -> a.getName().equals(artistName));
+            saveAllArtists(artists);
         } else {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("Artist not found");
         }
     }
 
@@ -110,9 +70,24 @@ public class ArtistService {
                 .findFirst();
     }
 
+    public void deleteArtist(Long id) {
+        List<Artist> artists = getAllArtists();
+        Optional<Artist> artistToDelete = getArtistById(id);
+
+        if (artistToDelete.isPresent()) {
+            Artist artist = artistToDelete.get();
+            
+            // Remove the artist from the list
+            artists.removeIf(a -> a.getId().equals(id));
+            saveAllArtists(artists);
+        } else {
+            throw new RuntimeException("Artist not found");
+        }
+    }
+
     public Optional<Artist> getArtistById(Long id) {
         return getAllArtists().stream()
-                .filter(Artist -> artist.getId().equals(id))
+                .filter(artist -> artist.getId().equals(id))
                 .findFirst();
     }
 
@@ -177,8 +152,7 @@ public class ArtistService {
         String filename = "artist_" + artist.getId() + "_" + System.currentTimeMillis() + fileExtension;
 
         // Create images directory if it doesn't exist
-        String projectDir = System.getProperty("artist.dir");
-        File uploadDir = new File(projectDir + "/src/main/resources/static/images");
+        File uploadDir = new File("src/main/resources/static/images");
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
@@ -189,7 +163,7 @@ public class ArtistService {
 
         // Update Artist with image URL
         artist.setImageUrl("/images/" + filename);
-        updateArtist(artist);
+        saveArtist(artist);
     }
 
     public Artist updateArtist(Artist updatedArtist) {
@@ -204,21 +178,18 @@ public class ArtistService {
             throw new RuntimeException("Artist not found with ID: " + updatedArtist.getId());
         }
 
-        // Get the existing Artist to preserve data that shouldn't be updated
-        Artist existingArtist = Artists.get(ArtistIndex);
+        // Check if the new artist name is already taken by another artist
+        boolean nameExists = artists.stream()
+                .filter(artist -> !artist.getId().equals(updatedArtist.getId()))
+                .anyMatch(artist -> artist.getName().equals(updatedArtist.getName()));
 
-        // Check if the new Artistname is already taken by another Artist
-        boolean ArtistnameExists = Artists.stream()
-                .filter(Artist -> !Artist.getId().equals(updatedArtist.getId()))
-                .anyMatch(Artist -> Artist.getArtistName().equals(updatedArtist.getArtistName()));
-
-        if (ArtistnameExists) {
+        if (nameExists) {
             throw new RuntimeException("Artist name already exists");
         }
 
-        // Update the Artist
-        artists.set(ArtistIndex, updatedArtist);
-        saveAllArtists(Artists);
+        // Update the artist
+        artists.set(artistIndex, updatedArtist);
+        saveAllArtists(artists);
 
         return updatedArtist;
     }
