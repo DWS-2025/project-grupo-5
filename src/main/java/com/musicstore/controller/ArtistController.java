@@ -1,5 +1,6 @@
 package com.musicstore.controller;
 
+import com.musicstore.model.Album;
 import com.musicstore.model.User;
 import com.musicstore.model.Artist;
 import com.musicstore.service.AlbumService;
@@ -13,10 +14,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/admin/artists")
+@RequestMapping("/artists")
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
@@ -26,31 +29,66 @@ public class ArtistController {
 
     @GetMapping
     public String artistHome(Model model, HttpSession session) {
-        model.addAttribute("artists", artistService.getAllArtists());
-        User user = (User) session.getAttribute("user");
+        try {
+            List<Artist> artists = artistService.getAllArtists();
+            List<Album> albums = albumService.getAllAlbums();
 
-        if (user != null) {
-            model.addAttribute("user", user);
-        } else {
-            User anonymousUser = new User();
-            anonymousUser.setAnonymous(true);
-            model.addAttribute("user", anonymousUser);
+            // Update AlbumIds for each artist
+            for (Artist artist : artists) {
+                List<Long> albumIds = albums.stream()
+                    .filter(album -> album.getArtist().equalsIgnoreCase(artist.getName()))
+                    .map(Album::getId)
+                    .toList();
+                artist.setAlbumIds(albumIds);
+            }
+
+            model.addAttribute("artists", artists);
+            model.addAttribute("albums", albums);
+            User user = (User) session.getAttribute("user");
+
+            if (user != null) {
+                model.addAttribute("user", user);
+            } else {
+                User anonymousUser = new User();
+                anonymousUser.setAnonymous(true);
+                model.addAttribute("user", anonymousUser);
+            }
+            return "artist/welcome";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading artists: " + e.getMessage());
+            return "error";
         }
-        return "artist/list";
     }
 
     @GetMapping("/{id}")
     public String viewArtist(@PathVariable Long id, Model model, HttpSession session) {
-        Optional<Artist> artistOpt = artistService.getArtistById(id);
-        if (artistOpt.isEmpty()) {
-            model.addAttribute("error", "Artist not found");
+        try {
+            Optional<Artist> artistOpt = artistService.getArtistById(id);
+            if (artistOpt.isEmpty()) {
+                model.addAttribute("error", "Artist not found");
+                return "error";
+            }
+
+            Artist artist = artistOpt.get();
+            List<Album> allAlbums = albumService.getAllAlbums();
+            List<Album> albums = allAlbums.stream()
+                    .filter(album -> Arrays.stream(album.getArtist().split(","))
+                            .map(String::trim)
+                            .anyMatch(name -> name.equalsIgnoreCase(artist.getName())))
+                    .toList();
+
+            artist.setAlbumIds(albums.stream().map(Album::getId).toList());
+
+
+            model.addAttribute("artist", artist);
+            model.addAttribute("albums", albums);
+            User user = (User) session.getAttribute("user");
+            model.addAttribute("user", user);
+            return "artist/view";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error viewing artist: " + e.getMessage());
             return "error";
         }
-
-        model.addAttribute("artist", artistOpt.get());
-        User user = (User) session.getAttribute("user");
-        model.addAttribute("user", user);
-        return "artist/view";
     }
 
     @GetMapping("/new")
@@ -75,6 +113,7 @@ public class ArtistController {
         }
 
         if (result.hasErrors()) {
+            model.addAttribute("error", "Please correct the errors in the form");
             return "artist/form";
         }
 
@@ -99,14 +138,19 @@ public class ArtistController {
             return "error";
         }
 
-        Optional<Artist> artistOpt = artistService.getArtistById(id);
-        if (artistOpt.isEmpty()) {
-            model.addAttribute("error", "Artist not found");
+        try {
+            Optional<Artist> artistOpt = artistService.getArtistById(id);
+            if (artistOpt.isEmpty()) {
+                model.addAttribute("error", "Artist not found");
+                return "error";
+            }
+
+            model.addAttribute("artist", artistOpt.get());
+            return "artist/form";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading artist: " + e.getMessage());
             return "error";
         }
-
-        model.addAttribute("artist", artistOpt.get());
-        return "artist/form";
     }
 
     @PostMapping("/{id}")
@@ -122,10 +166,12 @@ public class ArtistController {
         }
 
         if (result.hasErrors()) {
+            model.addAttribute("error", "Please correct the errors in the form");
             return "artist/form";
         }
 
         try {
+            artist.setId(id); // Ensure the ID is set correctly
             if (imageFile != null && !imageFile.isEmpty()) {
                 artistService.saveArtistWithProfileImage(artist, imageFile);
             } else {

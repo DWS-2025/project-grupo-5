@@ -11,7 +11,10 @@
     <link rel="stylesheet" href="/css/header-footer.css">
     <link rel="stylesheet" href="/css/search.css">
     <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+
 </head>
+
+
 
 <body>
 
@@ -24,21 +27,31 @@
             <a href="/artists" class="btn btn-primary active">Artists</a>
         </div>
         <div class="d-flex gap-2">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search artists..." oninput="filterArtists()">
-            <button id="viewToggle" class="btn btn-outline-primary" onclick="toggleView()">
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search artists..." oninput="filterArtists()">
+                <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <button id="viewToggle" class="btn btn-outline-primary" onclick="toggleView()" title="Toggle grid view">
                 <i class="bi bi-grid-3x3-gap-fill"></i>
             </button>
         </div>
     </div>
+    
+    <div class="alert alert-info d-none" id="noResults">
+        No artists found matching your search.
+    </div>
+
     <h2 id="sectionTitle" class="mb-4">Popular Artists</h2>
-    <div id="artistsGrid" class="row row-cols-1 row-cols-md-3 g-4">
-        <div th:each="artist : ${artists}" class="col" th:data-id="${artist.id}" th:data-name="${artist.name}">
+
+    <div id="artistsGrid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div th:each="artist : ${artists}" class="col" th:data-name="${artist.name.toLowerCase()}">
             <a th:href="@{/artists/{id}(id=${artist.id})}" class="text-decoration-none">
-                <div class="card h-100">
-                    <img th:src="${artist.imageUrl}" class="card-img-top" alt="Artist Photo">
+                <div class="card h-100 shadow-sm hover-effect">
+                    <img th:src="${artist.imageUrl}" class="card-img-top" alt="Artist Image">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${artist.name}">Artist Name</h5>
-                        <p class="card-text" th:if="${artist.description}" th:text="${artist.description}">Artist Description</p>
                     </div>
                 </div>
             </a>
@@ -48,34 +61,56 @@
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
+<style>
+.hover-effect {
+    transition: transform 0.2s ease-in-out;
+}
+.hover-effect:hover {
+    transform: translateY(-5px);
+}
+.artist-card img {
+    height: 200px;
+    object-fit: cover;
+}
+</style>
+
 <script>
-    function filterArtists() {
-        const searchInput = document.getElementById("searchInput").value.toLowerCase();
-        const artistCards = document.querySelectorAll("#artistsGrid .col");
+function filterArtists() {
+    const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    const artistCards = document.querySelectorAll("#artistsGrid .col");
+    let hasResults = false;
 
-        artistCards.forEach(card => {
-            const artistName = card.textContent.toLowerCase();
-            if (artistName.includes(searchInput)) {
-                card.style.display = "";
-            } else {
-                card.style.display = "none";
-            }
-        });
-    }
-
-    function toggleView() {
-        const grid = document.getElementById('artistsGrid');
-        const button = document.getElementById('viewToggle');
-        const currentCols = grid.classList.contains('row-cols-md-3') ? 3 : 5;
-
-        if (currentCols === 3) {
-            grid.classList.replace('row-cols-md-3', 'row-cols-md-5');
-            button.innerHTML = '<i class="bi bi-grid-fill"></i>';
+    artistCards.forEach(card => {
+        const artistName = card.getAttribute("data-name");
+        if (artistName.includes(searchInput)) {
+            card.style.display = "";
+            hasResults = true;
         } else {
-            grid.classList.replace('row-cols-md-5', 'row-cols-md-3');
-            button.innerHTML = '<i class="bi bi-grid-3x3-gap-fill"></i>';
+            card.style.display = "none";
         }
+    });
+
+    document.getElementById("noResults").classList.toggle("d-none", hasResults);
+}
+
+function clearSearch() {
+    document.getElementById("searchInput").value = "";
+    filterArtists();
+}
+
+function toggleView() {
+    const grid = document.getElementById('artistsGrid');
+    const button = document.getElementById('viewToggle');
+    const isCompact = grid.classList.contains('row-cols-lg-4');
+
+    if (isCompact) {
+        grid.classList.replace('row-cols-lg-4', 'row-cols-lg-3');
+        button.innerHTML = '<i class="bi bi-grid-3x3-gap-fill"></i>';
+    } else {
+        grid.classList.replace('row-cols-lg-3', 'row-cols-lg-4');
+        button.innerHTML = '<i class="bi bi-grid-fill"></i>';
     }
+}
 </script>
 </body>
 </html>
