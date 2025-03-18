@@ -82,7 +82,7 @@
                         <strong class="audio-preview-text">Audio Preview:</strong>
                         <audio th:if="${album.audioFile}" autoplay loop controls controlsList="nodownload noremoteplayback">
                             <source th:src="@{'/snippets/' + ${album.audioFile}}" type="audio/mpeg">
-                            Tu navegador no soporta la reproducción de audio.
+                            Your browser does not support audio playback.
                         </audio>
                         <input type="checkbox" id="checkboxInput">
                         <label for="checkboxInput" class="toggleSwitch">
@@ -101,7 +101,7 @@
                         </label>
                     </div>
                     <p th:unless="${album.audioFile}">
-                        No hay audio asociado con este álbum.
+                        No audio associated.
                     </p>
 
                     <div class="review-card2">
