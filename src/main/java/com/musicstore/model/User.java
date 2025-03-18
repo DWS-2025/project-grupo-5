@@ -7,6 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -18,6 +20,7 @@ import java.sql.Blob;
 @Entity
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Username is required")
@@ -47,7 +50,4 @@ public class User {
     @Lob
     @Column(name= "audio_preview")
     private Blob imageFile;
-
-    private List<Long> followers = new ArrayList<>();
-    private List<Long> following = new ArrayList<>();
 }
