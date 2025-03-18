@@ -49,6 +49,7 @@ public class AdminController {
 
     @PostMapping
     public String createAlbum(@Valid Album album, BindingResult result,
+                              @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
                               Model model, HttpSession session) throws IOException {
 
@@ -65,8 +66,8 @@ public class AdminController {
             }
 
             try {
-                if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
-                    albumService.saveAlbumWithImage(album, album.getImageFile());
+                if (imageFile != null && !imageFile.isEmpty()) {
+                    albumService.saveAlbumWithImage(album, imageFile);
                 } else {
                     albumService.saveAlbum(album);
                 }
@@ -112,6 +113,7 @@ public class AdminController {
             @PathVariable Long id,
             @Valid Album album,
             BindingResult result,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
             Model model, HttpSession session) throws IOException {
 
@@ -149,8 +151,8 @@ public class AdminController {
             albumService.saveAlbum(existingAlbum);
 
             try {
-                if (album.getImageFile() != null && !album.getImageFile().isEmpty()) {
-                    albumService.saveAlbumWithImage(existingAlbum, album.getImageFile());
+                if (imageFile != null && !imageFile.isEmpty()) {
+                    albumService.saveAlbumWithImage(existingAlbum, imageFile);
                 } else {
                     albumService.saveAlbum(existingAlbum);
                 }

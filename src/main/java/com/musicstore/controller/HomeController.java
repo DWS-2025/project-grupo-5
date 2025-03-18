@@ -57,11 +57,7 @@ public class HomeController {
         albumService.getAlbumById(id).ifPresent(album -> {
             model.addAttribute("album", album);
             // Get username and map users and albums
-            List<String> usernames = album.getFavoriteUsers().stream()
-                    .map(userId -> userService.getUserById(Long.parseLong(userId))
-                            .map(User::getUsername)
-                            .orElse("Unknown User"))
-                    .collect(Collectors.toList());
+            List<String> usernames = userService.getUsernamesByAlbumId(album.getId());
             model.addAttribute("favoriteUsernames", usernames);
 
             // Get reviews and map user IDs to usernames and profile images

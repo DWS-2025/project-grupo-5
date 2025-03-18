@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,7 @@ public class ProfileController{
 
             // Keep the following parameters
             updatedUser.setId(currentUser.getId());
-            updatedUser.setFavoriteAlbumIds(currentUser.getFavoriteAlbumIds());
+            updatedUser.setFavoriteAlbums(currentUser.getFavoriteAlbums());
             updatedUser.setFollowers(currentUser.getFollowers());
             updatedUser.setFollowing(currentUser.getFollowing());
 
@@ -169,11 +170,7 @@ public class ProfileController{
         model.addAttribute("followingUsers", followingUsers);
 
         // Get favorite albums
-        List<Album> favoriteAlbums = profileUser.getFavoriteAlbumIds().stream()
-                .map(albumId -> albumService.getAlbumById(albumId))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        List<Album> favoriteAlbums = new ArrayList<>(profileUser.getFavoriteAlbums());
 
         Collections.reverse(favoriteAlbums);
         favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());

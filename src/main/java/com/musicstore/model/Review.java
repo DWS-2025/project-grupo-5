@@ -9,12 +9,16 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Entity
+
 public class Review {
     @Id
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "album_id")
     private Album album;

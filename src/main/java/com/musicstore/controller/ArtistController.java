@@ -33,13 +33,12 @@ public class ArtistController {
             List<Artist> artists = artistService.getAllArtists();
             List<Album> albums = albumService.getAllAlbums();
 
-            // Update AlbumIds for each artist
+            // Update albums for each artist
             for (Artist artist : artists) {
-                List<Long> albumIds = albums.stream()
+                List<Album> artistAlbums = albums.stream()
                     .filter(album -> album.getArtist().equalsIgnoreCase(artist.getName()))
-                    .map(Album::getId)
                     .toList();
-                artist.setAlbumIds(albumIds);
+                artist.setAlbums(artistAlbums);
             }
 
             model.addAttribute("artists", artists);
@@ -77,7 +76,7 @@ public class ArtistController {
                             .anyMatch(name -> name.equalsIgnoreCase(artist.getName())))
                     .toList();
 
-            artist.setAlbumIds(albums.stream().map(Album::getId).toList());
+            artist.setAlbums(albums);
 
 
             model.addAttribute("artist", artist);

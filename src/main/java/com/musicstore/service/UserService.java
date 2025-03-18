@@ -1,13 +1,13 @@
 package com.musicstore.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.musicstore.model.Album;
 import com.musicstore.model.Review;
 import com.musicstore.model.User;
+import com.musicstore.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -18,20 +18,20 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    private final String FILE_PATH = "data/users.json";
-    private final ObjectMapper objectMapper;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private ReviewService reviewService;
     @Autowired
     private AlbumService albumService;
 
+    @Transactional
     public void deleteUser(String username) {
-        List<User> users = getAllUsers();
         Optional<User> userToDelete = getUserByUsername(username);
 
         if (userToDelete.isPresent()) {
             User user = userToDelete.get();
-            // Get all reviews by this user and delete them one by one
+            // Get all reviews by this user and delete them
             List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
 
             // Collect all affected album IDs before deleting reviews
@@ -45,7 +45,7 @@ public class UserService {
                 reviewService.deleteReview(review.getAlbumId(), review.getId());
             }
 
-            // Then update the average ratings of all affected albums
+            // Update the average ratings of all affected albums
             for (Long albumId : affectedAlbumIds) {
                 albumService.getAlbumById(albumId).ifPresent(album -> {
                     album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
@@ -53,96 +53,50 @@ public class UserService {
                 });
             }
 
-            // Remove user ID from all albums' favoriteUsers lists
-            List<Album> allAlbums = albumService.getAllAlbums();
-            for (Album album : allAlbums) {
-                if (album.getFavoriteUsers().contains(user.getId().toString())) {
-                    album.getFavoriteUsers().remove(user.getId().toString());
-                    albumService.saveAlbum(album);
-                }
+            // Remove user from all albums' favorites
+            for (Album album : user.getFavoriteAlbums()) {
+                album.getFavoriteUsers().remove(user.getId().toString());
+                albumService.saveAlbum(album);
             }
 
-            // Remove follow/follower relationships
-            for (User otherUser : users) {
-                // Remove the user from others' followers list
-                otherUser.getFollowers().removeIf(followerId -> followerId.equals(user.getId()));
-                // Remove the user from others' following list
-                otherUser.getFollowing().removeIf(followingId -> followingId.equals(user.getId()));
-            }
-            saveAllUsers(users); // Save the updated follow/follower relationships
-
-            // Then remove the user
-            users.removeIf(user1 -> user1.getUsername().equals(username));
-            saveAllUsers(users);
-
+            // Delete the user
+            userRepository.delete(user);
         } else {
             throw new RuntimeException("User not found");
         }
     }
 
-    public UserService() {
-        this.objectMapper = new ObjectMapper();
-        createFileIfNotExists();
-    }
-
-    private void createFileIfNotExists() {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) {
-            try {
-                objectMapper.writeValue(file, new ArrayList<User>());
-            } catch (IOException e) {
-                throw new RuntimeException("Could not initialize storage file", e);
-            }
-        }
+    public List<String> getUsernamesByAlbumId(Long albumId) {
+        return userRepository.findUsernamesByFavoriteAlbumId(albumId);
     }
 
     public List<User> getAllUsers() {
-        try {
-            return objectMapper.readValue(new File(FILE_PATH), new TypeReference<List<User>>() {});
-        } catch (IOException e) {
-            throw new RuntimeException("Could not read users", e);
-        }
+        return userRepository.findAll();
     }
 
     public Optional<User> getUserByUsername(String username) {
-        return getAllUsers().stream()
-                .filter(user -> user.getUsername().equals(username))
-                .findFirst();
+        return userRepository.findByUsername(username);
     }
 
     public Optional<User> getUserById(Long id) {
-        return getAllUsers().stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst();
+        return userRepository.findById(id);
     }
 
+    @Transactional
     public User saveUser(User user) {
-        List<User> users = getAllUsers();
         if (user.getId() == null) {
-            if (getUserByUsername(user.getUsername()).isPresent()) {
+            if (userRepository.existsByUsername(user.getUsername())) {
                 throw new RuntimeException("Username already exists");
             }
-            user.setId(generateId(users));
-            users.add(user);
-        } else {
-            int index = findUserIndex(users, user.getId());
-            if (index != -1) {
-                users.set(index, user);
-            } else {
-                users.add(user);
-            }
         }
-        saveAllUsers(users);
-        return user;
+        return userRepository.save(user);
     }
 
     public Optional<User> authenticateUser(String username, String password) {
-        return getAllUsers().stream()
-                .filter(user -> user.getUsername().equals(username) 
-                        && user.getPassword().equals(password))
-                .findFirst();
+        return userRepository.findByUsernameAndPassword(username, password);
     }
 
+    @Transactional
     public User registerUser(User user) {
         if (user == null) {
             throw new RuntimeException("User cannot be null");
@@ -156,140 +110,92 @@ public class UserService {
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
             throw new RuntimeException("Email cannot be empty");
         }
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
         return saveUser(user);
     }
 
-    private Long generateId(List<User> users) {
-        return users.stream()
-                .mapToLong(User::getId)
-                .max()
-                .orElse(0L) + 1;
-    }
-
-    private int findUserIndex(List<User> users, Long id) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(id)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private void saveAllUsers(List<User> users) {
-        try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_PATH), users);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not save users", e);
-        }
-    }
-
+    @Transactional
     public void addFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
-        List<User> users = getAllUsers();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Optional<User> optionalUser = users.stream()
-                .filter(user -> user.getId().equals(userId))
-                .findFirst();
-
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            if (!user.getFavoriteAlbumIds().contains(albumId)) {
-                user.getFavoriteAlbumIds().add(albumId);
-
-                saveAllUsers(users);
-
+        albumService.getAlbumById(albumId).ifPresent(album -> {
+            if (!user.getFavoriteAlbums().contains(album)) {
+                user.getFavoriteAlbums().add(album);
+                userRepository.save(user);
                 session.setAttribute("user", user);
             }
-        } else {
-            throw new IllegalArgumentException("Usuario no encontrado: " + userId);
-        }
+        });
     }
 
     public List<Long> getFavoriteAlbums(String username) {
-        Optional<User> userOpt = getUserByUsername(username);
-        if (userOpt.isPresent()) {
-            return userOpt.get().getFavoriteAlbumIds();
-        }
-        return new ArrayList<>();
+        return getUserByUsername(username)
+                .map(user -> user.getFavoriteAlbums().stream()
+                        .map(Album::getId)
+                        .toList())
+                .orElse(new ArrayList<>());
     }
 
+    @Transactional
     public void deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
-        List<User> users = getAllUsers();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Optional<User> optionalUser = users.stream()
-                .filter(user -> user.getId().equals(userId))
-                .findFirst();
-
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            if (user.getFavoriteAlbumIds().contains(albumId)) {
-                user.getFavoriteAlbumIds().remove(albumId);
-
-                saveAllUsers(users);
-
+        albumService.getAlbumById(albumId).ifPresent(album -> {
+            if (user.getFavoriteAlbums().remove(album)) {
+                userRepository.save(user);
                 session.setAttribute("user", user);
             } else {
-                throw new IllegalArgumentException("El álbum no está en los favoritos de este usuario.");
+                throw new RuntimeException("Album not found in user's favorites");
             }
-        } else {
-            throw new IllegalArgumentException("Usuario no encontrado: " + userId);
-        }
+        });
     }
 
+    @Transactional
     public void saveUserWithProfileImage(User user, MultipartFile profileImage) throws IOException {
         if (profileImage == null || profileImage.isEmpty()) {
             throw new RuntimeException("Profile image cannot be null or empty");
         }
 
-        // Validate file type
         String contentType = profileImage.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new RuntimeException("Only image files are allowed");
         }
 
-        // Generate a unique filename
         String originalFilename = profileImage.getOriginalFilename();
-        String fileExtension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
+        String fileExtension = originalFilename != null ? 
+                originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
         String filename = "user_" + user.getId() + "_" + System.currentTimeMillis() + fileExtension;
 
-        // Create images directory if it doesn't exist
-        String projectDir = System.getProperty("user.dir");
-        File uploadDir = new File(projectDir + "/src/main/resources/static/images");
+        File uploadDir = new File("src/main/resources/static/images");
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
 
-        // Save the file
         File destFile = new File(uploadDir.getAbsolutePath() + File.separator + filename);
         profileImage.transferTo(destFile);
 
-        // Update user with image URL
         user.setImageUrl("/images/" + filename);
-        updateUser(user);
+        userRepository.save(user);
     }
 
+    @Transactional
     public User updateUser(User updatedUser) {
         if (updatedUser == null || updatedUser.getId() == null) {
             throw new RuntimeException("User or user ID cannot be null");
         }
 
-        List<User> users = getAllUsers();
-        int userIndex = findUserIndex(users, updatedUser.getId());
-
-        if (userIndex == -1) {
-            throw new RuntimeException("User not found with ID: " + updatedUser.getId());
-        }
-
-        // Get the existing user to preserve data that shouldn't be updated
-        User existingUser = users.get(userIndex);
+        User existingUser = userRepository.findById(updatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Check if the new username is already taken by another user
-        boolean usernameExists = users.stream()
-                .filter(user -> !user.getId().equals(updatedUser.getId()))
-                .anyMatch(user -> user.getUsername().equals(updatedUser.getUsername()));
-
-        if (usernameExists) {
+        Optional<User> userWithUsername = userRepository.findByUsername(updatedUser.getUsername());
+        if (userWithUsername.isPresent() && !userWithUsername.get().getId().equals(updatedUser.getId())) {
             throw new RuntimeException("Username already exists");
         }
 
@@ -298,53 +204,45 @@ public class UserService {
             updatedUser.setPassword(existingUser.getPassword());
         }
 
-        // Update the user
-        users.set(userIndex, updatedUser);
-        saveAllUsers(users);
-
-        return updatedUser;
+        return userRepository.save(updatedUser);
     }
 
+    @Transactional
     public void followUser(Long followerId, Long targetUserId, HttpSession session) {
         if (followerId.equals(targetUserId)) {
             throw new RuntimeException("Users cannot follow themselves");
         }
 
-        List<User> users = getAllUsers();
-        User follower = getUserById(followerId)
+        User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower user not found"));
-        User target = getUserById(targetUserId)
+        User target = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
         if (!follower.getFollowing().contains(targetUserId)) {
             follower.getFollowing().add(targetUserId);
             target.getFollowers().add(followerId);
 
-            // Update both users
-            updateUser(follower);
-            updateUser(target);
+            userRepository.save(follower);
+            userRepository.save(target);
 
-            // Update session with the updated follower user
             session.setAttribute("user", follower);
         }
     }
 
+    @Transactional
     public void unfollowUser(Long followerId, Long targetUserId, HttpSession session) {
-        List<User> users = getAllUsers();
-        User follower = getUserById(followerId)
+        User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower user not found"));
-        User target = getUserById(targetUserId)
+        User target = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
         if (follower.getFollowing().contains(targetUserId)) {
             follower.getFollowing().remove(targetUserId);
             target.getFollowers().remove(followerId);
 
-            // Update both users
-            updateUser(follower);
-            updateUser(target);
+            userRepository.save(follower);
+            userRepository.save(target);
 
-            // Update session with the updated follower user
             session.setAttribute("user", follower);
         }
     }

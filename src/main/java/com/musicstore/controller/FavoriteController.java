@@ -51,8 +51,10 @@ public class FavoriteController {
             // Add album to the favorites section of the user
             userService.addFavoriteAlbum(auxUserId, albumId, session);
 
-            if (!album.getFavoriteUsers().contains(auxUserId.toString())) {
-                album.getFavoriteUsers().add(auxUserId.toString());
+            User currentUser = userService.getUserById(auxUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            if (!album.getFavoriteUsers().contains(currentUser)) {
+                album.getFavoriteUsers().add(currentUser);
                 albumService.saveAlbum(album); // Save changes
             }
 
@@ -89,9 +91,11 @@ public class FavoriteController {
             // Delete the album of the user favorites
             userService.deleteFavoriteAlbum(userId, albumId, session);
 
-            // Delete the user of the list in the album
-            if (album.getFavoriteUsers().contains(userId.toString())) {
-                album.getFavoriteUsers().remove(userId.toString());
+            // Delete the user from the album's favorite users list
+            User currentUser = userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            if (album.getFavoriteUsers().contains(currentUser)) {
+                album.getFavoriteUsers().remove(currentUser);
                 albumService.saveAlbum(album); // Save the album
             }
 

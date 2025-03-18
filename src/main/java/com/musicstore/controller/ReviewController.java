@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -129,11 +130,7 @@ public class ReviewController {
         String profileImageUrl = profileUser.getImageUrl();
         model.addAttribute("profileImageUrl", profileImageUrl);
 
-        List<Album> favoriteAlbums = profileUser.getFavoriteAlbumIds().stream()
-                .map(albumId -> albumService.getAlbumById(albumId))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        List<Album> favoriteAlbums = new ArrayList<>(profileUser.getFavoriteAlbums());
 
         Collections.reverse(favoriteAlbums);
         favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());

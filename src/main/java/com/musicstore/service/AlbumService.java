@@ -37,8 +37,8 @@ public class AlbumService {
 
     public Album saveAlbumWithAudio(Album album, MultipartFile audioFile2) throws IOException {
         if (audioFile2 != null && !audioFile2.isEmpty()) {
-            String audioFile = fileStorageService.storeAudio(audioFile2);
-            album.setAudioFile(audioFile); // Sobrescribe el valor de audioFile
+            String audioUrl = fileStorageService.storeAudio(audioFile2);
+            album.setAudioUrl(audioUrl);
         }
         return fileStorageService.saveAlbum(album);
     }

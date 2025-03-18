@@ -11,6 +11,7 @@ import java.sql.Blob;
 @Entity
 public class Artist {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Name is required")
