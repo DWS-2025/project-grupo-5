@@ -10,6 +10,12 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.CascadeType;
+import java.sql.Blob;
 
 @Data
 @Entity
@@ -20,8 +26,13 @@ public class Album {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotBlank(message = "Artist is required")
-    private String artist;
+    @ManyToOne
+    @JoinColumn(name = "artist_id")
+    private Artist artist;
+
+    // Add OneToMany relationship with Review
+    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+    private List<Review> reviews = new ArrayList<>();
 
     @NotBlank(message = "Genre is required")
     private String genre;
@@ -29,12 +40,12 @@ public class Album {
     private String imageUrl;
 
     @Lob
-    @Column(name= "audio_preview")
-    private byte[] imageFile;
+    @Column(name = "image_file")
+    private Blob imageFile;
 
     @Lob
-    @Column(name= "audio_preview")
-    private byte[] audioFile2;
+    @Column(name = "audio_preview")
+    private Blob audioFile2;
 
     private String audioFile;
 
@@ -63,7 +74,8 @@ public class Album {
         return id;
     }
 
-    public void updateAverageRating(List<Review> reviews) {
+    // Update the updateAverageRating method to use the reviews field
+    public void updateAverageRating() {
         if (reviews == null || reviews.isEmpty()) {
             this.averageRating = 0.0;
             return;
@@ -72,5 +84,23 @@ public class Album {
                 .mapToInt(Review::getRating)
                 .sum();
         this.averageRating = sum / reviews.size();
+    }
+
+    @ManyToMany
+    @JoinTable(
+        name = "album_artists",
+        joinColumns = @JoinColumn(name = "album_id"),
+        inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
+    private List<Artist> artists = new ArrayList<>();
+
+    public void addArtist(Artist artist) {
+        artists.add(artist);
+        artist.getAlbums().add(this);
+    }
+
+    public void removeArtist(Artist artist) {
+        artists.remove(artist);
+        artist.getAlbums().remove(this);
     }
 }

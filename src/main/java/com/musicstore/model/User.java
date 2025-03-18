@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Blob;
 
 @Data
 @Entity
@@ -45,7 +46,7 @@ public class User {
 
     @Lob
     @Column(name= "audio_preview")
-    private byte[] imageFile;
+    private Blob imageFile;
 
     private List<Long> followers = new ArrayList<>();
     private List<Long> following = new ArrayList<>();

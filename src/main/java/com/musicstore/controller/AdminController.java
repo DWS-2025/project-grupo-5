@@ -101,7 +101,7 @@ public class AdminController {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
-            // It handel all the exceptions.
+            // handle all the exceptions
             albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
             return "album/form";
         }
