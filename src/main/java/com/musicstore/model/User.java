@@ -1,16 +1,22 @@
 package com.musicstore.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Entity
 public class User {
+    @Id
     private Long id;
 
     @NotBlank(message = "Username is required")
@@ -24,15 +30,22 @@ public class User {
     private String email;
 
     private boolean isAnonymous = false;
-    
+
     private boolean isAdmin = false;
 
-    private List<Long> favoriteAlbumIds = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "user_favorite_albums",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "album_id")
+    )
+    private List<Album> favoriteAlbums = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";
 
-    @JsonIgnore
-    private MultipartFile imageFile;
+    @Lob
+    @Column(name= "audio_preview")
+    private byte[] imageFile;
 
     private List<Long> followers = new ArrayList<>();
     private List<Long> following = new ArrayList<>();

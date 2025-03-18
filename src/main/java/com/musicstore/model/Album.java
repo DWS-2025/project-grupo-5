@@ -1,15 +1,20 @@
 package com.musicstore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 @Data
+@Entity
 public class Album {
+    @Id
     private Long id;
 
     @NotBlank(message = "Title is required")
@@ -23,11 +28,13 @@ public class Album {
 
     private String imageUrl;
 
-    @JsonIgnore
-    private MultipartFile imageFile;
+    @Lob
+    @Column(name= "audio_preview")
+    private byte[] imageFile;
 
-    @JsonIgnore
-    private MultipartFile audioFile2;
+    @Lob
+    @Column(name= "audio_preview")
+    private byte[] audioFile2;
 
     private String audioFile;
 
@@ -43,7 +50,8 @@ public class Album {
 
     private String tidal_url;
 
-    private List<String> favoriteUsers = new ArrayList<>();
+    @ManyToMany(mappedBy = "favoriteAlbums")
+    private List<User> favoriteUsers = new ArrayList<>();
 
     private Double averageRating = 0.0;
 
