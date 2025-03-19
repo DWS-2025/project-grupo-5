@@ -1,14 +1,6 @@
 package com.musicstore.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -44,6 +36,18 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "album_id")
     )
     private List<Album> favoriteAlbums = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "user_followers",
+            joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "follower_id")
+    private List<Long> followers = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "user_following",
+            joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "following_id")
+    private List<Long> following = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";
 

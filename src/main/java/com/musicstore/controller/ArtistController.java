@@ -33,13 +33,8 @@ public class ArtistController {
             List<Artist> artists = artistService.getAllArtists();
             List<Album> albums = albumService.getAllAlbums();
 
-            // Update albums for each artist
-            for (Artist artist : artists) {
-                List<Album> artistAlbums = albums.stream()
-                    .filter(album -> album.getArtist().equalsIgnoreCase(artist.getName()))
-                    .toList();
-                artist.setAlbums(artistAlbums);
-            }
+            // The albums are already associated with artists through JPA relationships
+            // No need for manual filtering as the relationship is maintained by the database
 
             model.addAttribute("artists", artists);
             model.addAttribute("albums", albums);
@@ -69,14 +64,8 @@ public class ArtistController {
             }
 
             Artist artist = artistOpt.get();
-            List<Album> allAlbums = albumService.getAllAlbums();
-            List<Album> albums = allAlbums.stream()
-                    .filter(album -> Arrays.stream(album.getArtist().split(","))
-                            .map(String::trim)
-                            .anyMatch(name -> name.equalsIgnoreCase(artist.getName())))
-                    .toList();
-
-            artist.setAlbums(albums);
+            // The albums are already associated with the artist through JPA relationships
+            List<Album> albums = artist.getAlbums();
 
 
             model.addAttribute("artist", artist);

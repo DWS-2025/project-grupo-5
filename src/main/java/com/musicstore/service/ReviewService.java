@@ -111,7 +111,7 @@ public class ReviewService {
         for (List<Review> albumReviews : reviewsByAlbum.values()) {
             if (albumReviews != null) {
                 userReviews.addAll(albumReviews.stream()
-                        .filter(review -> review.getUserId() != null && review.getUserId().equals(userId))
+                        .filter(review -> review.getUser() != null && review.getUser().getId().equals(userId))
                         .toList());
             }
         }

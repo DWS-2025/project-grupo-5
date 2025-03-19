@@ -63,11 +63,10 @@ public class HomeController {
             // Get reviews and map user IDs to usernames and profile images
             List<Review> reviews = reviewService.getReviewsByAlbumId(id);
             reviews.forEach(review -> {
-                userService.getUserById(review.getUserId())
-                        .ifPresent(user -> {
-                            review.setUsername(user.getUsername());
-                            review.setUserImageUrl(user.getImageUrl());
-                        });
+                if (review.getUser() != null) {
+                    review.setUsername(review.getUser().getUsername());
+                    review.setUserImageUrl(review.getUser().getImageUrl());
+                }
             });
             model.addAttribute("reviews", reviews);
         });

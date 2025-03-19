@@ -28,9 +28,13 @@ public class Album {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "artist_id")
-    private Artist artist;
+    @ManyToMany
+    @JoinTable(
+            name = "album_artists",
+            joinColumns = @JoinColumn(name = "album_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
+    private List<Artist> artists = new ArrayList<>();
 
     // Add OneToMany relationship with Review
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
@@ -68,16 +72,8 @@ public class Album {
 
     private Double averageRating = 0.0;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    // Update the updateAverageRating method to use the reviews field
-    public void updateAverageRating() {
+    // Update the average rating based on provided reviews
+    public void updateAverageRating(List<Review> reviews) {
         if (reviews == null || reviews.isEmpty()) {
             this.averageRating = 0.0;
             return;
@@ -86,23 +82,5 @@ public class Album {
                 .mapToInt(Review::getRating)
                 .sum();
         this.averageRating = sum / reviews.size();
-    }
-
-    @ManyToMany
-    @JoinTable(
-        name = "album_artists",
-        joinColumns = @JoinColumn(name = "album_id"),
-        inverseJoinColumns = @JoinColumn(name = "artist_id")
-    )
-    private List<Artist> artists = new ArrayList<>();
-
-    public void addArtist(Artist artist) {
-        artists.add(artist);
-        artist.getAlbums().add(this);
-    }
-
-    public void removeArtist(Artist artist) {
-        artists.remove(artist);
-        artist.getAlbums().remove(this);
     }
 }

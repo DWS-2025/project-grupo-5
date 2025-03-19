@@ -63,7 +63,16 @@ public class ArtistService {
 
     public List<Artist> getAllArtists() {
         try {
-            return objectMapper.readValue(new File(FILE_PATH), new TypeReference<List<Artist>>() {});
+            List<Artist> artists = objectMapper.readValue(new File(FILE_PATH), new TypeReference<List<Artist>>() {});
+            List<Album> albums = albumService.getAllAlbums();
+            for (Artist artist : artists) {
+                List<Album> artistAlbums = albums.stream()
+                    .filter(album -> album.getArtists().stream()
+                            .anyMatch(a -> a.getName().equalsIgnoreCase(artist.getName())))
+                    .toList();
+                artist.setAlbums(artistAlbums);
+            }
+            return artists;
         } catch (IOException e) {
             throw new RuntimeException("Could not read Artists", e);
         }

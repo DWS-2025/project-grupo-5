@@ -133,7 +133,7 @@ public class AdminController {
                     .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id));
 
             existingAlbum.setTitle(album.getTitle());
-            existingAlbum.setArtist(album.getArtist());
+            existingAlbum.setArtists(album.getArtists());
             existingAlbum.setGenre(album.getGenre());
             existingAlbum.setDescription(album.getDescription());
             existingAlbum.setTracklist(album.getTracklist());
