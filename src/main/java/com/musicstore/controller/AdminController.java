@@ -19,7 +19,6 @@ public class AdminController {
     @Autowired
     private AlbumService albumService;
 
-
     @GetMapping
     public String listAlbums(Model model, HttpSession session) {
 
