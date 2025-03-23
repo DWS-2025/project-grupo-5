@@ -20,12 +20,12 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "album_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "album_id", nullable = false)
     private Album album;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     private String username;
@@ -40,8 +40,7 @@ public class Review {
     @Max(value = 5, message = "La calificación no puede ser mayor a 5")
     private int rating;
 
-    // Getters and setters are handled by Lombok @Data
-
+    // Getters and setters for relationships
     public Long getAlbumId() {
         return album != null ? album.getId() : null;
     }
@@ -63,9 +62,10 @@ public class Review {
         }
         this.user.setId(userId);
     }
-/*
+
+    // Getters and setters for denormalized fields
     public String getAlbumTitle() {
-        return albumTitle != null ? albumTitle : (album != null ? album.getTitle() : null);
+        return albumTitle;
     }
 
     public void setAlbumTitle(String albumTitle) {
@@ -73,11 +73,10 @@ public class Review {
     }
 
     public String getAlbumImageUrl() {
-        return albumImageUrl != null ? albumImageUrl : (album != null ? album.getImageUrl() : null);
+        return albumImageUrl;
     }
 
     public void setAlbumImageUrl(String albumImageUrl) {
         this.albumImageUrl = albumImageUrl;
     }
-    */
 }

@@ -1,7 +1,7 @@
 [ {
   "id" : 1,
   "title" : "YHLQMDLG",
-  "artist" : "Bad Bunny",
+  "artists" : ["Bad Bunny"],
   "genre" : "Latino",
   "imageUrl" : "/resources/uploads/yhlqmdlg.png",
   "audioFile" : "yhlqmdlg.mp3",
@@ -16,7 +16,7 @@
 }, {
   "id" : 2,
   "title" : "Bully ",
-  "artist" : "Kanye West",
+  "artists" : ["Kanye West"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/bully.jpg",
   "audioFile" : "bully2.mp3",
@@ -31,7 +31,7 @@
 }, {
   "id" : 5,
   "title" : "EL ÚLTIMO TOUR DEL MUNDO",
-  "artist" : "Bad Bunny",
+  "artists" : ["Bad Bunny"],
   "genre" : "Latino",
   "imageUrl" : "/resources/uploads/eutdm.png",
   "audioFile" : "eutdm.mp3",
@@ -46,7 +46,7 @@
 }, {
   "id" : 6,
   "title" : "MUSIC",
-  "artist" : "Playboi Carti",
+  "artists" : ["Playboi Carti"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/iammusic.png",
   "audioFile" : "iammusic2.mp3",
@@ -61,7 +61,7 @@
 }, {
   "id" : 7,
   "title" : "VULTURES 1",
-  "artist" : " ¥$, Kanye West, Ty Dolla $ign",
+  "artists" : ["¥$", "Kanye West", "Ty Dolla $ign"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/vultures 1.png",
   "audioFile" : "v1.mp3",
@@ -76,7 +76,7 @@
 }, {
   "id" : 8,
   "title" : "VULTURES 2",
-  "artist" : " ¥$, Kanye West, Ty Dolla $ign",
+  "artists" : ["¥$", "Kanye West", "Ty Dolla $ign"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/vultures 2.png",
   "audioFile" : "v2.mp3",
@@ -91,7 +91,7 @@
 }, {
   "id" : 9,
   "title" : "My Beautiful Dark Twisted Fantasy",
-  "artist" : "Kanye West",
+  "artists" : ["Kanye West"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/mbdtf.jpg",
   "audioFile" : "mbdtf.mp3",
@@ -121,7 +121,7 @@
 }, {
   "id" : 11,
   "title" : "Die Lit",
-  "artist" : "Playboi Carti",
+  "artists" : ["Playboi Carti"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/die lit.jpg",
   "audioFile" : "die lit.mp3",
@@ -136,7 +136,7 @@
 }, {
   "id" : 12,
   "title" : "DeBÍ TiRAR MáS FOToS",
-  "artist" : "Bad Bunny",
+  "artists" : ["Bad Bunny"],
   "genre" : "Latino",
   "imageUrl" : "/resources/uploads/dtmf.jpg",
   "audioFile" : "dtmf.mp3",
@@ -166,7 +166,7 @@
 }, {
   "id" : 14,
   "title" : "VULTURES 3",
-  "artist" : " ¥$, Kanye West, Ty Dolla $ign",
+  "artists" : ["¥$", "Kanye West", "Ty Dolla $ign"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/vultures 3.png",
   "audioFile" : "v3.mp3",
@@ -211,7 +211,7 @@
 }, {
   "id" : 17,
   "title" : "Graduation",
-  "artist" : "Kanye West",
+  "artists" : ["Kanye West"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/graduation.png",
   "audioFile" : "i wonder.mp3",
@@ -226,7 +226,7 @@
 }, {
   "id" : 18,
   "title" : "Yeezus",
-  "artist" : "Kanye West",
+  "artists" : ["Kanye West"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/yeezus.png",
   "audioFile" : "yeezus.mp3",
@@ -241,7 +241,7 @@
 }, {
   "id" : 19,
   "title" : "ye",
-  "artist" : "Kanye West",
+  "artists" : ["Kanye West"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/ye.png",
   "audioFile" : "ye.mp3",
@@ -256,7 +256,7 @@
 }, {
   "id" : 20,
   "title" : "Donda",
-  "artist" : "Kanye West",
+  "artists" : ["Kanye West"],
   "genre" : "Hip-Hop/Rap",
   "imageUrl" : "/resources/uploads/donda.png",
   "audioFile" : "donda.mp3",
@@ -271,7 +271,7 @@
 }, {
   "id" : 21,
   "title" : "nadie sabe lo que va a pasar mañana",
-  "artist" : "Bad Bunny",
+  "artists" : ["Bad Bunny"],
   "genre" : "Latino",
   "imageUrl" : "/resources/uploads/nslqvapm.jpg",
   "audioFile" : "nadiesabe.mp3",
@@ -286,7 +286,7 @@
 }, {
   "id" : 22,
   "title" : "Un Verano Sin Ti",
-  "artist" : "Bad Bunny",
+  "artists" : ["Bad Bunny"],
   "genre" : "Latino",
   "imageUrl" : "/resources/uploads/uvst.jpg",
   "audioFile" : "uvst.mp3",

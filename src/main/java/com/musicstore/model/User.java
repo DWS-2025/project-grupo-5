@@ -10,7 +10,15 @@ import java.sql.Blob;
 
 @Data
 @Entity
+@Table(name = "users")
 public class User {
+    // Constructor for string deserialization
+    public User(String id) {
+        this.id = Long.parseLong(id);
+    }
+
+    // Default constructor
+    public User() {}
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,6 +1,7 @@
 package com.musicstore.service;
 
 import com.musicstore.model.Album;
+import com.musicstore.repository.AlbumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,18 +13,21 @@ import java.util.Optional;
 public class AlbumService {
 
     @Autowired
+    private AlbumRepository albumRepository;
+
+    @Autowired
     private FileStorageService fileStorageService;
 
     public List<Album> getAllAlbums() {
-        return fileStorageService.getAllAlbums();
+        return albumRepository.findAll();
     }
 
     public Optional<Album> getAlbumById(Long id) {
-        return fileStorageService.getAlbumById(id);
+        return albumRepository.findById(id);
     }
 
     public Album saveAlbum(Album album) {
-        return fileStorageService.saveAlbum(album);
+        return albumRepository.save(album);
     }
 
     public Album saveAlbumWithImage(Album album, MultipartFile imageFile) throws IOException {
@@ -32,7 +36,7 @@ public class AlbumService {
             album.setImageUrl(imageUrl);
         }
 
-        return fileStorageService.saveAlbum(album);
+        return albumRepository.save(album);
     }
 
     public Album saveAlbumWithAudio(Album album, MultipartFile audioFile2) throws IOException {
@@ -40,10 +44,10 @@ public class AlbumService {
             String audioUrl = fileStorageService.storeAudio(audioFile2);
             album.setAudioFile(audioUrl);
         }
-        return fileStorageService.saveAlbum(album);
+        return albumRepository.save(album);
     }
 
     public void deleteAlbum(Long id) {
-        fileStorageService.deleteAlbum(id);
+        albumRepository.deleteById(id);
     }
 }

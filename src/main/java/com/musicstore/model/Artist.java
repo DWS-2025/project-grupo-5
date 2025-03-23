@@ -6,6 +6,8 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Blob;
+import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity
@@ -20,8 +22,30 @@ public class Artist {
     @NotBlank(message = "Country is required")
     private String country;
 
-    @ManyToMany(mappedBy = "artists", cascade = CascadeType.REMOVE)
+    @ManyToMany(mappedBy = "artists")
     private List<Album> albums = new ArrayList<>();
+
+    private String imageUrl = "/images/default.jpg";
+
+    @Lob
+    @Column(name = "image_file")
+    private Blob imageFile;
+
+    @Transient
+    @JsonIgnore
+    private MultipartFile uploadFile;
+
+    // Constructor for string deserialization
+    public Artist(String name) {
+        this.name = name;
+        this.country = "Unknown";
+    }
+
+    // Default constructor
+    public Artist() {}
+    @Lob
+    @Column(name= "audio_preview")
+    private Blob audioPreview;
 
     public void addAlbum(Album album) {
         albums.add(album);
@@ -33,10 +57,8 @@ public class Artist {
         album.getArtists().remove(this);
     }
 
-    private String imageUrl = "/images/default.jpg";
-
-    @Lob
-    @Column(name= "audio_preview")
-    private Blob imageFile;
-
+    @Override
+    public String toString() {
+        return name;
+    }
 }

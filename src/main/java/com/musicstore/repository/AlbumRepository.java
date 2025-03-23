@@ -11,7 +11,8 @@ import java.util.List;
 public interface AlbumRepository extends JpaRepository<Album, Long> {
     List<Album> findByTitleContainingIgnoreCase(String title);
     List<Album> findByGenreIgnoreCase(String genre);
-    List<Album> findByArtistNameContainingIgnoreCase(String artistName);
+    @Query("SELECT DISTINCT a FROM Album a JOIN a.artists art WHERE LOWER(art.name) LIKE LOWER(CONCAT('%', :artistName, '%'))")
+    List<Album> findByArtistNameContainingIgnoreCase(@Param("artistName") String artistName);
     List<Album> findByYearOrderByTitleAsc(Integer year);
     
     @Query("SELECT a FROM Album a WHERE a.averageRating >= :rating ORDER BY a.averageRating DESC")
