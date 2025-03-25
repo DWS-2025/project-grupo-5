@@ -33,8 +33,6 @@ public class User {
     @NotBlank(message = "Email is required")
     private String email;
 
-    private boolean isAnonymous = false;
-
     private boolean isAdmin = false;
 
     @ManyToMany
@@ -60,6 +58,6 @@ public class User {
     private String imageUrl = "/images/default.jpg";
 
     @Lob
-    @Column(name= "audio_preview")
+    @Column(name= "image_preview")
     private Blob imageFile;
 }

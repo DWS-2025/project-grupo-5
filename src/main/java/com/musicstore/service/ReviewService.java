@@ -20,27 +20,6 @@ public class ReviewService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private Map<Long, List<Review>> reviewsByAlbum;
 
-    public ReviewService() {
-        loadReviewsFromFile();
-    }
-
-    private void loadReviewsFromFile() {
-        File file = new File(FILE_PATH);
-        if (file.exists() && file.length() > 0) {
-            try {
-                reviewsByAlbum = objectMapper.readValue(file, new TypeReference<Map<Long, List<Review>>>() {
-                });
-                System.out.println("Reseñas cargadas correctamente");
-            } catch (IOException e) {
-                System.err.println("Error cargando reseñas: " + e.getMessage());
-                reviewsByAlbum = new HashMap<>();
-            }
-        } else {
-            System.out.println("Archivo de reseñas no encontrado o vacío. Inicializando.");
-            reviewsByAlbum = new HashMap<>();
-            saveReviewsToFile();
-        }
-    }
 
     private synchronized void saveReviewsToFile() {
         try {

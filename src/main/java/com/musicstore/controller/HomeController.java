@@ -41,7 +41,6 @@ public class HomeController {
             model.addAttribute("user", user);
         } else {
             User anonymousUser = new User();
-            anonymousUser.setAnonymous(true);
             model.addAttribute("user", anonymousUser);
         }
         return "album/welcome";
