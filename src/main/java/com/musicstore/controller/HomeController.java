@@ -47,7 +47,15 @@ public class HomeController {
     }
 
     @GetMapping("/{id}")
-    public String viewAlbum(@PathVariable Long id, Model model) {
+    public String viewAlbum(@PathVariable Long id, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("user", user);
+        } else {
+            User anonymousUser = new User();
+            model.addAttribute("user", anonymousUser);
+        }
+
         if (albumService.getAlbumById(id).isEmpty()) {
             model.addAttribute("error", "Album not found");
             return "error";
