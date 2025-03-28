@@ -19,6 +19,8 @@ public class Artist {
     @NotBlank(message = "Name is required")
     private String name;
 
+
+
     @NotBlank(message = "Country is required")
     private String country;
 
@@ -43,9 +45,6 @@ public class Artist {
 
     // Default constructor
     public Artist() {}
-    @Lob
-    @Column(name= "audio_preview")
-    private Blob audioPreview;
 
     public void addAlbum(Album album) {
         albums.add(album);
@@ -56,9 +55,12 @@ public class Artist {
         albums.remove(album);
         album.getArtists().remove(this);
     }
-
+    /*
     @Override
     public String toString() {
         return name;
     }
+
+     */
+
 }
