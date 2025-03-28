@@ -25,20 +25,23 @@
             
             <div class="mb-3">
                 <label for="name" class="form-label">Artist Name</label>
-                <input type="text" class="form-control" id="name" th:field="*{name}" required>
-                <div class="invalid-feedback">Please provide an artist name.</div>
+                <input type="text" class="form-control" id="name" th:field="*{name}" required minlength="2" maxlength="100" pattern="^[\p{L}\s'-]+$">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Please provide a valid artist name.</div>
+                <div class="invalid-feedback">Artist name must be between 2 and 100 characters and contain only letters, spaces, hyphens and apostrophes.</div>
             </div>
 
             <div class="mb-3">
                 <label for="country" class="form-label">Country</label>
-                <input type="text" class="form-control" id="country" th:field="*{country}" required>
-                <div class="invalid-feedback">Please provide a country.</div>
+                <input type="text" class="form-control" id="country" th:field="*{country}" required minlength="2" maxlength="100" pattern="^[\p{L}\s'-]+$">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('country')}" th:errors="*{country}">Please provide a valid country name.</div>
+                <div class="invalid-feedback">Country name must be between 2 and 100 characters and contain only letters, spaces, hyphens and apostrophes.</div>
             </div>
 
             <div class="mb-3">
                 <label for="imageFile" class="form-label">Profile Image</label>
-                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
-                <div class="form-text">Upload a profile image for the artist (optional).</div>
+                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpeg,image/png,image/gif" onchange="validateFileSize(this)">
+                <div class="form-text">Upload a profile image for the artist (optional). Max size: 5MB. Accepted formats: JPG, PNG, GIF.</div>
+                <div class="invalid-feedback" id="imageError"></div>
             </div>
 
             <div class="d-flex gap-2">
@@ -64,6 +67,23 @@
                 }, false)
             })
         })()
+
+        // File validation
+        function validateFileSize(input) {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const errorElement = document.getElementById('imageError');
+            
+            if (input.files && input.files[0]) {
+                if (input.files[0].size > maxSize) {
+                    input.value = '';
+                    errorElement.textContent = 'File size must be less than 5MB';
+                    input.classList.add('is-invalid');
+                } else {
+                    errorElement.textContent = '';
+                    input.classList.remove('is-invalid');
+                }
+            }
+        }
     </script>
 </body>
 </html>

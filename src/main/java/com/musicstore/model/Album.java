@@ -109,7 +109,6 @@ public class Album {
     private String tidal_url;
 
     @ManyToMany(mappedBy = "favoriteAlbums")
-    @JsonDeserialize(contentAs = User.class)
     private List<User> favoriteUsers = new ArrayList<>();
 
     private Double averageRating = 0.0;

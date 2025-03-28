@@ -19,8 +19,6 @@ public class Artist {
     @NotBlank(message = "Name is required")
     private String name;
 
-
-
     @NotBlank(message = "Country is required")
     private String country;
 
@@ -28,14 +26,6 @@ public class Artist {
     private List<Album> albums = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";
-
-    @Lob
-    @Column(name = "image_file")
-    private Blob imageFile;
-
-    @Transient
-    @JsonIgnore
-    private MultipartFile uploadFile;
 
     // Constructor for string deserialization
     public Artist(String name) {
