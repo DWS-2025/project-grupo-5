@@ -36,8 +36,6 @@ public class Album {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @JsonDeserialize(using = ArtistListDeserializer.class)
-    @JsonAlias({"artist", "artists"})
     @ManyToMany
     @JoinTable(
             name = "album_artists",
@@ -50,30 +48,6 @@ public class Album {
         return artists != null && !artists.isEmpty() ? artists.get(0) : null;
     }
 
-    public static class ArtistListDeserializer extends StdDeserializer<List<Artist>> {
-        public ArtistListDeserializer() {
-            super(List.class);
-        }
-
-        @Override
-        public List<Artist> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.getCodec().readTree(p);
-            List<Artist> artists = new ArrayList<>();
-            
-            if (node.isArray()) {
-                for (JsonNode artistNode : node) {
-                    if (artistNode.isTextual()) {
-                        artists.add(new Artist(artistNode.asText()));
-                    }
-                }
-            } else if (node.isTextual()) {
-                artists.add(new Artist(node.asText()));
-            }
-            
-            return artists;
-        }
-    }
-
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
 
@@ -82,19 +56,20 @@ public class Album {
 
     private String imageUrl;
 
+    /*
     @Lob
     @Column(name = "image_file")
     private Blob imageFile;
 
     @Lob
     @Column(name = "audio_preview")
-    private Blob audioFile2;
+    private Blob audioFile2;*/
 
     private String audioFile;
 
     private String description;
 
-    @Lob
+
     @Column(name = "tracklist", columnDefinition = "TEXT")
     private String tracklist;
 
