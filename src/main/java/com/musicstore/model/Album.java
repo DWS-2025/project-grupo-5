@@ -36,6 +36,7 @@ public class Album {
     @NotBlank(message = "Title is required")
     private String title;
 
+
     @ManyToMany
     @JoinTable(
             name = "album_artists",
@@ -56,14 +57,9 @@ public class Album {
 
     private String imageUrl;
 
-    /*
     @Lob
-    @Column(name = "image_file")
-    private Blob imageFile;
-
-    @Lob
-    @Column(name = "audio_preview")
-    private Blob audioFile2;*/
+    @Column(name = "image_data")
+    private Blob imageData;
 
     private String audioFile;
 

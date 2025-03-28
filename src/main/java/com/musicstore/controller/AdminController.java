@@ -51,7 +51,7 @@ public class AdminController {
     public String createAlbum(@Valid Album album, BindingResult result,
                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
-                              Model model, HttpSession session) throws IOException {
+                              Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
 
         User user = (User) session.getAttribute("user");
 
@@ -115,7 +115,7 @@ public class AdminController {
             BindingResult result,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
-            Model model, HttpSession session) throws IOException {
+            Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
 
         User user = (User) session.getAttribute("user");
 

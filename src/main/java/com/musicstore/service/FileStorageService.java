@@ -3,15 +3,21 @@ package com.musicstore.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.musicstore.model.Album;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 public class FileStorageService {
@@ -67,7 +73,6 @@ public class FileStorageService {
         return album;
     }
 
-
     public void deleteAlbum(Long id) {
         try {
             File file = new File(FILE_PATH);
@@ -107,42 +112,32 @@ public class FileStorageService {
         }
     }
 
-
     public String storeFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("Failed to store empty file.");
         }
 
         try {
-            // Get the absolute path for the uploads directory
             String projectDir = System.getProperty("user.dir");
             String uploadDir = projectDir + "/src/main/resources/static/resources/uploads";
             File directory = new File(uploadDir);
 
-            // Create directory if it doesn't exist
             if (!directory.exists()) {
                 if (!directory.mkdirs()) {
                     throw new RuntimeException("Failed to create directory: " + uploadDir);
                 }
             }
 
-            // Get the original filename without any changes
             String originalFilename = file.getOriginalFilename();
-
-            // If the original filename is null (edge case), we set a default name
             String fileName = (originalFilename != null ? originalFilename : "unknown");
-
             File dest = new File(directory, fileName);
 
-            // Transfer the file
             file.transferTo(dest);
 
-            // Verify the file was created
             if (!dest.exists()) {
                 throw new RuntimeException("Failed to store file: " + fileName);
             }
 
-            // Return the relative path for the image URL
             return "/resources/uploads/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file. Error: " + e.getMessage(), e);
@@ -155,40 +150,29 @@ public class FileStorageService {
         }
 
         try {
-            // Get the absolute path for the uploads directory
             String projectDir = System.getProperty("user.dir");
             String uploadDir = projectDir + "/src/main/resources/static/snippets";
             File directory = new File(uploadDir);
 
-            // Create directory if it doesn't exist
             if (!directory.exists()) {
                 if (!directory.mkdirs()) {
                     throw new RuntimeException("Failed to create directory: " + uploadDir);
                 }
             }
 
-            // Get the original filename without any changes
             String originalFilename = file.getOriginalFilename();
-
-            // If the original filename is null (edge case), we set a default name
             String fileName = (originalFilename != null ? originalFilename : "unknown");
-
             File dest = new File(directory, fileName);
 
-            // Transfer the file
             file.transferTo(dest);
 
-            // Verify the file was created
             if (!dest.exists()) {
                 throw new RuntimeException("Failed to store file: " + fileName);
             }
 
-            // Return the relative path for the image URL
             return fileName;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file. Error: " + e.getMessage(), e);
         }
     }
-
-
 }
