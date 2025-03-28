@@ -288,7 +288,7 @@
             <h2 class="text-center mb-4">Profile Settings</h2>
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{/profile/update}" method="post" th:object="${user}" enctype="multipart/form-data">
+                    <form th:action="@{/profile/update}" method="post" th:object="${user}" enctype="multipart/form-data" onsubmit="window.location.reload(); return true;">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" th:field="*{username}" required>

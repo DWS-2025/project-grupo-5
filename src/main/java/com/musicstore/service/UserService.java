@@ -10,8 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -163,6 +167,7 @@ public class UserService {
         });
     }
 
+    /*
     @Transactional
     public void saveUserWithProfileImage(User user, MultipartFile profileImage) throws IOException {
         if (profileImage == null || profileImage.isEmpty()) {
@@ -189,7 +194,24 @@ public class UserService {
 
         user.setImageUrl("/images/" + filename);
         userRepository.save(user);
+    }*/
+
+    public User saveUserWithProfileImage(User user, MultipartFile imageFile) throws IOException {
+        User savedUser = userRepository.save(user);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                byte[] imageData = imageFile.getBytes();
+                savedUser.setImageData(imageData);
+                savedUser.setImageUrl("/api/users/" + savedUser.getId() + "/image");
+                return userRepository.save(savedUser);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
+            }
+        }
+        return savedUser;
     }
+
 
     @Transactional
     public User updateUser(User updatedUser) {

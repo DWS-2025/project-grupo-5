@@ -58,6 +58,8 @@ public class User {
     private String imageUrl = "/images/default.jpg";
 
     @Lob
-    @Column(name= "image_preview")
-    private Blob imageFile;
+    @Column(name = "image_data")
+    private byte[] imageData;
+
+
 }
