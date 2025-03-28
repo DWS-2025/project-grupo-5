@@ -45,15 +45,15 @@ public class Review {
         return album != null ? album.getId() : null;
     }
 
+    public Long getUserId() {
+        return user != null ? user.getId() : null;
+    }
+
     public void setAlbumId(Long albumId) {
         if (this.album == null) {
             this.album = new Album();
         }
         this.album.setId(albumId);
-    }
-
-    public Long getUserId() {
-        return user != null ? user.getId() : null;
     }
 
     public void setUserId(Long userId) {

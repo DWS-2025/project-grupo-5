@@ -35,6 +35,7 @@ public class HomeController {
 
         model.addAttribute("albums", albumService.getAllAlbums());
         model.addAttribute("artist", artistService.getAllArtists());
+        model.addAttribute("userService", userService);
         User user = (User) session.getAttribute("user");
 
         if (user != null) {
@@ -55,6 +56,7 @@ public class HomeController {
             User anonymousUser = new User();
             model.addAttribute("user", anonymousUser);
         }
+        model.addAttribute("userService", userService);
 
         if (albumService.getAlbumById(id).isEmpty()) {
             model.addAttribute("error", "Album not found");

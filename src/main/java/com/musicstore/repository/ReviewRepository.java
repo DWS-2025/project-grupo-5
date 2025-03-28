@@ -13,4 +13,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByAlbum(Album album);
     List<Review> findByUserAndAlbum(User user, Album album);
     List<Review> findByRatingGreaterThanEqual(Integer rating);
+    List<Review> findByAlbum_Id(Long albumId);
+    List<Review> findByUser_Id(Long userId);
 }

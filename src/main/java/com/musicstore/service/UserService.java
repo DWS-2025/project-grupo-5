@@ -141,6 +141,13 @@ public class UserService {
                 .orElse(new ArrayList<>());
     }
 
+    public boolean isAlbumInFavorites(String username, Long albumId) {
+        return getUserByUsername(username)
+                .map(user -> user.getFavoriteAlbums().stream()
+                        .anyMatch(album -> album.getId().equals(albumId)))
+                .orElse(false);
+    }
+
     @Transactional
     public void deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
         User user = userRepository.findById(userId)
