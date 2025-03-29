@@ -59,9 +59,13 @@ public class Album {
 
     @Lob
     @Column(name = "image_data")
-    private Blob imageData;
+    private byte[] imageData;
 
     private String audioFile;
+
+    @Lob
+    @Column(name = "audio_data")
+    private Blob audioData;
 
     private String description;
 

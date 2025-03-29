@@ -171,13 +171,13 @@ public class AdminController {
                 }
             } catch (IOException e) {
                 // Handle the error appropriately
-                return "album" +
-                        "x/form";
+                return "album/form";
             }
 
             if (audioFile2 != null && !audioFile2.isEmpty()) {
                 albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
             } else {
+                // If there is no audio, it will save the album without audio.
                 albumService.saveAlbum(existingAlbum);
             }
             return "redirect:/admin";

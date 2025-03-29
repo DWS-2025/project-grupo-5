@@ -1,17 +1,21 @@
 package com.musicstore.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.musicstore.model.Album;
 import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.model.Artist;
+import com.musicstore.repository.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +31,9 @@ public class DataLoader {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    ArtistRepository artistRepository;
 
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -68,6 +75,9 @@ public class DataLoader {
             System.err.println("Error al cargar los artistas: " + e.getMessage());
         }
     }
+
+
+
 
     private void loadAdminUser() {
         if (userService.getAllUsers().isEmpty()) {
