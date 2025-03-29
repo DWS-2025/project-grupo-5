@@ -532,3 +532,77 @@ The object is already closed [90007-224]
 2025-03-29 18:38:20.099126+01:00 jdbc[4]: exception
 org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
 The object is already closed [90007-224]
+2025-03-29 18:46:56.218651+01:00 database: close
+org.h2.mvstore.MVStoreException: Reading from file sun.nio.ch.FileChannelImpl@34ce191b failed at 89282 (length -1), read 0, remaining 32 [2.2.224/1]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:996)
+	at org.h2.mvstore.DataUtils.readFully(DataUtils.java:455)
+	at org.h2.mvstore.FileStore.readFully(FileStore.java:719)
+	at org.h2.mvstore.SingleFileStore.readFully(SingleFileStore.java:60)
+	at org.h2.mvstore.SingleFileStore.readFully(SingleFileStore.java:28)
+	at org.h2.mvstore.SFChunk.readFully(SFChunk.java:35)
+	at org.h2.mvstore.Chunk.readBufferForPage(Chunk.java:465)
+	at org.h2.mvstore.FileStore.readPage(FileStore.java:1960)
+	at org.h2.mvstore.MVStore.readPage(MVStore.java:1021)
+	at org.h2.mvstore.MVMap.readPage(MVMap.java:632)
+	at org.h2.mvstore.Page$NonLeaf.getChildPage(Page.java:1117)
+	at org.h2.mvstore.MVMap.getMinMax(MVMap.java:398)
+	at org.h2.mvstore.MVMap.getMinMax(MVMap.java:398)
+	at org.h2.mvstore.MVMap.getMinMax(MVMap.java:375)
+	at org.h2.mvstore.MVMap.getMinMax(MVMap.java:371)
+	at org.h2.mvstore.MVMap.ceilingKey(MVMap.java:326)
+	at org.h2.mvstore.db.LobStorageMap.doRemoveLob(LobStorageMap.java:478)
+	at org.h2.mvstore.db.LobStorageMap.removeAllForTable(LobStorageMap.java:386)
+	at org.h2.mvstore.db.LobStorageMap.close(LobStorageMap.java:431)
+	at org.h2.engine.Database.closeOpenFilesAndUnlock(Database.java:1283)
+	at org.h2.engine.Database.closeImpl(Database.java:1255)
+	at org.h2.engine.Database.close(Database.java:1174)
+	at org.h2.engine.Database.close(Database.java:1151)
+	at org.h2.engine.Database.removeSession(Database.java:1078)
+	at org.h2.engine.SessionLocal.close(SessionLocal.java:910)
+	at org.h2.jdbc.JdbcConnection.close(JdbcConnection.java:391)
+	at com.zaxxer.hikari.pool.PoolBase.quietlyCloseConnection(PoolBase.java:137)
+	at com.zaxxer.hikari.pool.HikariPool.lambda$closeConnection$1(HikariPool.java:444)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1575)
+Caused by: java.nio.channels.ClosedChannelException
+	at java.base/sun.nio.ch.FileChannelImpl.ensureOpen(FileChannelImpl.java:169)
+	at java.base/sun.nio.ch.FileChannelImpl.implRead(FileChannelImpl.java:1142)
+	at java.base/sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:1134)
+	at org.h2.mvstore.DataUtils.readFully(DataUtils.java:441)
+	... 29 more
+2025-03-29 18:46:56.683529+01:00 database: flush
+org.h2.message.DbException: Error General : "org.h2.mvstore.MVStoreException: Writing to sun.nio.ch.FileChannelImpl@34ce191b failed; length 8192 at 36864 [2.2.224/2]"
+General error: "org.h2.mvstore.MVStoreException: Writing to sun.nio.ch.FileChannelImpl@34ce191b failed; length 8192 at 36864 [2.2.224/2]" [50000-224]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:407)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:122)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:1546)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:371)
+	at org.h2.mvstore.FileStore.storeBuffer(FileStore.java:1527)
+	at org.h2.mvstore.FileStore.lambda$serializeAndStore$3(FileStore.java:1432)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1575)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Error General : "org.h2.mvstore.MVStoreException: Writing to sun.nio.ch.FileChannelImpl@34ce191b failed; length 8192 at 36864 [2.2.224/2]"
+General error: "org.h2.mvstore.MVStoreException: Writing to sun.nio.ch.FileChannelImpl@34ce191b failed; length 8192 at 36864 [2.2.224/2]" [50000-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:566)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	... 12 more
+Caused by: org.h2.mvstore.MVStoreException: Writing to sun.nio.ch.FileChannelImpl@34ce191b failed; length 8192 at 36864 [2.2.224/2]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:996)
+	at org.h2.mvstore.DataUtils.writeFully(DataUtils.java:478)
+	at org.h2.mvstore.SingleFileStore.writeFully(SingleFileStore.java:67)
+	at org.h2.mvstore.SingleFileStore.writeFully(SingleFileStore.java:28)
+	at org.h2.mvstore.RandomAccessStore.writeChunk(RandomAccessStore.java:366)
+	at org.h2.mvstore.RandomAccessStore.writeChunk(RandomAccessStore.java:28)
+	at org.h2.mvstore.FileStore.storeBuffer(FileStore.java:1524)
+	... 6 more
+Caused by: java.nio.channels.ClosedChannelException
+	at java.base/sun.nio.ch.FileChannelImpl.ensureOpen(FileChannelImpl.java:169)
+	at java.base/sun.nio.ch.FileChannelImpl.implWrite(FileChannelImpl.java:1214)
+	at java.base/sun.nio.ch.FileChannelImpl.write(FileChannelImpl.java:1206)
+	at org.h2.mvstore.DataUtils.writeFully(DataUtils.java:474)
+	... 11 more

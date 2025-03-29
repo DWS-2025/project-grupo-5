@@ -98,7 +98,7 @@ public class ProfileController{
                 }
 
                 session.setAttribute("user", updatedUser);
-                return "redirect:/profile";
+                return "redirect:/profile?reload=" + System.currentTimeMillis();
             } catch (RuntimeException e) {
                 model.addAttribute("error", e.getMessage());
                 model.addAttribute("user", currentUser);
