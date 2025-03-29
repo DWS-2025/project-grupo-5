@@ -35,28 +35,8 @@ public class DataLoader {
     @PostConstruct
     public void loadData() {
         //loadAdminUser();
-        //loadAlbums();
     }
 
-    private void loadAlbums() {
-        try {
-            File albumsFile = new File(DATA_DIR + "/albums.json");
-            if (albumsFile.exists() && albumService.getAllAlbums().isEmpty()) {
-                List<Album> albums = objectMapper.readValue(albumsFile, new TypeReference<List<Album>>() {});
-                for (Album album : albums) {
-                    album.setAudioFile(null);
-                    album.setImageData(null);
-                    album.setImageUrl(null);
-                    album.setAudioData(null);
-                    album.setAverageRating(0.0);
-                    albumService.saveAlbum(album);
-                }
-                System.out.println("Datos de álbumes cargados exitosamente");
-            }
-        } catch (IOException e) {
-            System.err.println("Error al cargar los álbumes: " + e.getMessage());
-        }
-    }
 
     private void loadAdminUser() {
         if (userService.getAllUsers().isEmpty()) {
