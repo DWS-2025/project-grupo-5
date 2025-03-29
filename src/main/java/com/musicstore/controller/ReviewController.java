@@ -145,7 +145,6 @@ public class ReviewController {
         });
 
         Collections.reverse(userReviews);
-        userReviews = userReviews.stream().limit(5).collect(Collectors.toList());
         model.addAttribute("userReviews", userReviews);
 
         return "reviews/user-review";
