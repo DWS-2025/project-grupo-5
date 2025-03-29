@@ -174,13 +174,18 @@ public class ProfileController{
 
         // Get favorite albums
         List<Album> favoriteAlbums = new ArrayList<>(profileUser.getFavoriteAlbums());
+        List<Album> favoriteAlbums2 = new ArrayList<>(profileUser.getFavoriteAlbums());
 
         Collections.reverse(favoriteAlbums);
-        favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
-        model.addAttribute("favoriteAlbums", favoriteAlbums);
+        model.addAttribute("totalLikes", favoriteAlbums);
+
+        favoriteAlbums2 = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
+        model.addAttribute("favoriteAlbums", favoriteAlbums2);
 
         // Get reviews and associate them with albums
         List<Review> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
+        List<Review> userReviews2 = reviewService.getReviewsByUserId(profileUser.getId());
+
         userReviews.forEach(review -> {
             albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
                 review.setAlbumTitle(album.getTitle());
@@ -189,8 +194,10 @@ public class ProfileController{
         });
 
         Collections.reverse(userReviews);
-        userReviews = userReviews.stream().limit(5).collect(Collectors.toList());
-        model.addAttribute("userReviews", userReviews);
+        model.addAttribute("totalReviews", userReviews);
+
+        userReviews2 = userReviews.stream().limit(5).collect(Collectors.toList());
+        model.addAttribute("userReviews", userReviews2);
 
         return "user/profile-view";
     }
