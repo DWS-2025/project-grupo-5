@@ -140,7 +140,7 @@ public class ReviewController {
         userReviews.forEach(review -> {
             albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
                 review.setAlbumTitle(album.getTitle());
-               // review.setAlbumImageUrl(album.getImageUrl());
+               review.setAlbumImageUrl(album.getImageUrl());
             });
         });
 
