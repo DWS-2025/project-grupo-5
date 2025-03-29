@@ -43,7 +43,7 @@
         </div>
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-4 " id="albumsGrid">
-        <div th:each="album : ${albums}" class="col">
+        <div th:each="album : ${albums}" class="col" th:data-id="${album.id}" th:data-artist="${album.artist.name}">
             <a th:href="@{/{id}(id=${album.id})}" style="text-decoration: none;">
                 <div class="card h-100" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                     <img th:if="${album.imageUrl}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
@@ -52,7 +52,7 @@
                         <h5 class="card-title" th:text="${album.title}">Album Title</h5>
                         <div class="d-flex justify-content-between align-items-center">
                             <p class="card-text m-0">
-                                <strong>Artist:</strong> <span th:text="${album.artist.name}">Artist Name</span><br>
+                                <strong>Artists:</strong> <span th:text="${#strings.listJoin(album.artists.![name], ', ')}">Artist Names</span><br>
                                 <strong>Genre:</strong> <span th:text="${album.genre}">Genre</span><br>
                                 <strong>Year:</strong> <span th:text="${album.year}">Year</span><br>
                             </p>

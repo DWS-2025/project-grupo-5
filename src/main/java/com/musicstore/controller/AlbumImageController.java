@@ -23,19 +23,25 @@ public class AlbumImageController {
         Optional<Album> albumOpt = albumService.getAlbumById(id);
         
         if (albumOpt.isPresent() && albumOpt.get().getImageData() != null) {
-            try {
-                Blob imageBlob = albumOpt.get().getImageData();
-                byte[] imageBytes = imageBlob.getBytes(1, (int) imageBlob.length());
-                
-                return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(imageBytes);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return ResponseEntity.internalServerError().build();
-            }
+            return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(albumOpt.get().getImageData());
         }
         
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/{id}/audio")
+    public ResponseEntity<byte[]> getAlbumAudio(@PathVariable Long id) {
+        Optional<Album> albumOpt = albumService.getAlbumById(id);
+
+        if (albumOpt.isPresent() && albumOpt.get().getAudioData() != null) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(albumOpt.get().getAudioData());
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
 }

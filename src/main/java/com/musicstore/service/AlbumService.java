@@ -69,28 +69,38 @@ public class AlbumService {
         
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                byte[] bytes = imageFile.getBytes();
-                Blob blob = new SerialBlob(bytes);
-                savedAlbum.setImageData(blob);
+                savedAlbum.setImageData(imageFile.getBytes());
                 savedAlbum.setImageUrl("/api/albums/" + savedAlbum.getId() + "/image");
                 return albumRepository.save(savedAlbum);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
-            } catch (SerialException e) {
-                throw new RuntimeException("Failed to create BLOB from image file: " + e.getMessage(), e);
-            } catch (SQLException e) {
-                throw new RuntimeException("Database error while processing image: " + e.getMessage(), e);
             }
         }
         return savedAlbum;
     }
 
+    /*
     public Album saveAlbumWithAudio(Album album, MultipartFile audioFile2) throws IOException {
         if (audioFile2 != null && !audioFile2.isEmpty()) {
             String audioUrl = fileStorageService.storeAudio(audioFile2);
             album.setAudioFile(audioUrl);
         }
         return albumRepository.save(album);
+    }*/
+
+    public Album saveAlbumWithAudio(Album album, MultipartFile audioFile) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
+        Album savedAlbum = albumRepository.save(album);
+
+        if (audioFile != null && !audioFile.isEmpty()) {
+            try {
+                savedAlbum.setAudioData(audioFile.getBytes());
+                savedAlbum.setAudioFile("/api/albums/" + savedAlbum.getId() + "/audio");
+                return albumRepository.save(savedAlbum);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process audio file: " + e.getMessage(), e);
+            }
+        }
+        return savedAlbum;
     }
 
     public void deleteAlbum(Long id) {

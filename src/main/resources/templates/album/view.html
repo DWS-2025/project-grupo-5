@@ -87,7 +87,7 @@
                     <div class="audio-container">
                         <strong class="audio-preview-text">Audio Preview:</strong>
                         <audio th:if="${album.audioFile}" autoplay loop controls controlsList="nodownload noremoteplayback">
-                            <source th:src="@{'/snippets/' + ${album.audioFile}}" type="audio/mpeg">
+                            <source th:src="@{${album.audioFile}}" type="audio/mpeg">
                             Your browser does not support audio playback.
                         </audio>
                         <input type="checkbox" id="checkboxInput">
