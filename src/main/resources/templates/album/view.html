@@ -38,7 +38,13 @@
 
                         <div class="album-info">
                             <h1 class="card-title" th:text="${album.title}">Album Title</h1>
-                            <p class="card-text"><strong>Artist:</strong> <span th:text="${album.artist}">Artist Name</span></p>
+                            <p class="card-text">
+                                <strong>Artist:</strong>
+                                <a th:href="@{/artists/{id}(id=${album.artist.id})}"
+                                   th:text="${#strings.listJoin(album.artists.![name], ', ')}"
+                                   style="color: white; text-decoration: none;">Artist Name</a>
+                            </p>
+
                             <p class="card-text"><strong>Genre:</strong> <span th:text="${album.genre}">Genre</span></p>
                             <p class="card-text"><strong>Year:</strong> <span th:text="${album.year}">Year</span></p>
                             <p class="card-text" th:text="${album.description}">Description</p>

@@ -1,7 +1,10 @@
 package com.musicstore.service;
 
 import com.musicstore.model.Artist;
+import com.musicstore.model.Album;
+import com.musicstore.model.User;
 import com.musicstore.repository.ArtistRepository;
+import com.musicstore.repository.AlbumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +21,9 @@ import java.util.Optional;
 public class ArtistService {
     @Autowired
     private ArtistRepository artistRepository;
+    
+    @Autowired
+    private AlbumRepository albumRepository;
     
     @Autowired
     private FileStorageService fileStorageService;
@@ -51,13 +58,31 @@ public class ArtistService {
         return artistRepository.save(artist);
     }
 
+    /*
     public void saveArtistWithProfileImage(Artist artist, MultipartFile profileImage) throws IOException {
         if (profileImage != null && !profileImage.isEmpty()) {
             String imageUrl = fileStorageService.storeFile(profileImage);
             artist.setImageUrl(imageUrl);
         }
         saveArtist(artist);
+    }*/
+
+    public Artist saveArtistWithProfileImage(Artist artist, MultipartFile imageFile) throws IOException {
+        Artist savedArtist = artistRepository.save(artist);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                byte[] imageData = imageFile.getBytes();
+                savedArtist.setImageData(imageData);
+                savedArtist.setImageUrl("/api/artists/" + savedArtist.getId() + "/image");
+                return artistRepository.save(savedArtist);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
+            }
+        }
+        return savedArtist;
     }
+
 
     public Artist updateArtist(Artist updatedArtist) {
         if (updatedArtist == null || updatedArtist.getId() == null) {
@@ -84,10 +109,24 @@ public class ArtistService {
             throw new IllegalArgumentException("Artist ID cannot be null");
         }
 
-        if (!artistRepository.existsById(id)) {
+        Optional<Artist> artistOpt = artistRepository.findById(id);
+        if (artistOpt.isEmpty()) {
             throw new RuntimeException("Artist not found with ID: " + id);
         }
 
-        artistRepository.deleteById(id);
+        Artist artist = artistOpt.get();
+        List<Album> albums = new ArrayList<>(artist.getAlbums());
+        
+        // Remove artist from all albums and delete albums that have no other artists
+        for (Album album : albums) {
+            album.removeArtist(artist);
+            if (album.getArtists().isEmpty()) {
+                albumRepository.delete(album);
+            } else {
+                albumRepository.save(album);
+            }
+        }
+
+        artistRepository.delete(artist);
     }
 }

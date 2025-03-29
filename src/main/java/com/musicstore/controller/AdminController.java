@@ -1,8 +1,10 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
+import com.musicstore.model.Artist;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
+import com.musicstore.service.ArtistService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -18,6 +22,9 @@ import jakarta.servlet.http.HttpSession;
 public class AdminController {
     @Autowired
     private AlbumService albumService;
+
+    @Autowired
+    private ArtistService artistService;
 
     @GetMapping
     public String listAlbums(Model model, HttpSession session) {
@@ -37,6 +44,7 @@ public class AdminController {
     public String showCreateForm(Model model, HttpSession session) {
 
         User user = (User) session.getAttribute("user");
+        model.addAttribute("artists", artistService.getAllArtists());
 
         if (user == null || !user.getUsername().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
@@ -65,11 +73,10 @@ public class AdminController {
                 return "form";
             }
 
+            Album savedAlbum = albumService.saveAlbum(album);
             try {
                 if (imageFile != null && !imageFile.isEmpty()) {
-                    albumService.saveAlbumWithImage(album, imageFile);
-                } else {
-                    albumService.saveAlbum(album);
+                    savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
                 }
             } catch (IOException e) {
                 // Handle the error appropriately
@@ -95,18 +102,24 @@ public class AdminController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
-
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
-            // handle all the exceptions
-            albumService.getAlbumById(id).ifPresent(album -> model.addAttribute("album", album));
+            albumService.getAlbumById(id).ifPresent(album -> {
+                // Si la lista de artistas es nula o está vacía, inicializamos con un nuevo artista
+                if (album.getArtists() == null || album.getArtists().isEmpty()) {
+                    album.setArtists(new ArrayList<>());
+                    album.getArtists().add(new Artist()); // Añadimos un artista vacío
+                }
+                model.addAttribute("album", album);
+            });
             return "album/form";
         }
     }
+
 
     @PostMapping("/{id}")
     public String updateAlbum(
@@ -183,6 +196,19 @@ public class AdminController {
 
         albumService.deleteAlbum(id);
         return "redirect:/admin";
+        }
+    }
+
+    @GetMapping("/artists")
+    public String listArtists(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else {
+            model.addAttribute("artists", artistService.getAllArtists());
+            return "artist/admin";
         }
     }
 }

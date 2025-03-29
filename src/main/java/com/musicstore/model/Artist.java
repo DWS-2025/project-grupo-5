@@ -19,13 +19,17 @@ public class Artist {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank(message = "Country is required")
+
     private String country;
 
     @ManyToMany(mappedBy = "artists")
     private List<Album> albums = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";
+
+    @Lob
+    @Column(name = "image_data")
+    private byte[] imageData;
 
     // Constructor for string deserialization
     public Artist(String name) {

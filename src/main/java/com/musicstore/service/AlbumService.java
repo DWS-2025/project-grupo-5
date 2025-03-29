@@ -1,7 +1,10 @@
 package com.musicstore.service;
 
 import com.musicstore.model.Album;
+import com.musicstore.model.Artist;
+import com.musicstore.model.User;
 import com.musicstore.repository.AlbumRepository;
+import com.musicstore.repository.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +23,9 @@ public class AlbumService {
     private AlbumRepository albumRepository;
 
     @Autowired
+    private ArtistRepository artistRepository;
+
+    @Autowired
     private FileStorageService fileStorageService;
 
     public List<Album> getAllAlbums() {
@@ -31,6 +37,30 @@ public class AlbumService {
     }
 
     public Album saveAlbum(Album album) {
+        if (album.getArtists() != null && !album.getArtists().isEmpty()) {
+            String artistNamesString = String.join(", ", album.getArtists().stream()
+                .map(Artist::getName)
+                .toList());
+            
+            String[] artistNames = artistNamesString.split("\\s*,\\s*");
+            album.getArtists().clear();
+            
+            for (String artistName : artistNames) {
+                if (artistName != null && !artistName.trim().isEmpty()) {
+                    Optional<Artist> existingArtist = artistRepository.findByNameContainingIgnoreCase(artistName.trim()).stream().findFirst();
+                    Artist artist;
+                    
+                    if (existingArtist.isPresent()) {
+                        artist = existingArtist.get();
+                    } else {
+                        artist = new Artist(artistName.trim());
+                        artist = artistRepository.save(artist);
+                    }
+                    
+                    album.getArtists().add(artist);
+                }
+            }
+        }
         return albumRepository.save(album);
     }
 
@@ -64,6 +94,17 @@ public class AlbumService {
     }
 
     public void deleteAlbum(Long id) {
-        albumRepository.deleteById(id);
+        Optional<Album> albumOpt = albumRepository.findById(id);
+        if (albumOpt.isPresent()) {
+            Album album = albumOpt.get();
+            // Clear favorite relationships
+            for (User user : album.getFavoriteUsers()) {
+                user.getFavoriteAlbums().remove(album);
+            }
+            album.getFavoriteUsers().clear();
+            albumRepository.delete(album);
+        } else {
+            albumRepository.deleteById(id);
+        }
     }
 }
