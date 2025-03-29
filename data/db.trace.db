@@ -220,3 +220,40 @@ The connection was not closed by the application and is garbage collected [90018
 2025-03-29 15:37:09.343132+01:00 jdbc[4]: exception
 org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
 The object is already closed [90007-224]
+2025-03-29 15:44:11.055419+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]
+2025-03-29 15:44:11.060381+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Valor demasiado largo para la columna "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"
+Value too long for column "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"; SQL statement:
+insert into album (applemusic_url,audio_file,average_rating,description,genre,image_data,image_url,spotify_url,tidal_url,title,tracklist,release_year,id) values (?,?,?,?,?,?,?,?,?,?,?,?,default) [22001-224]
+2025-03-29 15:46:03.294979+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]
+2025-03-29 16:02:42.834376+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]
+2025-03-29 16:03:54.780589+01:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLDataException: Valor demasiado largo para la columna "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"
+Value too long for column "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"; SQL statement:
+update album set applemusic_url=?,audio_data=?,audio_file=?,average_rating=?,description=?,genre=?,image_data=?,image_url=?,spotify_url=?,tidal_url=?,title=?,tracklist=?,release_year=? where id=? [22001-224]
+2025-03-29 16:06:12.185962+01:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLDataException: Valor demasiado largo para la columna "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"
+Value too long for column "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"; SQL statement:
+update album set applemusic_url=?,audio_data=?,audio_file=?,average_rating=?,description=?,genre=?,image_data=?,image_url=?,spotify_url=?,tidal_url=?,title=?,tracklist=?,release_year=? where id=? [22001-224]
+2025-03-29 16:08:41.239485+01:00 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLDataException: Valor demasiado largo para la columna "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"
+Value too long for column "DESCRIPTION CHARACTER VARYING(255)": "U&'Ye es el octavo \\00e1lbum de estudio en solitario de Kanye West. El \\00e1lbum... (281)"; SQL statement:
+update album set applemusic_url=?,audio_data=?,audio_file=?,average_rating=?,description=?,genre=?,image_data=?,image_url=?,spotify_url=?,tidal_url=?,title=?,tracklist=?,release_year=? where id=? [22001-224]
+2025-03-29 16:17:30.942419+01:00 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]
+2025-03-29 16:22:45.888948+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]
+2025-03-29 16:22:45.896869+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]
+2025-03-29 16:22:45.907053+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]

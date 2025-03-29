@@ -11,20 +11,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.CascadeType;
-import java.sql.Blob;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.core.JsonParser;
-import java.io.IOException;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 @Data
 @Entity
@@ -61,12 +51,14 @@ public class Album {
     @Column(name = "image_data")
     private byte[] imageData;
 
+    @Lob
+    @Column(name = "audio_data")
+    private byte[] audioData;
+
     private String audioFile;
 
     @Lob
-    @Column(name = "audio_data")
-    private Blob audioData;
-
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
 

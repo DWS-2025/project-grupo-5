@@ -64,35 +64,12 @@ public class AlbumService {
         return albumRepository.save(album);
     }
 
-    /*
     public Album saveAlbumWithImage(Album album, MultipartFile imageFile) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
         Album savedAlbum = albumRepository.save(album);
         
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                byte[] bytes = imageFile.getBytes();
-                Blob blob = new SerialBlob(bytes);
-                savedAlbum.setImageData(blob);
-                savedAlbum.setImageUrl("/api/albums/" + savedAlbum.getId() + "/image");
-                return albumRepository.save(savedAlbum);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
-            } catch (SerialException e) {
-                throw new RuntimeException("Failed to create BLOB from image file: " + e.getMessage(), e);
-            } catch (SQLException e) {
-                throw new RuntimeException("Database error while processing image: " + e.getMessage(), e);
-            }
-        }
-        return savedAlbum;
-    }*/
-
-    public Album saveAlbumWithImage(Album album, MultipartFile imageFile) throws IOException {
-        Album savedAlbum = albumRepository.save(album);
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                byte[] imageData = imageFile.getBytes();
-                savedAlbum.setImageData(imageData);
+                savedAlbum.setImageData(imageFile.getBytes());
                 savedAlbum.setImageUrl("/api/albums/" + savedAlbum.getId() + "/image");
                 return albumRepository.save(savedAlbum);
             } catch (IOException e) {
@@ -111,23 +88,16 @@ public class AlbumService {
         return albumRepository.save(album);
     }*/
 
-
     public Album saveAlbumWithAudio(Album album, MultipartFile audioFile) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
         Album savedAlbum = albumRepository.save(album);
 
         if (audioFile != null && !audioFile.isEmpty()) {
             try {
-                byte[] bytes = audioFile.getBytes();
-                Blob blob = new SerialBlob(bytes);
-                savedAlbum.setAudioData(blob);
+                savedAlbum.setAudioData(audioFile.getBytes());
                 savedAlbum.setAudioFile("/api/albums/" + savedAlbum.getId() + "/audio");
                 return albumRepository.save(savedAlbum);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
-            } catch (SerialException e) {
-                throw new RuntimeException("Failed to create BLOB from image file: " + e.getMessage(), e);
-            } catch (SQLException e) {
-                throw new RuntimeException("Database error while processing image: " + e.getMessage(), e);
+                throw new RuntimeException("Failed to process audio file: " + e.getMessage(), e);
             }
         }
         return savedAlbum;

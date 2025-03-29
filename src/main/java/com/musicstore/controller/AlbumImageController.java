@@ -23,11 +23,9 @@ public class AlbumImageController {
         Optional<Album> albumOpt = albumService.getAlbumById(id);
         
         if (albumOpt.isPresent() && albumOpt.get().getImageData() != null) {
-            byte[] imageBytes = albumOpt.get().getImageData();
-
             return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(imageBytes);
+                .body(albumOpt.get().getImageData());
         }
         
         return ResponseEntity.notFound().build();
@@ -38,18 +36,9 @@ public class AlbumImageController {
         Optional<Album> albumOpt = albumService.getAlbumById(id);
 
         if (albumOpt.isPresent() && albumOpt.get().getAudioData() != null) {
-            try {
-                Blob audioBlob = albumOpt.get().getAudioData();
-                byte[] audioBytes = audioBlob.getBytes(1, (int) audioBlob.length());
-
-                return ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType("audio/mpeg"))
-                        .header("Content-Disposition", "inline")
-                        .body(audioBytes);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return ResponseEntity.internalServerError().build();
-            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(albumOpt.get().getAudioData());
         }
 
         return ResponseEntity.notFound().build();
