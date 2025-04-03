@@ -15,6 +15,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @Entity
@@ -33,6 +35,7 @@ public class Album {
             joinColumns = @JoinColumn(name = "album_id"),
             inverseJoinColumns = @JoinColumn(name = "artist_id")
     )
+    @JsonBackReference
     private List<Artist> artists = new ArrayList<>();
 
     public Artist getArtist() {
@@ -40,6 +43,7 @@ public class Album {
     }
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 
     @NotBlank(message = "Genre is required")
@@ -76,6 +80,7 @@ public class Album {
     private String tidal_url;
 
     @ManyToMany(mappedBy = "favoriteAlbums")
+    @JsonBackReference
     private List<User> favoriteUsers = new ArrayList<>();
 
     private Double averageRating = 0.0;

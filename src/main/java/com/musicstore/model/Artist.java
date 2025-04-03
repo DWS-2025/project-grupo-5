@@ -8,6 +8,7 @@ import java.util.List;
 import java.sql.Blob;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Data
 @Entity
@@ -23,6 +24,7 @@ public class Artist {
     private String country;
 
     @ManyToMany(mappedBy = "artists")
+    @JsonManagedReference
     private List<Album> albums = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";
