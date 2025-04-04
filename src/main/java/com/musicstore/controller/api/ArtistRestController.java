@@ -20,14 +20,45 @@ public class ArtistRestController {
 
     @GetMapping
     public ResponseEntity<List<Artist>> getAllArtists() {
-        return ResponseEntity.ok(artistService.getAllArtists());
+        List<Artist> artists = artistService.getAllArtists();
+        // Clear binary data and break circular references to prevent infinite recursion
+        artists.forEach(artist -> {
+            artist.setImageData(null);
+            if (artist.getAlbums() != null) {
+                artist.getAlbums().forEach(album -> {
+                    album.setImageData(null);
+                    album.setAudioData(null);
+                    album.setArtists(null);
+                });
+            }
+        });
+        return ResponseEntity.ok(artists);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Artist> getArtistById(@PathVariable Long id) {
-        return artistService.getArtistById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        if (id == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            return artistService.getArtistById(id)
+                    .map(artist -> {
+                        // Clear binary data and break circular references
+                        artist.setImageData(null);
+                        if (artist.getAlbums() != null) {
+                            artist.getAlbums().forEach(album -> {
+                                album.setImageData(null);
+                                album.setAudioData(null);
+                                album.setArtists(null);
+                            });
+                        }
+                        return ResponseEntity.ok(artist);
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/name/{name}")
