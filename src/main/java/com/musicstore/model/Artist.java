@@ -8,7 +8,7 @@ import java.util.List;
 import java.sql.Blob;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @Entity
@@ -20,17 +20,17 @@ public class Artist {
     @NotBlank(message = "Name is required")
     private String name;
 
-
     private String country;
 
     @ManyToMany(mappedBy = "artists")
-    @JsonManagedReference
+    @JsonIgnoreProperties({"artists", "reviews", "imageData", "audioData", "favoriteUsers"})
     private List<Album> albums = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";
 
     @Lob
     @Column(name = "image_data")
+    @JsonIgnore
     private byte[] imageData;
 
     // Constructor for string deserialization
@@ -51,12 +51,4 @@ public class Artist {
         albums.remove(album);
         album.getArtists().remove(this);
     }
-    /*
-    @Override
-    public String toString() {
-        return name;
-    }
-
-     */
-
 }

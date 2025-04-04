@@ -10,12 +10,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @Entity
-
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +21,12 @@ public class Review {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "album_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({"reviews", "artists", "imageData", "audioData", "favoriteUsers"})
     private Album album;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({"favoriteAlbums", "password", "email", "imageData", "followers", "following"})
     private User user;
 
     private String username;

@@ -1,5 +1,6 @@
 package com.musicstore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
@@ -35,7 +36,7 @@ public class Album {
             joinColumns = @JoinColumn(name = "album_id"),
             inverseJoinColumns = @JoinColumn(name = "artist_id")
     )
-    @JsonBackReference
+    @JsonIgnoreProperties({"albums", "imageData"})
     private List<Artist> artists = new ArrayList<>();
 
     public Artist getArtist() {
@@ -43,7 +44,7 @@ public class Album {
     }
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnoreProperties({"album", "user"})
     private List<Review> reviews = new ArrayList<>();
 
     @NotBlank(message = "Genre is required")
@@ -53,10 +54,12 @@ public class Album {
 
     @Lob
     @Column(name = "image_data")
+    @JsonIgnoreProperties
     private byte[] imageData;
 
     @Lob
     @Column(name = "audio_data")
+    @JsonIgnoreProperties
     private byte[] audioData;
 
     private String audioFile;
@@ -80,7 +83,7 @@ public class Album {
     private String tidal_url;
 
     @ManyToMany(mappedBy = "favoriteAlbums")
-    @JsonBackReference
+    @JsonIgnoreProperties({"favoriteAlbums", "password", "email", "imageData", "followers", "following"})
     private List<User> favoriteUsers = new ArrayList<>();
 
     private Double averageRating = 0.0;

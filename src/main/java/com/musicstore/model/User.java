@@ -7,6 +7,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Blob;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @Entity
@@ -19,6 +20,7 @@ public class User {
 
     // Default constructor
     public User() {}
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,10 +29,12 @@ public class User {
     private String username;
 
     @NotBlank(message = "Password is required")
+    @JsonIgnoreProperties
     private String password;
 
     @Email(message = "Please provide a valid email address")
     @NotBlank(message = "Email is required")
+    @JsonIgnoreProperties
     private String email;
 
     private boolean isAdmin = false;
@@ -41,6 +45,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "album_id")
     )
+    @JsonIgnoreProperties({"favoriteUsers", "reviews", "imageData", "audioData"})
     private List<Album> favoriteAlbums = new ArrayList<>();
 
     @ElementCollection
@@ -59,7 +64,6 @@ public class User {
 
     @Lob
     @Column(name = "image_data")
+    @JsonIgnoreProperties
     private byte[] imageData;
-
-
 }
