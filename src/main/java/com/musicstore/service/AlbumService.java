@@ -25,9 +25,6 @@ public class AlbumService {
     @Autowired
     private ArtistRepository artistRepository;
 
-    @Autowired
-    private FileStorageService fileStorageService;
-
     public List<Album> getAllAlbums() {
         return albumRepository.findAll();
     }
