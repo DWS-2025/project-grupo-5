@@ -11,6 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Optional;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 @RestController
 @RequestMapping("/api/artists")
@@ -19,8 +27,11 @@ public class ArtistImageController {
     @Autowired
     private ArtistService artistService;
 
+    @Autowired
+    private ArtistMapper artistMapper;
+
     @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getAlbumImage(@PathVariable Long id) {
+    public ResponseEntity<byte[]> getArtistImage(@PathVariable Long id) {
         Optional<Artist> artistOpt = artistService.getArtistById(id);
 
         if (artistOpt.isPresent() && artistOpt.get().getImageData() != null) {

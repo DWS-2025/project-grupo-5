@@ -10,6 +10,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 @RestController
 @RequestMapping("/api/albums")
@@ -18,43 +26,26 @@ public class AlbumRestController {
     @Autowired
     private AlbumService albumService;
 
+    @Autowired
+    private AlbumMapper albumMapper;
+
     @GetMapping
-    public ResponseEntity<List<Album>> getAllAlbums() {
+    public ResponseEntity<List<AlbumDTO>> getAllAlbums() {
         List<Album> albums = albumService.getAllAlbums();
-        // Clear binary data and break circular references to prevent infinite recursion
-        albums.forEach(album -> {
-            album.setImageData(null);
-            album.setAudioData(null);
-            if (album.getArtists() != null) {
-                album.getArtists().forEach(artist -> {
-                    artist.setAlbums(null);
-                    artist.setImageData(null);
-                });
-            }
-        });
-        return ResponseEntity.ok(albums);
+        return ResponseEntity.ok(albums.stream()
+                .map(albumMapper::toDTO)
+                .toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Album> getAlbumById(@PathVariable Long id) {
+    public ResponseEntity<AlbumDTO> getAlbumById(@PathVariable Long id) {
         if (id == null) {
             return ResponseEntity.badRequest().build();
         }
 
         try {
             return albumService.getAlbumById(id)
-                    .map(album -> {
-                        // Clear binary data and break circular references
-                        album.setImageData(null);
-                        album.setAudioData(null);
-                        if (album.getArtists() != null) {
-                            album.getArtists().forEach(artist -> {
-                                artist.setAlbums(null);
-                                artist.setImageData(null);
-                            });
-                        }
-                        return ResponseEntity.ok(album);
-                    })
+                    .map(album -> ResponseEntity.ok(albumMapper.toDTO(album)))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -62,10 +53,11 @@ public class AlbumRestController {
     }
 
     @PostMapping
-    public ResponseEntity<Album> createAlbum(@RequestBody Album album) {
+    public ResponseEntity<AlbumDTO> createAlbum(@RequestBody AlbumDTO albumDTO) {
         try {
+            Album album = albumMapper.toEntity(albumDTO);
             Album savedAlbum = albumService.saveAlbum(album);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
+            return ResponseEntity.status(HttpStatus.CREATED).body(albumMapper.toDTO(savedAlbum));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
@@ -74,16 +66,17 @@ public class AlbumRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Album> updateAlbum(
+    public ResponseEntity<AlbumDTO> updateAlbum(
             @PathVariable Long id,
-            @RequestBody Album album) {
+            @RequestBody AlbumDTO albumDTO) {
         try {
-            return (ResponseEntity<Album>) albumService.getAlbumById(id)
+            return (ResponseEntity<AlbumDTO>) albumService.getAlbumById(id)
                     .map(existingAlbum -> {
+                        Album album = albumMapper.toEntity(albumDTO);
                         album.setId(id);
                         try {
                             Album updatedAlbum = albumService.saveAlbum(album);
-                            return ResponseEntity.ok(updatedAlbum);
+                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum));
                         } catch (RuntimeException e) {
                             return ResponseEntity.status(HttpStatus.CONFLICT).build();
                         }
@@ -107,16 +100,16 @@ public class AlbumRestController {
     }
 
     @PostMapping("/{id}/image")
-    public ResponseEntity<Album> uploadAlbumImage(
+    public ResponseEntity<AlbumDTO> uploadAlbumImage(
             @PathVariable Long id,
             @RequestParam("image") MultipartFile image) {
         try {
-            return (ResponseEntity<Album>) albumService.getAlbumById(id)
+            return (ResponseEntity<AlbumDTO>) albumService.getAlbumById(id)
                     .map(album -> {
                         try {
                             album.setImageData(image.getBytes());
                             Album updatedAlbum = albumService.saveAlbum(album);
-                            return ResponseEntity.ok(updatedAlbum);
+                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum));
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }
