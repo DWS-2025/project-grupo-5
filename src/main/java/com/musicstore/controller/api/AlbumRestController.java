@@ -3,6 +3,7 @@ package com.musicstore.controller.api;
 import com.musicstore.model.Album;
 import com.musicstore.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,8 @@ import com.musicstore.mapper.UserMapper;
 import com.musicstore.mapper.AlbumMapper;
 import com.musicstore.mapper.ReviewMapper;
 import com.musicstore.mapper.ArtistMapper;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/albums")
