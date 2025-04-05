@@ -7,6 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 import java.util.List;
 
@@ -20,17 +28,22 @@ public class ReviewRestController {
     @Autowired
     private AlbumService albumService;
 
+    @Autowired
+    private ReviewMapper reviewMapper;
+
     @GetMapping("/album/{albumId}")
-    public ResponseEntity<List<Review>> getReviewsByAlbum(@PathVariable Long albumId) {
+    public ResponseEntity<List<ReviewDTO>> getReviewsByAlbum(@PathVariable Long albumId) {
         List<Review> reviews = reviewService.getReviewsByAlbumId(albumId);
-        return ResponseEntity.ok(reviews);
+        return ResponseEntity.ok(reviews.stream()
+                .map(reviewMapper::toDTO)
+                .toList());
     }
 
     @GetMapping("/{reviewId}")
-    public ResponseEntity<Review> getReviewById(@PathVariable Long reviewId) {
+    public ResponseEntity<ReviewDTO> getReviewById(@PathVariable Long reviewId) {
         try {
             return reviewService.getReviewById(null, reviewId)
-                    .map(ResponseEntity::ok)
+                    .map(review -> ResponseEntity.ok(reviewMapper.toDTO(review)))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -38,15 +51,16 @@ public class ReviewRestController {
     }
 
     @PostMapping("/album/{albumId}")
-    public ResponseEntity<Review> createReview(
+    public ResponseEntity<ReviewDTO> createReview(
             @PathVariable Long albumId,
-            @RequestBody Review review) {
+            @RequestBody ReviewDTO reviewDTO) {
         try {
-            if (review == null || review.getRating() < 1 || review.getRating() > 5 || 
-                review.getContent() == null || review.getContent().isBlank()) {
+            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 || 
+                reviewDTO.content() == null || reviewDTO.content().isBlank()) {
                 return ResponseEntity.badRequest().build();
             }
 
+            Review review = reviewMapper.toEntity(reviewDTO);
             review.setAlbumId(albumId);
             Review savedReview = reviewService.addReview(albumId, review);
 
@@ -56,7 +70,7 @@ public class ReviewRestController {
                 albumService.saveAlbum(album);
             });
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+            return ResponseEntity.status(HttpStatus.CREATED).body(reviewMapper.toDTO(savedReview));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
@@ -65,21 +79,22 @@ public class ReviewRestController {
     }
 
     @PutMapping("/album/{albumId}/review/{reviewId}")
-    public ResponseEntity<Review> updateReview(
+    public ResponseEntity<ReviewDTO> updateReview(
             @PathVariable Long albumId,
             @PathVariable Long reviewId,
-            @RequestBody Review review) {
+            @RequestBody ReviewDTO reviewDTO) {
         try {
-            if (review == null || review.getRating() < 1 || review.getRating() > 5 || 
-                review.getContent() == null || review.getContent().isBlank()) {
+            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 || 
+                reviewDTO.content() == null || reviewDTO.content().isBlank()) {
                 return ResponseEntity.badRequest().build();
             }
 
-            return (ResponseEntity<Review>) reviewService.getReviewById(albumId, reviewId)
+            return (ResponseEntity<ReviewDTO>) reviewService.getReviewById(albumId, reviewId)
                     .map(existingReview -> {
                         try {
-                            existingReview.setContent(review.getContent());
-                            existingReview.setRating(review.getRating());
+                            Review reviewToUpdate = reviewMapper.toEntity(reviewDTO);
+                            existingReview.setContent(reviewToUpdate.getContent());
+                            existingReview.setRating(reviewToUpdate.getRating());
                             Review updatedReview = reviewService.updateReview(albumId, existingReview);
 
                             // Update album's average rating
@@ -88,7 +103,7 @@ public class ReviewRestController {
                                 albumService.saveAlbum(album);
                             });
 
-                            return ResponseEntity.ok(updatedReview);
+                            return ResponseEntity.ok(reviewMapper.toDTO(updatedReview));
                         } catch (RuntimeException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }
