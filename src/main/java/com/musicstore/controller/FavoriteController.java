@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.mapper.UserMapper;
 
 @Controller
 @RequestMapping("/favorites")
@@ -22,6 +24,9 @@ public class FavoriteController {
 
     @Autowired
     private AlbumService albumService;
+    
+    @Autowired
+    private UserMapper userMapper;
 
     // Add album to favorites
 
@@ -51,8 +56,8 @@ public class FavoriteController {
             // Add album to the favorites section of the user
             userService.addFavoriteAlbum(auxUserId, albumId, session);
 
-            User currentUser = userService.getUserById(auxUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            User currentUser = userMapper.toEntity(userService.getUserById(auxUserId)
+                .orElseThrow(() -> new RuntimeException("User not found")));
             if (!album.getFavoriteUsers().contains(currentUser)) {
                 album.getFavoriteUsers().add(currentUser);
                 albumService.saveAlbum(album); // Save changes
@@ -92,8 +97,8 @@ public class FavoriteController {
             userService.deleteFavoriteAlbum(userId, albumId, session);
 
             // Delete the user from the album's favorite users list
-            User currentUser = userService.getUserById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            User currentUser = userMapper.toEntity(userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found")));
             if (album.getFavoriteUsers().contains(currentUser)) {
                 album.getFavoriteUsers().remove(currentUser);
                 albumService.saveAlbum(album); // Save the album

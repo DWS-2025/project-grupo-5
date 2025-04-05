@@ -1,12 +1,7 @@
 package com.musicstore.service;
 
 import com.musicstore.dto.UserDTO;
-import com.musicstore.dto.AlbumDTO;
-import com.musicstore.dto.ReviewDTO;
 import com.musicstore.mapper.UserMapper;
-import com.musicstore.mapper.AlbumMapper;
-import com.musicstore.mapper.ReviewMapper;
-import com.musicstore.mapper.ArtistMapper;
 import com.musicstore.model.Album;
 import com.musicstore.model.Review;
 import com.musicstore.model.User;
@@ -17,15 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
-import java.io.File;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -35,72 +26,71 @@ public class UserService {
     private ReviewService reviewService;
     @Autowired
     private AlbumService albumService;
+    @Autowired
+    private UserMapper userMapper;
 
     @Transactional
     public void deleteUser(String username) {
-        Optional<User> userToDelete = getUserByUsername(username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (userToDelete.isPresent()) {
-            User user = userToDelete.get();
-            // Get all reviews by this user and delete them
-            List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
+        // Get all reviews by this user and delete them
+        List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
 
-            // Collect all affected album IDs before deleting reviews
-            List<Long> affectedAlbumIds = userReviews.stream()
-                .map(Review::getAlbumId)
-                .distinct()
-                .toList();
+        // Collect all affected album IDs before deleting reviews
+        List<Long> affectedAlbumIds = userReviews.stream()
+            .map(Review::getAlbumId)
+            .distinct()
+            .toList();
 
-            // Delete all reviews first
-            for (Review review : userReviews) {
-                reviewService.deleteReview(review.getAlbumId(), review.getId());
-            }
-
-            // Update the average ratings of all affected albums
-            for (Long albumId : affectedAlbumIds) {
-                albumService.getAlbumById(albumId).ifPresent(album -> {
-                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbum(album);
-                });
-            }
-
-            // Remove user from all albums' favorites
-            for (Album album : user.getFavoriteAlbums()) {
-                album.getFavoriteUsers().remove(user.getId().toString());
-                albumService.saveAlbum(album);
-            }
-
-            // Delete the user
-            userRepository.delete(user);
-        } else {
-            throw new RuntimeException("User not found");
+        // Delete all reviews first
+        for (Review review : userReviews) {
+            reviewService.deleteReview(review.getAlbumId(), review.getId());
         }
-    }
 
+        // Update the average ratings of all affected albums
+        for (Long albumId : affectedAlbumIds) {
+            albumService.getAlbumById(albumId).ifPresent(album -> {
+                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                albumService.saveAlbum(album);
+            });
+        }
+
+        // Remove user from all albums' favorites
+        for (Album album : user.getFavoriteAlbums()) {
+            album.getFavoriteUsers().remove(user.getId().toString());
+            albumService.saveAlbum(album);
+        }
+
+        // Delete the user
+        userRepository.delete(user);
+    }
     public List<String> getUsernamesByAlbumId(Long albumId) {
         return userRepository.findUsernamesByFavoriteAlbumId(albumId);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        return userMapper.toDTOList(userRepository.findAll());
     }
 
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserDTO> getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(userMapper::toDTO);
     }
 
     @Transactional
-    public User saveUser(User user) {
-        if (user.getId() == null) {
-            if (userRepository.existsByUsername(user.getUsername())) {
+    public UserDTO saveUser(UserDTO userDTO) {
+        if (userDTO.id() == null) {
+            if (userRepository.existsByUsername(userDTO.username())) {
                 throw new RuntimeException("Username already exists");
             }
         }
-        return userRepository.save(user);
+        User user = userMapper.toEntity(userDTO);
+        return userMapper.toDTO(userRepository.save(user));
     }
 
     public Optional<User> authenticateUser(String username, String password) {
@@ -108,26 +98,23 @@ public class UserService {
     }
 
     @Transactional
-    public User registerUser(User user) {
-        if (user == null) {
+    public UserDTO registerUser(UserDTO userDTO) {
+        if (userDTO == null) {
             throw new RuntimeException("User cannot be null");
         }
-        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+        if (userDTO.username() == null || userDTO.username().trim().isEmpty()) {
             throw new RuntimeException("Username cannot be empty");
         }
-        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            throw new RuntimeException("Password cannot be empty");
-        }
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+        if (userDTO.email() == null || userDTO.email().trim().isEmpty()) {
             throw new RuntimeException("Email cannot be empty");
         }
-        if (userRepository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(userDTO.username())) {
             throw new RuntimeException("Username already exists");
         }
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(userDTO.email())) {
             throw new RuntimeException("Email already exists");
         }
-        return saveUser(user);
+        return saveUser(userDTO);
     }
 
     @Transactional
@@ -146,7 +133,7 @@ public class UserService {
 
     public List<Long> getFavoriteAlbums(String username) {
         return getUserByUsername(username)
-                .map(user -> user.getFavoriteAlbums().stream()
+                .<List<Long>>map(user -> user.getFavoriteAlbums().stream()
                         .map(Album::getId)
                         .toList())
                 .orElse(new ArrayList<>());
@@ -154,7 +141,7 @@ public class UserService {
 
     public boolean isAlbumInFavorites(String username, Long albumId) {
         return getUserByUsername(username)
-                .map(user -> user.getFavoriteAlbums().stream()
+                .<Boolean>map(user -> user.getFavoriteAlbums().stream()
                         .anyMatch(album -> album.getId().equals(albumId)))
                 .orElse(false);
     }
@@ -203,7 +190,8 @@ public class UserService {
         userRepository.save(user);
     }*/
 
-    public User saveUserWithProfileImage(User user, MultipartFile imageFile) throws IOException {
+    public UserDTO saveUserWithProfileImage(UserDTO userDTO, MultipartFile imageFile) throws IOException {
+        User user = userMapper.toEntity(userDTO);
         User savedUser = userRepository.save(user);
 
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -211,36 +199,37 @@ public class UserService {
                 byte[] imageData = imageFile.getBytes();
                 savedUser.setImageData(imageData);
                 savedUser.setImageUrl("/api/users/" + savedUser.getId() + "/image");
-                return userRepository.save(savedUser);
+                return userMapper.toDTO(userRepository.save(savedUser));
             } catch (IOException e) {
                 throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
             }
         }
-        return savedUser;
+        return userMapper.toDTO(savedUser);
     }
 
 
     @Transactional
-    public User updateUser(User updatedUser) {
-        if (updatedUser == null || updatedUser.getId() == null) {
+    public UserDTO updateUser(UserDTO updatedUserDTO) {
+        if (updatedUserDTO == null || updatedUserDTO.id() == null) {
             throw new RuntimeException("User or user ID cannot be null");
         }
 
-        User existingUser = userRepository.findById(updatedUser.getId())
+        User existingUser = userRepository.findById(updatedUserDTO.id())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Check if the new username is already taken by another user
-        Optional<User> userWithUsername = userRepository.findByUsername(updatedUser.getUsername());
-        if (userWithUsername.isPresent() && !userWithUsername.get().getId().equals(updatedUser.getId())) {
+        Optional<User> userWithUsername = userRepository.findByUsername(updatedUserDTO.username());
+        if (userWithUsername.isPresent() && !userWithUsername.get().getId().equals(updatedUserDTO.id())) {
             throw new RuntimeException("Username already exists");
         }
 
+        User updatedUser = userMapper.toEntity(updatedUserDTO);
         // Preserve the password if not provided in the update
         if (updatedUser.getPassword() == null || updatedUser.getPassword().trim().isEmpty()) {
             updatedUser.setPassword(existingUser.getPassword());
         }
 
-        return userRepository.save(updatedUser);
+        return userMapper.toDTO(userRepository.save(updatedUser));
     }
 
     @Transactional
@@ -285,7 +274,7 @@ public class UserService {
 
     public boolean isFollowing(Long followerId, Long targetUserId) {
         return getUserById(followerId)
-                .map(user -> user.getFollowing().contains(targetUserId))
+                .map(user -> user.following().contains(targetUserId))
                 .orElse(false);
     }
 }

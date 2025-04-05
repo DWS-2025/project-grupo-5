@@ -10,6 +10,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
+import java.util.ArrayList;
 
 @Controller
 public class AuthController {
@@ -47,12 +56,26 @@ public class AuthController {
 
             // Check if email already exists
             if (userService.getAllUsers().stream().anyMatch(existingUser ->
-                    existingUser.getEmail().equalsIgnoreCase(user.getEmail()))) {
+                    existingUser.email().equalsIgnoreCase(user.getEmail()))) {
                 model.addAttribute("error", "Email already in use");
                 return "error";
             }
 
-            userService.registerUser(user);
+            // Convert User to UserDTO
+            UserDTO userDTO = new UserDTO(
+                null,
+                user.getUsername(),
+                user.getPassword(),
+                user.getEmail(),
+                false,
+                null,
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            userService.registerUser(userDTO);
             redirectAttributes.addFlashAttribute("success", "Registration successful. Please login.");
             return "redirect:/login";
         } catch (RuntimeException e) {

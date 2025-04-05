@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 public record UserDTO(
     Long id,
     String username,
+    String password,
     String email,
     boolean isAdmin,
     String imageUrl,
+    byte[] imageData,
     List<Long> followers,
     List<Long> following,
     List<Long> favoriteAlbumIds
@@ -18,9 +20,11 @@ public record UserDTO(
         return new UserDTO(
             user.getId(),
             user.getUsername(),
+            user.getPassword(),
             user.getEmail(),
             user.isAdmin(),
             user.getImageUrl(),
+            user.getImageData(),
             user.getFollowers(),
             user.getFollowing(),
             user.getFavoriteAlbums().stream()
@@ -36,8 +40,39 @@ public record UserDTO(
         user.setEmail(this.email());
         user.setAdmin(this.isAdmin());
         user.setImageUrl(this.imageUrl());
+        user.setImageData(this.imageData());
         user.setFollowers(this.followers());
         user.setFollowing(this.following());
         return user;
+    }
+
+    public UserDTO withId(Long newId) {
+        return new UserDTO(
+            newId,
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.imageUrl(),
+            this.imageData(),
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds
+        );
+    }
+
+    public UserDTO withImageData(byte[] newImageData) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.imageUrl(),
+            newImageData,
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds
+        );
     }
 }

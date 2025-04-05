@@ -15,6 +15,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 @Component
 public class DataLoader {
@@ -34,17 +42,27 @@ public class DataLoader {
 
     @PostConstruct
     public void loadData() {
-        //loadAdminUser();
+        loadAdminUser();
     }
 
 
+    @Autowired
+    private UserMapper userMapper;
+
     private void loadAdminUser() {
         if (userService.getAllUsers().isEmpty()) {
-            User adminUser = new User();
-            adminUser.setUsername("admin");
-            adminUser.setPassword("admin");
-            adminUser.setEmail("admin@echoreview.com");
-            adminUser.setAdmin(true);
+            UserDTO adminUser = new UserDTO(
+                null,
+                "admin",
+                "admin",
+                "admin@echoreview.com",
+                true,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
             try {
                 userService.registerUser(adminUser);
                 System.out.println("Usuario administrador creado exitosamente");

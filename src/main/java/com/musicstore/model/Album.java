@@ -94,6 +94,7 @@ public class Album {
             return;
         }
         double sum = reviews.stream()
+                .filter(review -> review != null)
                 .mapToInt(Review::getRating)
                 .sum();
         this.averageRating = sum / reviews.size();

@@ -22,6 +22,15 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 @Controller
 public class ProfileController{
@@ -33,6 +42,9 @@ public class ProfileController{
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
@@ -75,17 +87,27 @@ public class ProfileController{
                 updatedUser.setPassword(currentUser.getPassword());
             }
 
-            // Keep the following parameters
-            updatedUser.setId(currentUser.getId());
-            updatedUser.setFavoriteAlbums(currentUser.getFavoriteAlbums());
-            updatedUser.setFollowers(currentUser.getFollowers());
-            updatedUser.setFollowing(currentUser.getFollowing());
+            // Create DTO with updated parameters
+            UserDTO updatedUserDTO = new UserDTO(
+                currentUser.getId(),
+                updatedUser.getUsername(),
+                updatedUser.getPassword(),
+                updatedUser.getEmail(),
+                currentUser.isAdmin(),
+                currentUser.getImageUrl(),
+                currentUser.getImageData(),
+                currentUser.getFollowers(),
+                currentUser.getFollowing(),
+                currentUser.getFavoriteAlbums().stream()
+                    .map(album -> album.getId())
+                    .collect(Collectors.toList())
+            );
 
             try {
                 // Handle profile image upload if provided
                 if (imageFile != null && !imageFile.isEmpty()) {
                     try {
-                        userService.saveUserWithProfileImage(updatedUser, imageFile);
+                        userService.saveUserWithProfileImage(updatedUserDTO, imageFile);
                     } catch (IOException e) {
                         model.addAttribute("error", "Error uploading profile image");
                         model.addAttribute("user", currentUser);
@@ -93,8 +115,7 @@ public class ProfileController{
                     }
                 } else {
                     // If no new image, keep the existing one
-                    updatedUser.setImageUrl(currentUser.getImageUrl());
-                    userService.updateUser(updatedUser);
+                    userService.saveUser(updatedUserDTO);
                 }
 
                 session.setAttribute("user", updatedUser);
@@ -161,13 +182,25 @@ public class ProfileController{
                 .map(id -> userService.getUserById(id))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toMap(User::getUsername, User::getImageUrl, (a, b) -> a));
+                .map(user -> userMapper.toDTO(user.toUser())) // aquí explícitamente usamos el User
+                .collect(Collectors.toMap(
+                        UserDTO::username,
+                        UserDTO::imageUrl,
+                        (a, b) -> a,
+                        HashMap::new
+                ));
 
         Map<String, String> followingUsers = profileUser.getFollowing().stream()
                 .map(id -> userService.getUserById(id))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toMap(User::getUsername, User::getImageUrl, (a, b) -> a));
+                .map(user -> userMapper.toDTO(user.toUser())) // aquí explícitamente usamos el User
+                .collect(Collectors.toMap(
+                        UserDTO::username,
+                        UserDTO::imageUrl,
+                        (a, b) -> a,
+                        HashMap::new
+                ));
 
         model.addAttribute("followersUsers", followersUsers);
         model.addAttribute("followingUsers", followingUsers);
