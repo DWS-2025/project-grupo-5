@@ -52,7 +52,7 @@
     <h2 id="sectionTitle" class="mb-4">Popular Albums</h2>
 
     <div id="albumsGrid" class="row row-cols-1 row-cols-md-3 g-4">
-        <div th:each="album : ${albums}" class="col" th:data-id="${album.id}" th:data-artist="${album.artist.name}">
+        <div th:each="album, iterStat : ${albums}" th:if="${iterStat.index < 15}" class="col album-item" th:data-id="${album.id}" th:data-artist="${album.artist.name}">
             <a th:href="@{/{id}(id=${album.id})}" class="text-decoration-none">
                 <div class="card h-100 shadow-sm hover-effect">
                     <img th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
@@ -65,10 +65,29 @@
                 </div>
             </a>
         </div>
+        <template id="albumTemplate">
+            <div class="col album-item" style="display: none;" th:each="album, iterStat : ${albums}" th:if="${iterStat.index >= 15}" th:data-id="${album.id}" th:data-artist="${album.artist.name}">
+                <a th:href="@{/{id}(id=${album.id})}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${album.title}">Album Title</h5>
+                            <p class="card-text">
+                                <strong>Artists:</strong> <span th:text="${#strings.listJoin(album.artists.![name], ', ')}">Artist Names</span><br>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </template>
     </div>
 
     <div class="alert alert-info d-none" id="noResults">
         No albums found matching your search.
+    </div>
+
+    <div class="text-center mt-4 mb-4">
+        <button id="loadMoreBtn" class="btn btn-success" onclick="loadMore()">Cargar más álbumes</button>
     </div>
 
 </div>
@@ -76,27 +95,56 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script>
+    let currentPage = 0;
+    const itemsPerPage = 15;
+    let allAlbumsLoaded = false;
+
     function filterAlbums() {
         const searchInput = document.getElementById("searchInput").value.toLowerCase();
-        const albumCards = document.querySelectorAll("#albumsGrid .col");
+        const albumCards = document.querySelectorAll(".album-item");
         let hasResults = false;
 
         albumCards.forEach(card => {
-            const albumTitle = card.textContent.toLowerCase();
-            if (albumTitle.includes(searchInput)) {
-                card.style.display = "";
-                hasResults = true;
-            } else {
-                card.style.display = "none";
+            if (card.style.display !== 'none') {
+                const albumTitle = card.textContent.toLowerCase();
+                if (albumTitle.includes(searchInput)) {
+                    card.style.display = "";
+                    hasResults = true;
+                } else {
+                    card.style.display = "none";
+                }
             }
         });
 
-        // Mostrar o ocultar el mensaje "No albums found"
         const noResultsAlert = document.getElementById("noResults");
         if (hasResults) {
             noResultsAlert.classList.add("d-none");
         } else {
             noResultsAlert.classList.remove("d-none");
+        }
+    }
+
+    function loadMore() {
+        const template = document.getElementById('albumTemplate');
+        const hiddenAlbums = template.content.querySelectorAll('.album-item');
+        const startIndex = currentPage * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        let albumsLoaded = 0;
+
+        hiddenAlbums.forEach((album, index) => {
+            if (index >= startIndex && index < endIndex) {
+                const clone = album.cloneNode(true);
+                clone.style.display = "";
+                document.getElementById('albumsGrid').appendChild(clone);
+                albumsLoaded++;
+            }
+        });
+
+        currentPage++;
+
+        if (albumsLoaded < itemsPerPage || startIndex + albumsLoaded >= hiddenAlbums.length) {
+            document.getElementById('loadMoreBtn').style.display = 'none';
+            allAlbumsLoaded = true;
         }
     }
 

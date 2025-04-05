@@ -15,6 +15,9 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class AlbumService {
@@ -30,6 +33,11 @@ public class AlbumService {
 
     public List<Album> getAllAlbums() {
         return albumRepository.findAll();
+    }
+
+    public Page<Album> getAlbumsPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return albumRepository.findAll(pageable);
     }
 
     public Optional<Album> getAlbumById(Long id) {
