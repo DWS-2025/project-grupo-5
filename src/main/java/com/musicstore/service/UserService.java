@@ -1,5 +1,12 @@
 package com.musicstore.service;
 
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 import com.musicstore.model.Album;
 import com.musicstore.model.Review;
 import com.musicstore.model.User;
