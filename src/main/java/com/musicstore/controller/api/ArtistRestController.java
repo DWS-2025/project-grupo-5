@@ -10,6 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.mapper.ArtistMapper;
 
 @RestController
 @RequestMapping("/api/artists")
@@ -18,43 +21,27 @@ public class ArtistRestController {
     @Autowired
     private ArtistService artistService;
 
+    @Autowired
+    private ArtistMapper artistMapper;
+
     @GetMapping
-    public ResponseEntity<List<Artist>> getAllArtists() {
+    public ResponseEntity<List<ArtistDTO>> getAllArtists() {
         List<Artist> artists = artistService.getAllArtists();
-        // Clear binary data and break circular references to prevent infinite recursion
-        artists.forEach(artist -> {
-            artist.setImageData(null);
-            if (artist.getAlbums() != null) {
-                artist.getAlbums().forEach(album -> {
-                    album.setImageData(null);
-                    album.setAudioData(null);
-                    album.setArtists(null);
-                });
-            }
-        });
-        return ResponseEntity.ok(artists);
+        List<ArtistDTO> artistDTOs = artists.stream()
+                .map(artistMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(artistDTOs);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Artist> getArtistById(@PathVariable Long id) {
+    public ResponseEntity<ArtistDTO> getArtistById(@PathVariable Long id) {
         if (id == null) {
             return ResponseEntity.badRequest().build();
         }
 
         try {
             return artistService.getArtistById(id)
-                    .map(artist -> {
-                        // Clear binary data and break circular references
-                        artist.setImageData(null);
-                        if (artist.getAlbums() != null) {
-                            artist.getAlbums().forEach(album -> {
-                                album.setImageData(null);
-                                album.setAudioData(null);
-                                album.setArtists(null);
-                            });
-                        }
-                        return ResponseEntity.ok(artist);
-                    })
+                    .map(artist -> ResponseEntity.ok(artistMapper.toDTO(artist)))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -62,10 +49,10 @@ public class ArtistRestController {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<Artist> getArtistByName(@PathVariable String name) {
+    public ResponseEntity<ArtistDTO> getArtistByName(@PathVariable String name) {
         try {
             return artistService.getArtistByName(name)
-                    .map(ResponseEntity::ok)
+                    .map(artist -> ResponseEntity.ok(artistMapper.toDTO(artist)))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -73,10 +60,12 @@ public class ArtistRestController {
     }
 
     @PostMapping
-    public ResponseEntity<Artist> createArtist(@RequestBody Artist artist) {
+    public ResponseEntity<ArtistDTO> createArtist(@RequestBody ArtistDTO artistDTO) {
         try {
+            Artist artist = artistMapper.toEntity(artistDTO);
             Artist savedArtist = artistService.saveArtist(artist);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedArtist);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(artistMapper.toDTO(savedArtist));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
@@ -85,16 +74,17 @@ public class ArtistRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Artist> updateArtist(
+    public ResponseEntity<ArtistDTO> updateArtist(
             @PathVariable Long id,
-            @RequestBody Artist artist) {
+            @RequestBody ArtistDTO artistDTO) {
         try {
-            return (ResponseEntity<Artist>) artistService.getArtistById(id)
+            return (ResponseEntity<ArtistDTO>) artistService.getArtistById(id)
                     .map(existingArtist -> {
-                        artist.setId(id);
+                        Artist artistToUpdate = artistMapper.toEntity(artistDTO);
+                        artistToUpdate.setId(id);
                         try {
-                            Artist updatedArtist = artistService.updateArtist(artist);
-                            return ResponseEntity.ok(updatedArtist);
+                            Artist updatedArtist = artistService.updateArtist(artistToUpdate);
+                            return ResponseEntity.ok(artistMapper.toDTO(updatedArtist));
                         } catch (RuntimeException e) {
                             return ResponseEntity.status(HttpStatus.CONFLICT).build();
                         }
@@ -118,15 +108,15 @@ public class ArtistRestController {
     }
 
     @PostMapping("/{id}/image")
-    public ResponseEntity<Artist> uploadArtistImage(
+    public ResponseEntity<ArtistDTO> uploadArtistImage(
             @PathVariable Long id,
             @RequestParam("image") MultipartFile image) {
         try {
-            return (ResponseEntity<Artist>) artistService.getArtistById(id)
+            return (ResponseEntity<ArtistDTO>) artistService.getArtistById(id)
                     .map(artist -> {
                         try {
                             Artist updatedArtist = artistService.saveArtistWithProfileImage(artist, image);
-                            return ResponseEntity.ok(updatedArtist);
+                            return ResponseEntity.ok(artistMapper.toDTO(updatedArtist));
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }
