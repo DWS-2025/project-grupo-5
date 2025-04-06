@@ -13,6 +13,13 @@ public record ReviewDTO(
     String content,
     int rating
 ) {
+
+    public ReviewDTO setAlbumTitle(String albumImageUrl) {
+        return new ReviewDTO(id, albumId, userId, username, userImageUrl, albumTitle, albumImageUrl, content, rating);
+    }
+    public ReviewDTO setAlbumImageUrl(String albumImageUrl) {
+        return new ReviewDTO(id, albumId, userId, username, userImageUrl, albumTitle, albumImageUrl, content, rating);
+    }
     public static ReviewDTO fromReview(Review review) {
         return new ReviewDTO(
             review.getId(),

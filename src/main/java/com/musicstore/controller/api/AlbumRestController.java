@@ -34,7 +34,7 @@ public class AlbumRestController {
 
     @GetMapping
     public ResponseEntity<List<AlbumDTO>> getAllAlbums() {
-        List<Album> albums = albumService.getAllAlbums();
+        List<AlbumDTO> albums = albumService.getAllAlbums();
         return ResponseEntity.ok(albums.stream()
                 .map(albumMapper::toDTO)
                 .toList());
@@ -48,7 +48,7 @@ public class AlbumRestController {
 
         try {
             return albumService.getAlbumById(id)
-                    .map(album -> ResponseEntity.ok(albumMapper.toDTO(album)))
+                    .map(album -> ResponseEntity.ok(albumMapper.toDTO(album.toAlbum())))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -111,7 +111,7 @@ public class AlbumRestController {
                     .map(album -> {
                         try {
                             album.setImageData(image.getBytes());
-                            Album updatedAlbum = albumService.saveAlbum(album);
+                            Album updatedAlbum = albumService.saveAlbum(album).toAlbum();
                             return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum));
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

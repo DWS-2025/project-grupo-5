@@ -1,5 +1,6 @@
 package com.musicstore.controller;
 
+import com.musicstore.dto.AlbumDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
@@ -45,13 +46,13 @@ public class FavoriteController {
             Long auxUserId = user.getId();
 
             // Search album
-            Optional<Album> albumOptional = albumService.getAlbumById(albumId);
+            Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
             if (albumOptional.isEmpty()) {
                 model.addAttribute("error", "Album not found.");
                 return "error";
             }
 
-            Album album = albumOptional.get();
+            Album album = albumOptional.get().toAlbum();
 
             // Add album to the favorites section of the user
             userService.addFavoriteAlbum(auxUserId, albumId, session);
@@ -60,7 +61,7 @@ public class FavoriteController {
                 .orElseThrow(() -> new RuntimeException("User not found")));
             if (!album.getFavoriteUsers().contains(currentUser)) {
                 album.getFavoriteUsers().add(currentUser);
-                albumService.saveAlbum(album); // Save changes
+                albumService.saveAlbum(AlbumDTO.fromAlbum(album)); // Save changes
             }
 
             return "redirect:/" + albumId; // Redirect to the favorites page
@@ -85,13 +86,13 @@ public class FavoriteController {
             Long userId = user.getId();
 
             // Search album
-            Optional<Album> albumOptional = albumService.getAlbumById(albumId);
+            Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
             if (albumOptional.isEmpty()) {
                 model.addAttribute("error", "Album not found.");
                 return "error";
             }
 
-            Album album = albumOptional.get();
+            Album album = albumOptional.get().toAlbum();
 
             // Delete the album of the user favorites
             userService.deleteFavoriteAlbum(userId, albumId, session);
@@ -101,7 +102,7 @@ public class FavoriteController {
                 .orElseThrow(() -> new RuntimeException("User not found")));
             if (album.getFavoriteUsers().contains(currentUser)) {
                 album.getFavoriteUsers().remove(currentUser);
-                albumService.saveAlbum(album); // Save the album
+                albumService.saveAlbum(AlbumDTO.fromAlbum(album)); // Save the album
             }
 
             return "redirect:/" + albumId; // Render the favorites page
@@ -122,15 +123,15 @@ public class FavoriteController {
             return "error";
         }
 
-        List<Album> favoriteAlbums = favoriteAlbumIds.stream()
+        List<AlbumDTO> favoriteAlbums = favoriteAlbumIds.stream()
                 .map(albumId -> albumService.getAlbumById(albumId).orElse(null))
                 .filter(album -> album != null)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).reversed();
 
         // Get the user information (including the profile image)
-        Optional<User> userOpt = userService.getUserByUsername(username);
+        Optional<UserDTO> userOpt = userService.getUserByUsername(username);
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
+            User user = userOpt.get().toUser();
             model.addAttribute("userProfileImage", user.getImageUrl()); // Add user profile image URL
         }
 

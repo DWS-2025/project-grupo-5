@@ -1,8 +1,9 @@
 package com.musicstore.controller;
 
-import com.musicstore.model.Album;
+import com.musicstore.dto.AlbumDTO;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.ReviewService;
+import com.musicstore.mapper.AlbumMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,16 +22,19 @@ public class TopAlbumsController {
     
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private AlbumMapper albumMapper;
     
     @GetMapping
     public String showTopAlbums(@RequestParam(required = false, defaultValue = "likes") String sortBy, Model model) {
-        List<Album> allAlbums = albumService.getAllAlbums();
+        List<AlbumDTO> allAlbums = albumService.getAllAlbums();
         
         allAlbums.forEach(album -> {
-            album.updateAverageRating(reviewService.getReviewsByAlbumId(album.getId()));
+            album.updateAverageRating(reviewService.getReviewsByAlbumId(album.id()));
         });
     
-        List<Album> topAlbums;
+        List<AlbumDTO> topAlbums;
         if (sortBy.equals("rating")) {
             topAlbums = allAlbums.stream()
                     .sorted((a1, a2) -> Double.compare(a2.getAverageRating(), a1.getAverageRating()))

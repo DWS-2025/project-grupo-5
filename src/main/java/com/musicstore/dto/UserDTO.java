@@ -75,4 +75,64 @@ public record UserDTO(
             this.favoriteAlbumIds
         );
     }
+
+    public UserDTO withImageUrl(String newImageUrl) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            newImageUrl,
+            this.imageData(),
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds
+        );
+    }
+
+    public UserDTO withFavoriteAlbumIds(List<Long> newFavoriteAlbumIds) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.imageUrl(),
+            this.imageData(),
+            this.followers(),
+            this.following(),
+            newFavoriteAlbumIds
+        );
+    }
+
+    public UserDTO withFollowing(List<Long> newFollowing) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.imageUrl(),
+            this.imageData(),
+            this.followers(),
+            newFollowing,
+            this.favoriteAlbumIds
+        );
+    }
+
+    public UserDTO withFollowers(List<Long> newFollowers) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.imageUrl(),
+            this.imageData(),
+            newFollowers,
+            this.following(),
+            this.favoriteAlbumIds
+        );
+    }
 }

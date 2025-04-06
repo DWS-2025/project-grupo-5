@@ -1,6 +1,7 @@
 package com.musicstore.controller;
 
 
+import com.musicstore.dto.ReviewDTO;
 import com.musicstore.model.Review;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.ArtistService;
@@ -70,7 +71,7 @@ public class HomeController {
             model.addAttribute("favoriteUsernames", usernames);
 
             // Get reviews and map user IDs to usernames and profile images
-            List<Review> reviews = reviewService.getReviewsByAlbumId(id);
+            List<ReviewDTO> reviews = reviewService.getReviewsByAlbumId(id);
             reviews.forEach(review -> {
                 if (review.getUser() != null) {
                     review.setUsername(review.getUser().getUsername());

@@ -26,7 +26,7 @@ public class ArtistRestController {
 
     @GetMapping
     public ResponseEntity<List<ArtistDTO>> getAllArtists() {
-        List<Artist> artists = artistService.getAllArtists();
+        List<ArtistDTO> artists = artistService.getAllArtists();
         List<ArtistDTO> artistDTOs = artists.stream()
                 .map(artistMapper::toDTO)
                 .collect(Collectors.toList());
@@ -41,7 +41,7 @@ public class ArtistRestController {
 
         try {
             return artistService.getArtistById(id)
-                    .map(artist -> ResponseEntity.ok(artistMapper.toDTO(artist)))
+                    .map(artist -> ResponseEntity.ok(artistMapper.toDTO(artist.toArtist())))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -52,7 +52,7 @@ public class ArtistRestController {
     public ResponseEntity<ArtistDTO> getArtistByName(@PathVariable String name) {
         try {
             return artistService.getArtistByName(name)
-                    .map(artist -> ResponseEntity.ok(artistMapper.toDTO(artist)))
+                    .map(artist -> ResponseEntity.ok(artistMapper.toDTO(artist.toArtist())))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -63,7 +63,7 @@ public class ArtistRestController {
     public ResponseEntity<ArtistDTO> createArtist(@RequestBody ArtistDTO artistDTO) {
         try {
             Artist artist = artistMapper.toEntity(artistDTO);
-            Artist savedArtist = artistService.saveArtist(artist);
+            Artist savedArtist = artistService.saveArtist(ArtistDTO.fromArtist(artist)).toArtist();
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(artistMapper.toDTO(savedArtist));
         } catch (IllegalArgumentException e) {
@@ -115,7 +115,7 @@ public class ArtistRestController {
             return (ResponseEntity<ArtistDTO>) artistService.getArtistById(id)
                     .map(artist -> {
                         try {
-                            Artist updatedArtist = artistService.saveArtistWithProfileImage(artist, image);
+                            Artist updatedArtist = artistService.saveArtistWithProfileImage(artist, image).toArtist();
                             return ResponseEntity.ok(artistMapper.toDTO(updatedArtist));
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

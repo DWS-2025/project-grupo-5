@@ -1,5 +1,6 @@
 package com.musicstore.controller;
 
+import com.musicstore.dto.AlbumDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
 import com.musicstore.model.User;
@@ -73,10 +74,10 @@ public class AdminController {
                 return "form";
             }
 
-            Album savedAlbum = albumService.saveAlbum(album);
+            Album savedAlbum = albumService.saveAlbum(AlbumDTO.fromAlbum(album)).toAlbum();
             try {
                 if (imageFile != null && !imageFile.isEmpty()) {
-                    savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
+                    savedAlbum = albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(savedAlbum), imageFile).toAlbum();
                 }
             } catch (IOException e) {
                 // Handle the error appropriately
@@ -88,13 +89,13 @@ public class AdminController {
                 String[] tracklistArray = album.getTracklist().split("\\r?\\n");
                 String concatenatedTracklist = String.join(" + ", tracklistArray);
                 album.setTracklist(concatenatedTracklist);
-            } albumService.saveAlbum(album);
+            } albumService.saveAlbum(AlbumDTO.fromAlbum(album));
 
             if (audioFile2 != null && !audioFile2.isEmpty()) {
-                albumService.saveAlbumWithAudio(album, audioFile2);
+                albumService.saveAlbumWithAudio(AlbumDTO.fromAlbum(album), audioFile2);
             } else {
                 // If there is no audio, it will save the album without audio.
-                albumService.saveAlbum(album);
+                albumService.saveAlbum(AlbumDTO.fromAlbum(album));
             }
             return "redirect:/admin";
         }
@@ -143,7 +144,7 @@ public class AdminController {
             }
 
             Album existingAlbum = albumService.getAlbumById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id));
+                    .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id)).toAlbum();
 
             existingAlbum.setTitle(album.getTitle());
             existingAlbum.setArtists(album.getArtists());
@@ -161,13 +162,13 @@ public class AdminController {
                 existingAlbum.setTracklist(concatenatedTracklist);
             }
 
-            albumService.saveAlbum(existingAlbum);
+            albumService.saveAlbum(AlbumDTO.fromAlbum(existingAlbum));
 
             try {
                 if (imageFile != null && !imageFile.isEmpty()) {
-                    albumService.saveAlbumWithImage(existingAlbum, imageFile);
+                    albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(existingAlbum), imageFile);
                 } else {
-                    albumService.saveAlbum(existingAlbum);
+                    albumService.saveAlbum(AlbumDTO.fromAlbum(existingAlbum));
                 }
             } catch (IOException e) {
                 // Handle the error appropriately
@@ -176,9 +177,9 @@ public class AdminController {
             }
 
             if (audioFile2 != null && !audioFile2.isEmpty()) {
-                albumService.saveAlbumWithAudio(existingAlbum, audioFile2);
+                albumService.saveAlbumWithAudio(AlbumDTO.fromAlbum(existingAlbum), audioFile2);
             } else {
-                albumService.saveAlbum(existingAlbum);
+                albumService.saveAlbum(AlbumDTO.fromAlbum(existingAlbum));
             }
             return "redirect:/admin";
         }

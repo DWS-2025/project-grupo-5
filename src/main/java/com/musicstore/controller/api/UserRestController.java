@@ -46,7 +46,7 @@ public class UserRestController {
     @GetMapping("/username/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username)
-                .map(user -> ResponseEntity.ok(UserDTO.fromUser(user)))
+                .map(user -> ResponseEntity.ok(UserDTO.fromUser(user.toUser())))
                 .orElse(ResponseEntity.notFound().build());
     }
 

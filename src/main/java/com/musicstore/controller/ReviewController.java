@@ -1,7 +1,6 @@
 package com.musicstore.controller;
 
 import com.musicstore.model.Album;
-import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.ReviewService;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.musicstore.dto.ReviewDTO;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
@@ -87,8 +87,8 @@ public class ReviewController {
                 return "redirect:/" + albumId;
             }
 
-            Review existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (existingReview != null && existingReview.getUsername().equals(user.getUsername())) {
+            ReviewDTO existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
+            if (existingReview != null && existingReview.username().equals(user.getUsername())) {
                 ReviewDTO reviewDTO = new ReviewDTO(
                     reviewId,
                     albumId,
@@ -120,8 +120,8 @@ public class ReviewController {
     ) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            Review review = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (review != null && (review.getUsername().equals(user.getUsername()) || user.isAdmin())) {
+            ReviewDTO review = reviewService.getReviewById(albumId, reviewId).orElse(null);
+            if (review != null && (review.username().equals(user.getUsername()) || user.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
 
                 // Update album's average rating
@@ -140,13 +140,13 @@ public class ReviewController {
         User currentUser = (User) session.getAttribute("user");
         model.addAttribute("currentUser", currentUser);
 
-        Optional<User> userOpt = userService.getUserByUsername(username);
+        Optional<UserDTO> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
             model.addAttribute("error", "User not found");
             return "error";
         }
 
-        User profileUser = userOpt.get();
+        User profileUser = userOpt.get().toUser();
         model.addAttribute("profileUser", profileUser);
 
         String profileImageUrl = profileUser.getImageUrl();
@@ -158,11 +158,10 @@ public class ReviewController {
         favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
         model.addAttribute("favoriteAlbums", favoriteAlbums);
 
-        List<Review> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
         userReviews.forEach(review -> {
-            albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
-                review.setAlbumTitle(album.getTitle());
-               review.setAlbumImageUrl(album.getImageUrl());
+            albumService.getAlbumById(review.albumId()).ifPresent(album -> {
+                // No need to set album title and image URL as they are already in the DTO
             });
         });
 

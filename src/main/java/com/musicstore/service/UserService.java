@@ -1,7 +1,9 @@
 package com.musicstore.service;
 
 import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ReviewDTO;
 import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
 import com.musicstore.model.Album;
 import com.musicstore.model.Review;
 import com.musicstore.model.User;
@@ -28,42 +30,51 @@ public class UserService {
     private AlbumService albumService;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private AlbumMapper albumMapper;
 
     @Transactional
     public void deleteUser(String username) {
-        User user = userRepository.findByUsername(username)
+        UserDTO userDTO = getUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Get all reviews by this user and delete them
-        List<Review> userReviews = reviewService.getReviewsByUserId(user.getId());
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(userDTO.id());
 
         // Collect all affected album IDs before deleting reviews
         List<Long> affectedAlbumIds = userReviews.stream()
-            .map(Review::getAlbumId)
+            .map(ReviewDTO::albumId)
             .distinct()
             .toList();
 
         // Delete all reviews first
-        for (Review review : userReviews) {
-            reviewService.deleteReview(review.getAlbumId(), review.getId());
+        for (ReviewDTO review : userReviews) {
+            reviewService.deleteReview(review.albumId(), review.id());
         }
 
         // Update the average ratings of all affected albums
         for (Long albumId : affectedAlbumIds) {
-            albumService.getAlbumById(albumId).ifPresent(album -> {
-                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                albumService.saveAlbum(album);
+            albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                List<ReviewDTO> albumReviews = reviewService.getReviewsByAlbumId(albumId);
+                double averageRating = albumReviews.stream()
+                    .mapToInt(ReviewDTO::rating)
+                    .average()
+                    .orElse(0.0);
+                albumDTO = albumDTO.updateAverageRating(albumReviews);
+                albumService.saveAlbum(albumDTO);
             });
         }
 
         // Remove user from all albums' favorites
-        for (Album album : user.getFavoriteAlbums()) {
-            album.getFavoriteUsers().remove(user.getId().toString());
-            albumService.saveAlbum(album);
+        for (Long albumId : userDTO.favoriteAlbumIds()) {
+            albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                albumDTO.getFavoriteUsers().remove(userDTO.id().toString());
+                albumService.saveAlbum(albumDTO);
+            });
         }
 
         // Delete the user
-        userRepository.delete(user);
+        userRepository.delete(userMapper.toEntity(userDTO));
     }
     public List<String> getUsernamesByAlbumId(Long albumId) {
         return userRepository.findUsernamesByFavoriteAlbumId(albumId);
@@ -73,8 +84,9 @@ public class UserService {
         return userMapper.toDTOList(userRepository.findAll());
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<UserDTO> getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(userMapper::toDTO);
     }
 
     public Optional<UserDTO> getUserById(Long id) {
@@ -93,8 +105,9 @@ public class UserService {
         return userMapper.toDTO(userRepository.save(user));
     }
 
-    public Optional<User> authenticateUser(String username, String password) {
-        return userRepository.findByUsernameAndPassword(username, password);
+    public Optional<UserDTO> authenticateUser(String username, String password) {
+        return userRepository.findByUsernameAndPassword(username, password)
+                .map(userMapper::toDTO);
     }
 
     @Transactional
@@ -118,47 +131,51 @@ public class UserService {
     }
 
     @Transactional
-    public void addFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
-        User user = userRepository.findById(userId)
+    public UserDTO addFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
+        UserDTO userDTO = getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        albumService.getAlbumById(albumId).ifPresent(album -> {
-            if (!user.getFavoriteAlbums().contains(album)) {
-                user.getFavoriteAlbums().add(album);
-                userRepository.save(user);
-                session.setAttribute("user", user);
+        return albumService.getAlbumById(albumId).map(albumDTO -> {
+            if (!userDTO.favoriteAlbumIds().contains(albumId)) {
+                List<Long> updatedFavorites = new ArrayList<>(userDTO.favoriteAlbumIds());
+                updatedFavorites.add(albumId);
+                UserDTO updatedUserDTO = userDTO.withFavoriteAlbumIds(updatedFavorites);
+                UserDTO savedUserDTO = saveUser(updatedUserDTO);
+                session.setAttribute("user", savedUserDTO);
+                return savedUserDTO;
             }
-        });
+            return userDTO;
+        }).orElseThrow(() -> new RuntimeException("Album not found"));
     }
 
     public List<Long> getFavoriteAlbums(String username) {
         return getUserByUsername(username)
-                .<List<Long>>map(user -> user.getFavoriteAlbums().stream()
-                        .map(Album::getId)
-                        .toList())
+                .map(UserDTO::favoriteAlbumIds)
                 .orElse(new ArrayList<>());
     }
 
     public boolean isAlbumInFavorites(String username, Long albumId) {
         return getUserByUsername(username)
-                .<Boolean>map(user -> user.getFavoriteAlbums().stream()
-                        .anyMatch(album -> album.getId().equals(albumId)))
+                .map(userDTO -> userDTO.favoriteAlbumIds().contains(albumId))
                 .orElse(false);
     }
 
     @Transactional
-    public void deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
-        User user = userRepository.findById(userId)
+    public UserDTO deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
+        UserDTO userDTO = getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        albumService.getAlbumById(albumId).ifPresent(album -> {
-            if (user.getFavoriteAlbums().remove(album)) {
-                userRepository.save(user);
-                session.setAttribute("user", user);
-            } else {
-                throw new RuntimeException("Album not found in user's favorites");
+        return albumService.getAlbumById(albumId).map(albumDTO -> {
+            if (userDTO.favoriteAlbumIds().contains(albumId)) {
+                List<Long> updatedFavorites = new ArrayList<>(userDTO.favoriteAlbumIds());
+                updatedFavorites.remove(albumId);
+                UserDTO updatedUserDTO = userDTO.withFavoriteAlbumIds(updatedFavorites);
+                UserDTO savedUserDTO = saveUser(updatedUserDTO);
+                session.setAttribute("user",savedUserDTO);
+                return savedUserDTO;
             }
-        });
+            throw new RuntimeException("Album not found in user's favorites");
+        }).orElseThrow(() -> new RuntimeException("Album not found"));
     }
 
     /*
@@ -191,20 +208,18 @@ public class UserService {
     }*/
 
     public UserDTO saveUserWithProfileImage(UserDTO userDTO, MultipartFile imageFile) throws IOException {
-        User user = userMapper.toEntity(userDTO);
-        User savedUser = userRepository.save(user);
-
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
                 byte[] imageData = imageFile.getBytes();
-                savedUser.setImageData(imageData);
-                savedUser.setImageUrl("/api/users/" + savedUser.getId() + "/image");
-                return userMapper.toDTO(userRepository.save(savedUser));
+                userDTO = userDTO
+                    .withImageData(imageData)
+                    .withImageUrl("/api/users/" + (userDTO.id() != null ? userDTO.id() : "") + "/image");
             } catch (IOException e) {
                 throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
             }
         }
-        return userMapper.toDTO(savedUser);
+        
+        return saveUser(userDTO);
     }
 
 
@@ -233,43 +248,59 @@ public class UserService {
     }
 
     @Transactional
-    public void followUser(Long followerId, Long targetUserId, HttpSession session) {
+    public UserDTO followUser(Long followerId, Long targetUserId, HttpSession session) {
         if (followerId.equals(targetUserId)) {
             throw new RuntimeException("Users cannot follow themselves");
         }
 
-        User follower = userRepository.findById(followerId)
+        UserDTO followerDTO = getUserById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower user not found"));
-        User target = userRepository.findById(targetUserId)
+        UserDTO targetDTO = getUserById(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
-        if (!follower.getFollowing().contains(targetUserId)) {
-            follower.getFollowing().add(targetUserId);
-            target.getFollowers().add(followerId);
+        if (!followerDTO.following().contains(targetUserId)) {
+            List<Long> updatedFollowing = new ArrayList<>(followerDTO.following());
+            List<Long> updatedTargetFollowers = new ArrayList<>(targetDTO.followers());
+            
+            updatedFollowing.add(targetUserId);
+            updatedTargetFollowers.add(followerId);
 
-            userRepository.save(follower);
-            userRepository.save(target);
+            UserDTO updatedFollowerDTO = followerDTO.withFollowing(updatedFollowing);
+            UserDTO updatedTargetDTO = targetDTO.withFollowers(updatedTargetFollowers);
 
-            session.setAttribute("user", follower);
+            UserDTO savedFollowerDTO = saveUser(updatedFollowerDTO);
+            saveUser(updatedTargetDTO);
+
+            session.setAttribute("user", savedFollowerDTO);
+            return savedFollowerDTO;
         }
+        return followerDTO;
     }
 
     @Transactional
-    public void unfollowUser(Long followerId, Long targetUserId, HttpSession session) {
-        User follower = userRepository.findById(followerId)
+    public UserDTO unfollowUser(Long followerId, Long targetUserId, HttpSession session) {
+        UserDTO followerDTO = getUserById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower user not found"));
-        User target = userRepository.findById(targetUserId)
+        UserDTO targetDTO = getUserById(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
-        if (follower.getFollowing().contains(targetUserId)) {
-            follower.getFollowing().remove(targetUserId);
-            target.getFollowers().remove(followerId);
+        if (followerDTO.following().contains(targetUserId)) {
+            List<Long> updatedFollowing = new ArrayList<>(followerDTO.following());
+            List<Long> updatedTargetFollowers = new ArrayList<>(targetDTO.followers());
+            
+            updatedFollowing.remove(targetUserId);
+            updatedTargetFollowers.remove(followerId);
 
-            userRepository.save(follower);
-            userRepository.save(target);
+            UserDTO updatedFollowerDTO = followerDTO.withFollowing(updatedFollowing);
+            UserDTO updatedTargetDTO = targetDTO.withFollowers(updatedTargetFollowers);
 
-            session.setAttribute("user", follower);
+            UserDTO savedFollowerDTO = saveUser(updatedFollowerDTO);
+            saveUser(updatedTargetDTO);
+
+            session.setAttribute("user", savedFollowerDTO);
+            return savedFollowerDTO;
         }
+        return followerDTO;
     }
 
     public boolean isFollowing(Long followerId, Long targetUserId) {

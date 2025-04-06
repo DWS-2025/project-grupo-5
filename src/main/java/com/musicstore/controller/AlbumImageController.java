@@ -1,5 +1,6 @@
 package com.musicstore.controller;
 
+import com.musicstore.dto.AlbumDTO;
 import com.musicstore.model.Album;
 import com.musicstore.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class AlbumImageController {
 
     @GetMapping("/{id}/image")
     public ResponseEntity<byte[]> getAlbumImage(@PathVariable Long id) {
-        Optional<Album> albumOpt = albumService.getAlbumById(id);
+        Optional<AlbumDTO> albumOpt = albumService.getAlbumById(id);
         
         if (albumOpt.isPresent() && albumOpt.get().getImageData() != null) {
             return ResponseEntity.ok()
@@ -33,7 +34,7 @@ public class AlbumImageController {
 
     @GetMapping("/{id}/audio")
     public ResponseEntity<byte[]> getAlbumAudio(@PathVariable Long id) {
-        Optional<Album> albumOpt = albumService.getAlbumById(id);
+        Optional<AlbumDTO> albumOpt = albumService.getAlbumById(id);
 
         if (albumOpt.isPresent() && albumOpt.get().getAudioData() != null) {
             return ResponseEntity.ok()

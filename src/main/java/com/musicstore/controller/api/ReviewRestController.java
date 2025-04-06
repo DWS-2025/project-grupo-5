@@ -1,6 +1,5 @@
 package com.musicstore.controller.api;
 
-import com.musicstore.model.Review;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +22,12 @@ public class ReviewRestController {
 
     @GetMapping("/album/{albumId}")
     public ResponseEntity<List<ReviewDTO>> getReviewsByAlbum(@PathVariable Long albumId) {
-        List<Review> reviews = reviewService.getReviewsByAlbumId(albumId);
-        List<ReviewDTO> reviewDTOs = reviews.stream()
-                .map(ReviewDTO::fromReview)
-                .toList();
-        return ResponseEntity.ok(reviewDTOs);
+        List<ReviewDTO> reviews = reviewService.getReviewsByAlbumId(albumId);
+        return ResponseEntity.ok(reviews);
     }
 
     @GetMapping("/{reviewId}")
-    public ResponseEntity<Review> getReviewById(@PathVariable Long reviewId) {
+    public ResponseEntity<ReviewDTO> getReviewById(@PathVariable Long reviewId) {
         try {
             return reviewService.getReviewById(null, reviewId)
                     .map(ResponseEntity::ok)

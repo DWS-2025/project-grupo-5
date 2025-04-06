@@ -32,7 +32,7 @@ public class ArtistImageController {
 
     @GetMapping("/{id}/image")
     public ResponseEntity<byte[]> getArtistImage(@PathVariable Long id) {
-        Optional<Artist> artistOpt = artistService.getArtistById(id);
+        Optional<ArtistDTO> artistOpt = artistService.getArtistById(id);
 
         if (artistOpt.isPresent() && artistOpt.get().getImageData() != null) {
             byte[] imageBytes = artistOpt.get().getImageData();

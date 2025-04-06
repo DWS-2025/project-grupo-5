@@ -137,11 +137,11 @@ public class ProfileController{
         }
 
         // Get all reviews by this user
-        List<Review> userReviews = reviewService.getReviewsByUserId(currentUser.getId());
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(currentUser.getId());
 
         // Collect all affected album IDs before deleting reviews
         List<Long> affectedAlbumIds = userReviews.stream()
-                .map(Review::getAlbumId)
+                .map(ReviewDTO::albumId)
                 .distinct()
                 .toList();
 
@@ -168,13 +168,13 @@ public class ProfileController{
         User currentUser = (User) session.getAttribute("user");
         model.addAttribute("currentUser", currentUser);
 
-        Optional<User> userOpt = userService.getUserByUsername(username);
+        Optional<UserDTO> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
             model.addAttribute("error", "User not found");
             return "error";
         }
 
-        User profileUser = userOpt.get();
+        User profileUser = userOpt.get().toUser();
         model.addAttribute("profileUser", profileUser);
 
         // Get followers and following usernames with their profile images
@@ -216,13 +216,13 @@ public class ProfileController{
         model.addAttribute("favoriteAlbums", favoriteAlbums2);
 
         // Get reviews and associate them with albums
-        List<Review> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
-        List<Review> userReviews2 = reviewService.getReviewsByUserId(profileUser.getId());
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
+        List<ReviewDTO> userReviews2 = reviewService.getReviewsByUserId(profileUser.getId());
 
         userReviews.forEach(review -> {
-            albumService.getAlbumById(review.getAlbumId()).ifPresent(album -> {
-                review.setAlbumTitle(album.getTitle());
-                review.setAlbumImageUrl(album.getImageUrl());
+            albumService.getAlbumById(review.albumId()).ifPresent(album -> {
+                review.setAlbumTitle(album.title());
+                review.setAlbumImageUrl(album.imageUrl());
             });
         });
 

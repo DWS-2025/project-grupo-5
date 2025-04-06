@@ -2,103 +2,121 @@ package com.musicstore.service;
 
 import com.musicstore.model.Artist;
 import com.musicstore.model.Album;
-import com.musicstore.model.User;
 import com.musicstore.repository.ArtistRepository;
 import com.musicstore.repository.AlbumRepository;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.mapper.ArtistMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ArtistService {
+
     @Autowired
     private ArtistRepository artistRepository;
-    
+
     @Autowired
     private AlbumRepository albumRepository;
 
-    public List<Artist> getAllArtists() {
-        return artistRepository.findAll();
+    @Autowired
+    private ArtistMapper artistMapper;
+
+    public List<ArtistDTO> getAllArtists() {
+        return artistMapper.toDTOList(artistRepository.findAll());
     }
 
-    public Optional<Artist> getArtistByName(String name) {
+    public Optional<ArtistDTO> getArtistByName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Artist name cannot be null or empty");
         }
-        return artistRepository.findByNameContainingIgnoreCase(name.trim()).stream().findFirst();
+
+        return artistRepository.findByNameContainingIgnoreCase(name.trim())
+                .stream()
+                .findFirst()
+                .map(artistMapper::toDTO);
     }
 
-    public Optional<Artist> getArtistById(Long id) {
+    public Optional<ArtistDTO> getArtistById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Artist ID cannot be null");
         }
-        return artistRepository.findById(id);
+
+        return artistRepository.findById(id)
+                .map(artistMapper::toDTO);
     }
 
-    public Artist saveArtist(Artist artist) {
-        if (artist == null) {
+    public ArtistDTO saveArtist(ArtistDTO artistDTO) {
+        if (artistDTO == null) {
             throw new IllegalArgumentException("Artist cannot be null");
         }
 
-        if (artist.getId() == null && artistRepository.findByNameContainingIgnoreCase(artist.getName()).stream().findFirst().isPresent()) {
+        Artist artist = artistMapper.toEntity(artistDTO);
+
+        if (artist.getId() == null && artistRepository.findByNameContainingIgnoreCase(artist.getName())
+                .stream()
+                .findFirst()
+                .isPresent()) {
             throw new RuntimeException("Artist name already exists");
         }
 
-        return artistRepository.save(artist);
+        return artistMapper.toDTO(artistRepository.save(artist));
     }
 
-    /*
-    public void saveArtistWithProfileImage(Artist artist, MultipartFile profileImage) throws IOException {
-        if (profileImage != null && !profileImage.isEmpty()) {
-            String imageUrl = fileStorageService.storeFile(profileImage);
-            artist.setImageUrl(imageUrl);
+    public ArtistDTO saveArtistWithProfileImage(ArtistDTO artistDTO, MultipartFile imageFile) throws IOException {
+        if (artistDTO == null || artistDTO.name() == null || artistDTO.name().trim().isEmpty()) {
+            throw new IllegalArgumentException("Artist and artist name cannot be null or empty");
         }
-        saveArtist(artist);
-    }*/
 
-    public Artist saveArtistWithProfileImage(Artist artist, MultipartFile imageFile) throws IOException {
-        Artist savedArtist = artistRepository.save(artist);
+        Artist artist = artistMapper.toEntity(artistDTO);
 
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                byte[] imageData = imageFile.getBytes();
-                savedArtist.setImageData(imageData);
-                savedArtist.setImageUrl("/api/artists/" + savedArtist.getId() + "/image");
-                return artistRepository.save(savedArtist);
+                artist.setImageData(imageFile.getBytes());
+                // Guardamos sin ID al principio, luego se actualizará al guardar
             } catch (IOException e) {
                 throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
             }
         }
-        return savedArtist;
+
+        Artist savedArtist = artistRepository.save(artist);
+
+        if (savedArtist.getImageData() != null) {
+            savedArtist.setImageUrl("/api/artists/" + savedArtist.getId() + "/image");
+            savedArtist = artistRepository.save(savedArtist); // actualizamos con URL
+        }
+
+        return artistMapper.toDTO(savedArtist);
     }
 
-
-    public Artist updateArtist(Artist updatedArtist) {
-        if (updatedArtist == null || updatedArtist.getId() == null) {
+    public ArtistDTO updateArtist(ArtistDTO artistDTO) {
+        if (artistDTO == null || artistDTO.id() == null) {
             throw new IllegalArgumentException("Artist or Artist ID cannot be null");
         }
 
-        if (!artistRepository.existsById(updatedArtist.getId())) {
-            throw new RuntimeException("Artist not found with ID: " + updatedArtist.getId());
+        Long id = artistDTO.id();
+
+        if (!artistRepository.existsById(id)) {
+            throw new RuntimeException("Artist not found with ID: " + id);
         }
 
-        List<Artist> existingArtists = artistRepository.findByNameContainingIgnoreCase(updatedArtist.getName());
+        Artist artist = artistMapper.toEntity(artistDTO);
+
+        List<Artist> existingArtists = artistRepository.findByNameContainingIgnoreCase(artist.getName());
         boolean nameExists = existingArtists.stream()
-                .anyMatch(artist -> !artist.getId().equals(updatedArtist.getId()));
+                .anyMatch(a -> !a.getId().equals(id));
 
         if (nameExists) {
-            throw new RuntimeException("Artist name already exists");
+            throw new RuntimeException("Artist name already exists for another artist");
         }
 
-        return artistRepository.save(updatedArtist);
+        return artistMapper.toDTO(artistRepository.save(artist));
     }
 
     public void deleteArtist(Long id) {
@@ -107,14 +125,14 @@ public class ArtistService {
         }
 
         Optional<Artist> artistOpt = artistRepository.findById(id);
+
         if (artistOpt.isEmpty()) {
             throw new RuntimeException("Artist not found with ID: " + id);
         }
 
         Artist artist = artistOpt.get();
         List<Album> albums = new ArrayList<>(artist.getAlbums());
-        
-        // Remove artist from all albums and delete albums that have no other artists
+
         for (Album album : albums) {
             album.removeArtist(artist);
             if (album.getArtists().isEmpty()) {

@@ -1,5 +1,7 @@
 package com.musicstore.controller;
 
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ArtistDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.User;
 import com.musicstore.model.Artist;
@@ -30,8 +32,8 @@ public class ArtistController {
     @GetMapping
     public String artistHome(Model model, HttpSession session) {
         try {
-            List<Artist> artists = artistService.getAllArtists();
-            List<Album> albums = albumService.getAllAlbums();
+            List<ArtistDTO> artists = artistService.getAllArtists();
+            List<AlbumDTO> albums = albumService.getAllAlbums();
 
             // The albums are already associated with artists through JPA relationships
             // No need for manual filtering as the relationship is maintained by the database
@@ -56,13 +58,13 @@ public class ArtistController {
     @GetMapping("/{id}")
     public String viewArtist(@PathVariable Long id, Model model, HttpSession session) {
         try {
-            Optional<Artist> artistOpt = artistService.getArtistById(id);
+            Optional<ArtistDTO> artistOpt = artistService.getArtistById(id);
             if (artistOpt.isEmpty()) {
                 model.addAttribute("error", "Artist not found");
                 return "error";
             }
 
-            Artist artist = artistOpt.get();
+            Artist artist = artistOpt.get().toArtist();
             // The albums are already associated with the artist through JPA relationships
             List<Album> albums = artist.getAlbums();
 
@@ -106,9 +108,9 @@ public class ArtistController {
 
         try {
             if (imageFile != null && !imageFile.isEmpty()) {
-                artistService.saveArtistWithProfileImage(artist, imageFile);
+                artistService.saveArtistWithProfileImage(ArtistDTO.fromArtist(artist), imageFile);
             } else {
-                artistService.saveArtist(artist);
+                artistService.saveArtist(ArtistDTO.fromArtist(artist));
             }
             return "redirect:/artists";
         } catch (Exception e) {
@@ -126,7 +128,7 @@ public class ArtistController {
         }
 
         try {
-            Optional<Artist> artistOpt = artistService.getArtistById(id);
+            Optional<ArtistDTO> artistOpt = artistService.getArtistById(id);
             if (artistOpt.isEmpty()) {
                 model.addAttribute("error", "Artist not found");
                 return "error";
@@ -160,9 +162,9 @@ public class ArtistController {
         try {
             artist.setId(id); // Ensure the ID is set correctly
             if (imageFile != null && !imageFile.isEmpty()) {
-                artistService.saveArtistWithProfileImage(artist, imageFile);
+                artistService.saveArtistWithProfileImage(ArtistDTO.fromArtist(artist), imageFile);
             } else {
-                artistService.updateArtist(artist);
+                artistService.updateArtist(ArtistDTO.fromArtist(artist));
             }
             return "redirect:/artists";
         } catch (Exception e) {
