@@ -7,14 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.musicstore.dto.UserDTO;
-import com.musicstore.dto.ArtistDTO;
-import com.musicstore.dto.AlbumDTO;
 import com.musicstore.dto.ReviewDTO;
-import com.musicstore.mapper.UserMapper;
-import com.musicstore.mapper.AlbumMapper;
-import com.musicstore.mapper.ReviewMapper;
-import com.musicstore.mapper.ArtistMapper;
 
 import java.util.List;
 
@@ -28,22 +21,20 @@ public class ReviewRestController {
     @Autowired
     private AlbumService albumService;
 
-    @Autowired
-    private ReviewMapper reviewMapper;
-
     @GetMapping("/album/{albumId}")
     public ResponseEntity<List<ReviewDTO>> getReviewsByAlbum(@PathVariable Long albumId) {
         List<Review> reviews = reviewService.getReviewsByAlbumId(albumId);
-        return ResponseEntity.ok(reviews.stream()
-                .map(reviewMapper::toDTO)
-                .toList());
+        List<ReviewDTO> reviewDTOs = reviews.stream()
+                .map(ReviewDTO::fromReview)
+                .toList();
+        return ResponseEntity.ok(reviewDTOs);
     }
 
     @GetMapping("/{reviewId}")
-    public ResponseEntity<ReviewDTO> getReviewById(@PathVariable Long reviewId) {
+    public ResponseEntity<Review> getReviewById(@PathVariable Long reviewId) {
         try {
             return reviewService.getReviewById(null, reviewId)
-                    .map(review -> ResponseEntity.ok(reviewMapper.toDTO(review)))
+                    .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -60,9 +51,7 @@ public class ReviewRestController {
                 return ResponseEntity.badRequest().build();
             }
 
-            Review review = reviewMapper.toEntity(reviewDTO);
-            review.setAlbumId(albumId);
-            Review savedReview = reviewService.addReview(albumId, review);
+            ReviewDTO savedReview = ReviewDTO.fromReview(reviewService.addReview(albumId, reviewDTO));
 
             // Update album's average rating
             albumService.getAlbumById(albumId).ifPresent(album -> {
@@ -70,7 +59,7 @@ public class ReviewRestController {
                 albumService.saveAlbum(album);
             });
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(reviewMapper.toDTO(savedReview));
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
@@ -92,10 +81,7 @@ public class ReviewRestController {
             return (ResponseEntity<ReviewDTO>) reviewService.getReviewById(albumId, reviewId)
                     .map(existingReview -> {
                         try {
-                            Review reviewToUpdate = reviewMapper.toEntity(reviewDTO);
-                            existingReview.setContent(reviewToUpdate.getContent());
-                            existingReview.setRating(reviewToUpdate.getRating());
-                            Review updatedReview = reviewService.updateReview(albumId, existingReview);
+                            ReviewDTO updatedReview = reviewService.updateReview(albumId, reviewId, reviewDTO);
 
                             // Update album's average rating
                             albumService.getAlbumById(albumId).ifPresent(album -> {
@@ -103,7 +89,7 @@ public class ReviewRestController {
                                 albumService.saveAlbum(album);
                             });
 
-                            return ResponseEntity.ok(reviewMapper.toDTO(updatedReview));
+                            return ResponseEntity.ok(updatedReview);
                         } catch (RuntimeException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }

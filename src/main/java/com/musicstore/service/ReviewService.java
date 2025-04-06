@@ -1,29 +1,24 @@
 package com.musicstore.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.musicstore.model.Review;
 import com.musicstore.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import com.musicstore.dto.UserDTO;
-import com.musicstore.dto.ArtistDTO;
-import com.musicstore.dto.AlbumDTO;
+
 import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.ReviewMapper;
 
 @Service
 public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private ReviewMapper reviewMapper;
 
     public List<Review> getReviewsByAlbumId(Long albumId) {
         return reviewRepository.findByAlbum_Id(albumId);
@@ -33,12 +28,15 @@ public class ReviewService {
         return reviewRepository.findById(reviewId);
     }
 
-    public Review addReview(Long albumId, Review review) {
+    public Review addReview(Long albumId, ReviewDTO reviewDTO) {
+        Review review = reviewMapper.toEntity(reviewDTO);
         return reviewRepository.save(review);
     }
 
-    public Review updateReview(Long albumId, Review updatedReview) {
-        return reviewRepository.save(updatedReview);
+    public ReviewDTO updateReview(Long albumId, Long reviewId, ReviewDTO reviewDTO) {
+        Review review = reviewMapper.toEntity(reviewDTO);
+        review.setId(reviewId);
+        return reviewMapper.toDTO(reviewRepository.save(review));
     }
 
     public void deleteReview(Long albumId, Long reviewId) {

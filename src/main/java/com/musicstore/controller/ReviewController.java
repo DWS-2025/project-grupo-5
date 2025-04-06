@@ -16,6 +16,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 @Controller
 @RequestMapping("/reviews")
@@ -41,15 +49,20 @@ public class ReviewController {
                 return "redirect:/" + albumId;
             }
 
-            Review review = new Review();
-            review.setContent(content);
-            review.setRating(rating);
-            review.setUsername(user.getUsername());
-            review.setUserId(user.getId());
-            review.setAlbumId(albumId);
+            ReviewDTO reviewDTO = new ReviewDTO(
+                null,
+                albumId,
+                user.getId(),
+                user.getUsername(),
+                user.getImageUrl(),
+                null,
+                null,
+                content,
+                rating
+            );
 
             System.out.println("Guardando reseña del usuario: " + user.getUsername());
-            reviewService.addReview(albumId, review);
+            reviewService.addReview(albumId, reviewDTO);
 
             // Update album's average rating
             albumService.getAlbumById(albumId).ifPresent(album -> {
@@ -76,9 +89,18 @@ public class ReviewController {
 
             Review existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (existingReview != null && existingReview.getUsername().equals(user.getUsername())) {
-                existingReview.setContent(content);
-                existingReview.setRating(rating);
-                reviewService.updateReview(albumId, existingReview);
+                ReviewDTO reviewDTO = new ReviewDTO(
+                    reviewId,
+                    albumId,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getImageUrl(),
+                    null,
+                    null,
+                    content,
+                    rating
+                );
+                reviewService.updateReview(albumId, reviewId, reviewDTO);
 
                 // Update album's average rating
                 albumService.getAlbumById(albumId).ifPresent(album -> {
