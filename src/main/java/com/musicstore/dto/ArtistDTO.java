@@ -8,27 +8,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record ArtistDTO(
-    Long id,
-    String name,
-    String country,
-    String imageUrl,
-    List<Long> albumIds,
-    List<String> albumTitles,
-    byte[] imageData
+        Long id,
+        String name,
+        String country,
+        String imageUrl,
+        List<Long> albumIds,
+        List<String> albumTitles,
+        byte[] imageData
 ) {
     public static ArtistDTO fromArtist(Artist artist) {
         return new ArtistDTO(
-            artist.getId(),
-            artist.getName(),
-            artist.getCountry(),
-            artist.getImageUrl(),
-            artist.getAlbums() != null ? artist.getAlbums().stream()
-                .map(Album::getId)
-                .collect(Collectors.toList()) : Collections.emptyList(),
-            artist.getAlbums().stream()
-                .map(Album::getTitle)
-                .collect(Collectors.toList()),
-            artist.getImageData()
+                artist.getId(),
+                artist.getName(),
+                artist.getCountry(),
+                artist.getImageUrl(),
+                artist.getAlbums() != null ? artist.getAlbums().stream()
+                        .map(Album::getId)
+                        .collect(Collectors.toList()) : Collections.emptyList(),
+                artist.getAlbums().stream()
+                        .map(Album::getTitle)
+                        .collect(Collectors.toList()),
+                artist.getImageData()
         );
     }
 
@@ -44,13 +44,13 @@ public record ArtistDTO(
 
     public ArtistDTO withId(Long newId) {
         return new ArtistDTO(
-            newId,
-            this.name,
-            this.country,
-            this.imageUrl,
-            this.albumIds,
-            this.albumTitles,
-            this.imageData
+                newId,
+                this.name,
+                this.country,
+                this.imageUrl,
+                this.albumIds,
+                this.albumTitles,
+                this.imageData
         );
     }
 }

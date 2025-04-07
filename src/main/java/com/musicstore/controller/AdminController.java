@@ -146,7 +146,7 @@ public class AdminController {
             }
 
             Album existingAlbum = albumService.getAlbumById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado: " + id)).toAlbum();
+                    .orElseThrow(() -> new IllegalArgumentException("Album not found: " + id)).toAlbum();
 
             existingAlbum.setTitle(album.getTitle());
             existingAlbum.setArtists(album.getArtists());
@@ -197,8 +197,8 @@ public class AdminController {
             return "error";
         } else {
 
-        albumService.deleteAlbum(id);
-        return "redirect:/admin";
+            albumService.deleteAlbum(id);
+            return "redirect:/admin";
         }
     }
 

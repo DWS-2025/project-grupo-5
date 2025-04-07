@@ -10,23 +10,23 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public record AlbumDTO(
-    Long id,
-    String title,
-    String genre,
-    String imageUrl,
-    String description,
-    String tracklist,
-    Integer year,
-    String spotify_url,
-    String applemusic_url,
-    String tidal_url,
-    Double averageRating,
-    List<Long> artistIds,
-    List<Long> reviewIds,
-    List<String> artistNames,
-    List<String> favoriteUsers,
-    byte[] imageData,
-    byte[] audioData
+        Long id,
+        String title,
+        String genre,
+        String imageUrl,
+        String description,
+        String tracklist,
+        Integer year,
+        String spotify_url,
+        String applemusic_url,
+        String tidal_url,
+        Double averageRating,
+        List<Long> artistIds,
+        List<Long> reviewIds,
+        List<String> artistNames,
+        List<String> favoriteUsers,
+        byte[] imageData,
+        byte[] audioData
 ) {
     public double getAverageRating() {
         return averageRating != null ? averageRating : 0.0;
@@ -43,50 +43,50 @@ public record AlbumDTO(
             newAverageRating = sum / reviews.size();
         }
         return new AlbumDTO(
-            id, title, genre, imageUrl, description, tracklist, year,
-            spotify_url, applemusic_url, tidal_url, newAverageRating,
-            artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
+                id, title, genre, imageUrl, description, tracklist, year,
+                spotify_url, applemusic_url, tidal_url, newAverageRating,
+                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
         );
     }
     @JsonIgnore
     public static AlbumDTO fromAlbum(Album album) {
         if (album == null) return null;
-        
+
         List<Artist> artists = album.getArtists();
         if (artists == null) artists = new ArrayList<>();
-        
+
         List<Review> reviews = album.getReviews();
         if (reviews == null) reviews = new ArrayList<>();
-        
+
         List<User> favoriteUsers = album.getFavoriteUsers();
         if (favoriteUsers == null) favoriteUsers = new ArrayList<>();
-        
+
         return new AlbumDTO(
-            album.getId(),
-            album.getTitle(),
-            album.getGenre(),
-            album.getImageUrl(),
-            album.getDescription(),
-            album.getTracklist(),
-            album.getYear(),
-            album.getSpotify_url(),
-            album.getApplemusic_url(),
-            album.getTidal_url(),
-            album.getAverageRating(),
-            artists.stream()
-                .map(Artist::getId)
-                .collect(Collectors.toList()),
-            reviews.stream()
-                .map(Review::getId)
-                .collect(Collectors.toList()),
-            artists.stream()
-                .map(Artist::getName)
-                .collect(Collectors.toList()),
-            favoriteUsers.stream()
-                .map(User::getUsername)
-                .collect(Collectors.toList()),
-            album.getImageData(),
-            album.getAudioData()
+                album.getId(),
+                album.getTitle(),
+                album.getGenre(),
+                album.getImageUrl(),
+                album.getDescription(),
+                album.getTracklist(),
+                album.getYear(),
+                album.getSpotify_url(),
+                album.getApplemusic_url(),
+                album.getTidal_url(),
+                album.getAverageRating(),
+                artists.stream()
+                        .map(Artist::getId)
+                        .collect(Collectors.toList()),
+                reviews.stream()
+                        .map(Review::getId)
+                        .collect(Collectors.toList()),
+                artists.stream()
+                        .map(Artist::getName)
+                        .collect(Collectors.toList()),
+                favoriteUsers.stream()
+                        .map(User::getUsername)
+                        .collect(Collectors.toList()),
+                album.getImageData(),
+                album.getAudioData()
         );
     }
 
@@ -134,16 +134,16 @@ public record AlbumDTO(
     }
     public AlbumDTO withId(Long newId) {
         return new AlbumDTO(
-            newId, title, genre, imageUrl, description, tracklist, year,
-            spotify_url, applemusic_url, tidal_url, averageRating,
-            artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
+                newId, title, genre, imageUrl, description, tracklist, year,
+                spotify_url, applemusic_url, tidal_url, averageRating,
+                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
         );
     }
     public AlbumDTO withImageData(byte[] newImageData) {
         return new AlbumDTO(
-            id, title, genre, imageUrl, description, tracklist, year,
-            spotify_url, applemusic_url, tidal_url, averageRating,
-            artistIds, reviewIds, artistNames, favoriteUsers, newImageData, audioData
+                id, title, genre, imageUrl, description, tracklist, year,
+                spotify_url, applemusic_url, tidal_url, averageRating,
+                artistIds, reviewIds, artistNames, favoriteUsers, newImageData, audioData
         );
     }
 }

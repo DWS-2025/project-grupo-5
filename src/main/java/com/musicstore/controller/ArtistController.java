@@ -1,7 +1,5 @@
 package com.musicstore.controller;
 
-import com.musicstore.dto.AlbumDTO;
-import com.musicstore.dto.ArtistDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.User;
 import com.musicstore.model.Artist;
@@ -16,9 +14,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 @Controller
 @RequestMapping("/artists")
@@ -40,12 +47,12 @@ public class ArtistController {
 
             model.addAttribute("artists", artists);
             model.addAttribute("albums", albums);
-            User user = (User) session.getAttribute("user");
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
 
-            if (user != null) {
-                model.addAttribute("user", user);
+            if (userDTO != null) {
+                model.addAttribute("user", userDTO);
             } else {
-                User anonymousUser = new User();
+                UserDTO anonymousUser = new UserDTO(null, null, null, null, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
                 model.addAttribute("user", anonymousUser);
             }
             return "artist/welcome";
@@ -64,15 +71,15 @@ public class ArtistController {
                 return "error";
             }
 
-            ArtistDTO artistDTO = artistOpt.get();
-            List<AlbumDTO> albums = albumService.getAllAlbums().stream()
-                .filter(album -> artistDTO.albumIds().contains(album.id()))
-                .toList();
+            Artist artist = artistOpt.get().toArtist();
+            // The albums are already associated with the artist through JPA relationships
+            List<Album> albums = artist.getAlbums();
 
-            model.addAttribute("artist", artistDTO);
+
+            model.addAttribute("artist", artist);
             model.addAttribute("albums", albums);
-            User user = (User) session.getAttribute("user");
-            model.addAttribute("user", user);
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
+            model.addAttribute("user", userDTO);
             return "artist/view";
         } catch (Exception e) {
             model.addAttribute("error", "Error viewing artist: " + e.getMessage());
@@ -82,8 +89,8 @@ public class ArtistController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -93,10 +100,10 @@ public class ArtistController {
 
     @PostMapping
     public String createArtist(@Valid Artist artist, BindingResult result,
-                              @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-                              Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                               Model model, HttpSession session) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -121,8 +128,8 @@ public class ArtistController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -144,12 +151,12 @@ public class ArtistController {
 
     @PostMapping("/{id}")
     public String updateArtist(@PathVariable Long id,
-                              @Valid Artist artist,
-                              BindingResult result,
-                              @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-                              Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+                               @Valid Artist artist,
+                               BindingResult result,
+                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                               Model model, HttpSession session) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -175,8 +182,8 @@ public class ArtistController {
 
     @PostMapping("/{id}/delete")
     public String deleteArtist(@PathVariable Long id, Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }

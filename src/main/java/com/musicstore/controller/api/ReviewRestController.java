@@ -52,8 +52,8 @@ public class ReviewRestController {
             @PathVariable Long albumId,
             @RequestBody ReviewDTO reviewDTO) {
         try {
-            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 || 
-                reviewDTO.content() == null || reviewDTO.content().isBlank()) {
+            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 ||
+                    reviewDTO.content() == null || reviewDTO.content().isBlank()) {
                 return ResponseEntity.badRequest().build();
             }
 
@@ -79,8 +79,8 @@ public class ReviewRestController {
             @PathVariable Long reviewId,
             @RequestBody ReviewDTO reviewDTO) {
         try {
-            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 || 
-                reviewDTO.content() == null || reviewDTO.content().isBlank()) {
+            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 ||
+                    reviewDTO.content() == null || reviewDTO.content().isBlank()) {
                 return ResponseEntity.badRequest().build();
             }
 

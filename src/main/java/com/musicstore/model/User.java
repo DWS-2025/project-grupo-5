@@ -21,7 +21,7 @@ public class User {
 
     // Default constructor
     public User() {}
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -50,15 +50,15 @@ public class ReviewController {
             }
 
             ReviewDTO reviewDTO = new ReviewDTO(
-                null,
-                albumId,
-                user.getId(),
-                user.getUsername(),
-                user.getImageUrl(),
-                null,
-                null,
-                content,
-                rating
+                    null,
+                    albumId,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getImageUrl(),
+                    null,
+                    null,
+                    content,
+                    rating
             );
 
             System.out.println("Guardando reseña del usuario: " + user.getUsername());
@@ -90,15 +90,15 @@ public class ReviewController {
             ReviewDTO existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (existingReview != null && existingReview.username().equals(user.getUsername())) {
                 ReviewDTO reviewDTO = new ReviewDTO(
-                    reviewId,
-                    albumId,
-                    user.getId(),
-                    user.getUsername(),
-                    user.getImageUrl(),
-                    null,
-                    null,
-                    content,
-                    rating
+                        reviewId,
+                        albumId,
+                        user.getId(),
+                        user.getUsername(),
+                        user.getImageUrl(),
+                        null,
+                        null,
+                        content,
+                        rating
                 );
                 reviewService.updateReview(albumId, reviewId, reviewDTO);
 
@@ -159,7 +159,7 @@ public class ReviewController {
         model.addAttribute("favoriteAlbums", favoriteAlbums);
 
         List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
-        
+
 
         Collections.reverse(userReviews);
         model.addAttribute("userReviews", userReviews);

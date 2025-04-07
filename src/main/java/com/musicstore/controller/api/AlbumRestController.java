@@ -21,7 +21,6 @@ import com.musicstore.mapper.ReviewMapper;
 import com.musicstore.mapper.ArtistMapper;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/albums")
@@ -38,12 +37,10 @@ public class AlbumRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Page<Album> pageResult = albumService.getAllAlbumsPaged(page, size);
-        List<AlbumDTO> albumDTOs = pageResult.getContent().stream()
-                .map(albumMapper::toDTO)
-                .collect(Collectors.toList());
+        List<AlbumDTO> albums = albumMapper.toDTOList(pageResult.getContent());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("albums", albumDTOs);
+        response.put("albums", albums);
         response.put("currentPage", pageResult.getNumber());
         response.put("totalItems", pageResult.getTotalElements());
         response.put("totalPages", pageResult.getTotalPages());
@@ -59,7 +56,7 @@ public class AlbumRestController {
 
         try {
             return albumService.getAlbumById(id)
-                    .map(ResponseEntity::ok)
+                    .map(album -> ResponseEntity.ok(albumMapper.toDTO(album.toAlbum())))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -117,11 +114,14 @@ public class AlbumRestController {
             @RequestParam("image") MultipartFile image) {
         try {
             return (ResponseEntity<AlbumDTO>) albumService.getAlbumById(id)
-                    .map(albumDTO -> {
+                    .map(album -> {
                         try {
-                            AlbumDTO updatedAlbumDTO = albumDTO.withImageData(image.getBytes());
-                            AlbumDTO savedAlbum = albumService.saveAlbum(updatedAlbumDTO);
-                            return ResponseEntity.ok(savedAlbum);
+                            // Aquí estamos trabajando con la entidad Album
+                            album.withImageData(image.getBytes()); // Modificamos la entidad directamente
+                            // Guardamos la entidad en la base de datos
+                            Album updatedAlbum = albumService.saveAlbum(album).toAlbum();
+                            // Convertimos la entidad de vuelta a un DTO para devolverlo
+                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum)); // Respondemos con el DTO
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }

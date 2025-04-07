@@ -1311,3 +1311,7 @@ SELECT * FROM USER_FOLLOWING USER_FOLLOWING USER_FOLLOWERS [42000-224]
 2025-04-07 19:20:23.688251+02:00 jdbc[8]: exception
 org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
 The object is already closed [90007-224]
+2025-04-07 21:53:03.558737+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-04-07 21:55:20.314876+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]

@@ -89,18 +89,18 @@ public class ProfileController{
 
             // Create DTO with updated parameters
             UserDTO updatedUserDTO = new UserDTO(
-                currentUser.getId(),
-                updatedUser.getUsername(),
-                updatedUser.getPassword(),
-                updatedUser.getEmail(),
-                currentUser.isAdmin(),
-                currentUser.getImageUrl(),
-                currentUser.getImageData(),
-                currentUser.getFollowers(),
-                currentUser.getFollowing(),
-                currentUser.getFavoriteAlbums().stream()
-                    .map(album -> album.getId())
-                    .collect(Collectors.toList())
+                    currentUser.getId(),
+                    updatedUser.getUsername(),
+                    updatedUser.getPassword(),
+                    updatedUser.getEmail(),
+                    currentUser.isAdmin(),
+                    currentUser.getImageUrl(),
+                    currentUser.getImageData(),
+                    currentUser.getFollowers(),
+                    currentUser.getFollowing(),
+                    currentUser.getFavoriteAlbums().stream()
+                            .map(album -> album.getId())
+                            .collect(Collectors.toList())
             );
 
             try {
