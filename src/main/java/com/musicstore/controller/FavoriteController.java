@@ -35,44 +35,34 @@ public class FavoriteController {
     // Add album to favorites
 
     @PostMapping("/add")
-    public String addFavorite(@RequestParam Long albumId,
-                              HttpSession session,
-                              Model model) {
+    public String addFavorite(@RequestParam Long albumId, HttpSession session, Model model) {
         try {
-            // Obtain the user in the actual session
-            User user = (User) session.getAttribute("user");
-            if (user == null || user.getId() == null) {
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
+            if (userDTO == null || userDTO.id() == null) {
                 model.addAttribute("error", "No session started.");
                 return "error";
             }
 
-            Long auxUserId = user.getId();
+            Long userId = userDTO.id();
+            AlbumDTO album = albumService.getAlbumById(albumId)
+                    .orElseThrow(() -> new RuntimeException("Album not found"));
 
-            // Search album
-            Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
-            if (albumOptional.isEmpty()) {
-                model.addAttribute("error", "Album not found.");
-                return "error";
+            UserDTO user = userService.getUserById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Añadir a favoritos si no está
+            if (!album.getFavoriteUsers().contains(user)) {
+                album.getFavoriteUsers().add(String.valueOf((user)));
+                albumService.saveAlbum(album);
             }
 
-            Album album = albumOptional.get().toAlbum();
-
-            // Add album to the favorites section of the user
-            userService.addFavoriteAlbum(auxUserId, albumId, session);
-
-            User currentUser = userMapper.toEntity(userService.getUserById(auxUserId)
-                .orElseThrow(() -> new RuntimeException("User not found")));
-            if (!album.getFavoriteUsers().contains(currentUser)) {
-                album.getFavoriteUsers().add(currentUser);
-                albumService.saveAlbum(AlbumDTO.fromAlbum(album)); // Save changes
-            }
-
-            return "redirect:/" + albumId; // Redirect to the favorites page
+            return "redirect:/" + albumId;
         } catch (Exception e) {
             model.addAttribute("error", "Ocurrió un error al añadir el álbum a favoritos: " + e.getMessage());
-            return "error"; // Render the error page
+            return "error";
         }
     }
+
 
     @PostMapping("/delete")
     public String deleteFavorite(@RequestParam Long albumId,
@@ -80,13 +70,13 @@ public class FavoriteController {
                                  Model model) {
         try {
             // Obtain the user in the actual session
-            User user = (User) session.getAttribute("user");
-            if (user == null || user.getId() == null) {
+            UserDTO user = (UserDTO) session.getAttribute("user");
+            if (user == null || user.id() == null) {
                 model.addAttribute("error", "No session started.");
                 return "error";
             }
 
-            Long userId = user.getId();
+            Long userId = user.id();
 
             // Search album
             Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
@@ -95,7 +85,7 @@ public class FavoriteController {
                 return "error";
             }
 
-            Album album = albumOptional.get().toAlbum();
+            AlbumDTO album = AlbumDTO.fromAlbum(albumOptional.get().toAlbum());
 
             // Delete the album of the user favorites
             userService.deleteFavoriteAlbum(userId, albumId, session);
@@ -105,7 +95,7 @@ public class FavoriteController {
                 .orElseThrow(() -> new RuntimeException("User not found")));
             if (album.getFavoriteUsers().contains(currentUser)) {
                 album.getFavoriteUsers().remove(currentUser);
-                albumService.saveAlbum(AlbumDTO.fromAlbum(album)); // Save the album
+                albumService.saveAlbum(AlbumDTO.fromAlbum(album.toAlbum())); // Save the album
             }
 
             return "redirect:/" + albumId; // Render the favorites page
