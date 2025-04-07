@@ -4,7 +4,7 @@
     <nav class="main-nav">
       <a href="/"><i class="bi bi-house-fill"></i> Home</a>
         <a href="/top-albums"><i class="bi bi-stars"></i> Top Albums</a>
-        <a th:if="${session.user != null}" th:href="@{/favorites/{username}(username=${session.user.username})}">
+        <a th:if="${session.user != null}" th:href="@{/favorites/{username}(username=${session.user.username()})}">
             <i class="bi bi-heart-fill"></i>  Favorite
         </a>
 
@@ -12,7 +12,7 @@
             <i class="bi bi-heart-fill"></i>  Favorite
         </a>
 
-        <a th:if="${session.user != null}" th:href="@{/reviews/user/{username}(username=${session.user.username})}">
+        <a th:if="${session.user != null}" th:href="@{/reviews/user/{username}(username=${session.user.username()})}">
             <i class="bi bi-star-fill"></i>  Reviews
         </a>
 
@@ -25,14 +25,14 @@
         <div th:if="${session.user != null}" class="user-section">
         <div class="dropdown d-inline-block">
           <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <img th:if="${session.user.imageUrl != null}" th:src="${session.user.imageUrl}" alt="Profile Picture" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 4px;">
-            <i th:unless="${session.user.imageUrl != null}" class="bi bi-person-circle" style="color: #1a5f42;"></i>
-            <span th:text="${session.user.username}" style="color: white;"></span>
+            <img th:if="${session.user.imageUrl() != null}" th:src="${session.user.imageUrl()}" alt="Profile Picture" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 4px;">
+            <i th:unless="${session.user.imageUrl() != null}" class="bi bi-person-circle" style="color: #1a5f42;"></i>
+            <span th:text="${session.user.username()}" style="color: white;"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" th:href="@{/profile/{username}(username=${session.user.username})}"><i class="bi bi-person"></i> Your Profile</a></li>
+              <li><a class="dropdown-item" th:href="@{/profile/{username}(username=${session.user.username()})}"><i class="bi bi-person"></i> Your Profile</a></li>
               <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile Settings</a></li>
-            <li th:if="${session.user.admin}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
+            <li th:if="${session.user.isAdmin()}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
           </ul>

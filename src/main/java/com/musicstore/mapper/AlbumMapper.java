@@ -25,4 +25,8 @@ public interface AlbumMapper {
                 .map(User::getUsername)  // Extrae el username de cada User
                 .collect(Collectors.toList());
     }
+    List<Artist> map(List<Long> artistIds);
+    Artist map(Long artistId);
+    List<User> mapUserIdsToUsers(List<String> userIds);
+    User map(String userId);
 }

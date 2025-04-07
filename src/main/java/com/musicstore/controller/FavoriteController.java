@@ -126,7 +126,7 @@ public class FavoriteController {
         List<AlbumDTO> favoriteAlbums = favoriteAlbumIds.stream()
                 .map(albumId -> albumService.getAlbumById(albumId).orElse(null))
                 .filter(album -> album != null)
-                .collect(Collectors.toList()).reversed();
+                .collect(Collectors.toList());
 
         // Get the user information (including the profile image)
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);

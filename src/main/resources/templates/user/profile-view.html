@@ -173,7 +173,7 @@
                         <img th:src="${album.imageUrl}" class="album-mini-image" th:alt="${album.title}">
                         <div>
                             <h5 class="mb-1" th:text="${album.title}"></h5>
-                            <small class="text-white" th:text="${album.artist.name}"></small>
+                            <small class="text-white" th:text="${album.artists}"></small>
                         </div>
                     </a>
                 </div>
@@ -196,12 +196,12 @@
                     <i class="bi bi-star-fill"></i>
                     <span style="color: white;">Recent Reviews</span>
                 </h2>                <div th:each="review : ${userReviews}" class="album-mini-card-container">
-                    <a th:href="@{/{id}(id=${review.albumId})}" class="album-mini-card">
-                        <img th:src="${review.albumImageUrl}" class="album-mini-image" th:alt="${review.albumTitle}">
+                    <a th:href="@{/{id}(id=${review.albumId()})}" class="album-mini-card">
+                        <img th:src="${review.albumImageUrl()}" class="album-mini-image" th:alt="${review.albumTitle()}">
                         <div>
-                            <h5 class="mb-1" th:text="${review.albumTitle}"></h5>
+                            <h5 class="mb-1" th:text="${review.albumTitle()}"></h5>
                             <small class="text-white">
-                                <span th:text="${review.rating}"></span>/5 ⭐
+                                <span th:text="${review.rating()}"></span>/5 ⭐
                             </small>
                         </div>
                     </a>
