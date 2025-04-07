@@ -1,6 +1,7 @@
 package com.musicstore.controller;
 
 import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.UserDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
 import com.musicstore.model.User;
@@ -30,9 +31,9 @@ public class AdminController {
     @GetMapping
     public String listAlbums(Model model, HttpSession session) {
 
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.isAdmin()) {
+        if (user.username() == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -44,10 +45,10 @@ public class AdminController {
     @GetMapping("/new")
     public String showCreateForm(Model model, HttpSession session) {
 
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
         model.addAttribute("artists", artistService.getAllArtists());
 
-        if (user == null || !user.getUsername().equals("admin")) {
+        if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else{
@@ -62,9 +63,9 @@ public class AdminController {
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
                               Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
 
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.getUsername().equals("admin")) {
+        if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -103,9 +104,9 @@ public class AdminController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.isAdmin()) {
+        if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -133,9 +134,9 @@ public class AdminController {
             @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
             Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
 
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.isAdmin()) {
+        if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -190,9 +191,9 @@ public class AdminController {
     @PostMapping("/{id}/delete")
     public String deleteAlbum(@PathVariable Long id,  Model model, HttpSession session) {
 
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.isAdmin()) {
+        if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -204,9 +205,9 @@ public class AdminController {
 
     @GetMapping("/artists")
     public String listArtists(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.isAdmin()) {
+        if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
