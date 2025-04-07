@@ -73,6 +73,32 @@ public class ReviewRestController {
         }
     }
 
+    @PostMapping
+    public ResponseEntity<ReviewDTO> createReviewGeneral(@RequestBody ReviewDTO reviewDTO) {
+        try {
+            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 ||
+                    reviewDTO.content() == null || reviewDTO.content().isBlank() ||
+                    reviewDTO.albumId() == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Long albumId = reviewDTO.albumId();
+            ReviewDTO savedReview = ReviewDTO.fromReview(reviewService.addReview(albumId, reviewDTO));
+
+            // Update album's average rating
+            albumService.getAlbumById(albumId).ifPresent(album -> {
+                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                albumService.saveAlbum(album);
+            });
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PutMapping("/album/{albumId}/review/{reviewId}")
     public ResponseEntity<ReviewDTO> updateReview(
             @PathVariable Long albumId,
@@ -101,6 +127,35 @@ public class ReviewRestController {
                         }
                     })
                     .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ReviewDTO> updateReviewById(
+            @PathVariable Long reviewId,
+            @RequestBody ReviewDTO reviewDTO) {
+        try {
+            if (reviewDTO == null || reviewDTO.rating() < 1 || reviewDTO.rating() > 5 ||
+                    reviewDTO.content() == null || reviewDTO.content().isBlank()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            try {
+                ReviewDTO updatedReview = reviewService.updateReviewById(reviewId, reviewDTO);
+
+                // Update album's average rating
+                Long albumId = updatedReview.albumId();
+                albumService.getAlbumById(albumId).ifPresent(album -> {
+                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                    albumService.saveAlbum(album);
+                });
+
+                return ResponseEntity.ok(updatedReview);
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

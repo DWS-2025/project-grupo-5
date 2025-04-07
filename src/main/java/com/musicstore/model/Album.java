@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 @Data
 @Entity
-@JsonIgnoreProperties({"reviews", "imageData", "audioData", "favoriteUsers"})
+@JsonIgnoreProperties(value = {"reviews", "imageData", "audioData", "favoriteUsers, artist, artists"}, allowSetters = true)
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

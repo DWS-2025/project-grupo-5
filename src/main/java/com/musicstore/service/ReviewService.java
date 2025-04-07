@@ -38,7 +38,15 @@ public class ReviewService {
     }
 
     public Optional<ReviewDTO> getReviewById(Long albumId, Long reviewId) {
-        return reviewRepository.findById(reviewId)
+        Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
+        
+        // Si albumId es null, no filtramos por álbum (para API REST)
+        if (albumId == null) {
+            return reviewOpt.map(reviewMapper::toDTO);
+        }
+        
+        // Si albumId no es null, verificamos que la reseña pertenezca al álbum
+        return reviewOpt
                 .filter(review -> review.getAlbum().getId().equals(albumId))
                 .map(reviewMapper::toDTO);
     }
@@ -71,12 +79,23 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(updated);
         return reviewMapper.toDTO(savedReview);
     }
+    
+    public ReviewDTO updateReviewById(Long reviewId, ReviewDTO reviewDTO) {
+        Review existing = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+        
+        Review updated = reviewMapper.toEntity(reviewDTO);
+        updated.setId(reviewId);
+        updated.setAlbum(existing.getAlbum()); // Aseguramos que no cambie el álbum
+        Review savedReview = reviewRepository.save(updated);
+        return reviewMapper.toDTO(savedReview);
+    }
 
     public void deleteReview(Long albumId, Long reviewId) {
         Review existing = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
-        if (!existing.getAlbum().getId().equals(albumId)) {
+        if (albumId != null && !existing.getAlbum().getId().equals(albumId)) {
             throw new RuntimeException("Review does not belong to this album");
         }
 
