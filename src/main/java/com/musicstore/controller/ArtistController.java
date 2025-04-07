@@ -64,12 +64,12 @@ public class ArtistController {
                 return "error";
             }
 
-            Artist artist = artistOpt.get().toArtist();
-            // The albums are already associated with the artist through JPA relationships
-            List<Album> albums = artist.getAlbums();
+            ArtistDTO artistDTO = artistOpt.get();
+            List<AlbumDTO> albums = albumService.getAllAlbums().stream()
+                .filter(album -> artistDTO.albumIds().contains(album.id()))
+                .toList();
 
-
-            model.addAttribute("artist", artist);
+            model.addAttribute("artist", artistDTO);
             model.addAttribute("albums", albums);
             User user = (User) session.getAttribute("user");
             model.addAttribute("user", user);

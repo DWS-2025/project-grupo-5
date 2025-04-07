@@ -55,8 +55,9 @@ public class AlbumService {
         }
 
         if (year != null) {
+            String yearStr = String.valueOf(year);
             result = result.stream()
-                .filter(album -> album.getYear().equals(year))
+                .filter(album -> String.valueOf(album.getYear()).startsWith(yearStr))
                 .toList();
         }
 
