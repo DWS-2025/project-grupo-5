@@ -51,12 +51,10 @@ public class ReviewService {
         if (!albumId.equals(reviewDTO.albumId())) {
             throw new RuntimeException("Album ID mismatch between path and review data");
         }
-
-        // Aquí podrías validar también si hay contenido mínimo o puntuación válida, si procede
-
         Review review = reviewMapper.toEntity(reviewDTO);
         return reviewRepository.save(review);
     }
+
 
 
     public ReviewDTO updateReview(Long albumId, Long reviewId, ReviewDTO reviewDTO) {

@@ -204,15 +204,15 @@
 
                     <form th:action="@{/favorites/add}" method="post">
                         <input type="hidden" name="albumId" th:value="${album.id()}"/>
-                        <input type="hidden" name="username" th:value="${session.user != null ? session.user.id : ''}"/>
+                        <input type="hidden" name="username" th:value="${session.user != null ? session.user.id() : ''}"/>
 
-                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username == null}" style="background: none; border: none; padding: 0;">
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username() == null}" style="background: none; border: none; padding: 0;">
                             <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
                             </svg>
                         </button>
 
-                        <button type="submit" class="btn-primary" th:if="${session.user != null and session.user.id != null and !userService.isAlbumInFavorites(session.user.username, album.id)}" style="background: none; border: none; padding: 0;">
+                        <button type="submit" class="btn-primary" th:if="${session.user != null and session.user.id() != null and !userService.isAlbumInFavorites(session.user.username(), album.id())}" style="background: none; border: none; padding: 0;">
                             <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
                             </svg>
@@ -221,7 +221,7 @@
                     <form th:if="${session.user != null and session.user.id != null and userService.isAlbumInFavorites(session.user.username, album.id)}"
                           th:action="@{/favorites/delete}" method="post">
                         <input type="hidden" name="albumId" th:value="${album.id()}"/>
-                        <input type="hidden" name="username" th:value="${session.user.username}"/>
+                        <input type="hidden" name="username" th:value="${session.user.username()}"/>
                         <button type="submit" class="btn" style="background: none; border: none; padding: 0;">
                             <svg class="heart heart-red" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>

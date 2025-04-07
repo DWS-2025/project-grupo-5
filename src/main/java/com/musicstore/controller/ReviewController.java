@@ -67,7 +67,7 @@ public class ReviewController {
             // Update album's average rating
             albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
                 albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                albumService.saveAlbum(albumDTO);
+                albumService.saveAlbumReview(albumDTO);
             });
         }
         return "redirect:/" + albumId;

@@ -59,10 +59,12 @@ public class FavoriteController {
             userService.addFavoriteAlbum(auxUserId, albumId, session);
 
             // Mapear UserDTO a User
-            User currentUser = userMapper.toEntity(userDTO); // Usar el mapeo correcto entre DTO y entidad
-            if (!albumDTO.getFavoriteUsers().contains(currentUser)) {
-                albumDTO.getFavoriteUsers().add(String.valueOf(currentUser));
-                albumService.saveAlbum(albumDTO); // Guardar cambios
+            Long userId = userDTO.id();
+            UserDTO currentUser = UserDTO.fromUser(userMapper.toEntity(userService.getUserById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"))));
+            if (albumDTO.getFavoriteUsers().contains(currentUser)) {
+                albumDTO.getFavoriteUsers().add(currentUser.username());
+                albumService.saveAlbum(AlbumDTO.fromAlbum(albumDTO.toAlbum())); // Save the album
             }
 
             return "redirect:/" + albumId; // Redirigir a la página del álbum
@@ -101,8 +103,8 @@ public class FavoriteController {
             userService.deleteFavoriteAlbum(userId, albumId, session);
 
             // Delete the user from the album's favorite users list
-            User currentUser = userMapper.toEntity(userService.getUserById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found")));
+            UserDTO currentUser = UserDTO.fromUser(userMapper.toEntity(userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"))));
             if (album.getFavoriteUsers().contains(currentUser)) {
                 album.getFavoriteUsers().remove(currentUser);
                 albumService.saveAlbum(AlbumDTO.fromAlbum(album.toAlbum())); // Save the album

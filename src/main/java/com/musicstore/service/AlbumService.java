@@ -1,5 +1,6 @@
 package com.musicstore.service;
 
+import com.musicstore.dto.ArtistDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
 import com.musicstore.model.User;
@@ -97,6 +98,16 @@ public class AlbumService {
                     .toList();
             album.setArtists(processedArtists);
         }
+
+        return albumMapper.toDTO(albumRepository.save(album));
+    }
+
+    public AlbumDTO saveAlbumReview(AlbumDTO albumDTO) {
+        if (albumDTO == null) {
+            throw new IllegalArgumentException("AlbumDTO cannot be null");
+        }
+
+        Album album = albumMapper.toEntity(albumDTO);
 
         return albumMapper.toDTO(albumRepository.save(album));
     }
