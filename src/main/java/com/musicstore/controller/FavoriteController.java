@@ -28,7 +28,7 @@ public class FavoriteController {
 
     @Autowired
     private AlbumService albumService;
-    
+
     @Autowired
     private UserMapper userMapper;
 
@@ -37,31 +37,41 @@ public class FavoriteController {
     @PostMapping("/add")
     public String addFavorite(@RequestParam Long albumId, HttpSession session, Model model) {
         try {
+            // Obtener el usuario de la sesión
             UserDTO userDTO = (UserDTO) session.getAttribute("user");
             if (userDTO == null || userDTO.id() == null) {
                 model.addAttribute("error", "No session started.");
                 return "error";
             }
 
-            Long userId = userDTO.id();
-            AlbumDTO album = albumService.getAlbumById(albumId)
-                    .orElseThrow(() -> new RuntimeException("Album not found"));
+            Long auxUserId = userDTO.id();
 
-            UserDTO user = userService.getUserById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            // Añadir a favoritos si no está
-            if (!album.getFavoriteUsers().contains(user)) {
-                album.getFavoriteUsers().add(String.valueOf((user)));
-                albumService.saveAlbum(album);
+            // Buscar el álbum
+            Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
+            if (albumOptional.isEmpty()) {
+                model.addAttribute("error", "Album not found.");
+                return "error";
             }
 
-            return "redirect:/" + albumId;
+            AlbumDTO albumDTO = albumOptional.get();
+
+            // Añadir el álbum a la lista de favoritos del usuario
+            userService.addFavoriteAlbum(auxUserId, albumId, session);
+
+            // Mapear UserDTO a User
+            User currentUser = userMapper.toEntity(userDTO); // Usar el mapeo correcto entre DTO y entidad
+            if (!albumDTO.getFavoriteUsers().contains(currentUser)) {
+                albumDTO.getFavoriteUsers().add(String.valueOf(currentUser));
+                albumService.saveAlbum(albumDTO); // Guardar cambios
+            }
+
+            return "redirect:/" + albumId; // Redirigir a la página del álbum
         } catch (Exception e) {
             model.addAttribute("error", "Ocurrió un error al añadir el álbum a favoritos: " + e.getMessage());
-            return "error";
+            return "error"; // Mostrar página de error
         }
     }
+
 
 
     @PostMapping("/delete")
