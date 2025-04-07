@@ -22,6 +22,7 @@ public interface AlbumMapper {
     Album toEntity(AlbumDTO albumDTO);
 
     List<AlbumDTO> toDTOList(List<Album> albums);
+
     List<Album> toEntityList(List<AlbumDTO> albumDTOs);
 
     @Named("artistsToIds")
@@ -68,5 +69,6 @@ public interface AlbumMapper {
     }
 
     List<User> mapUserIdsToUsers(List<String> userIds);
+
     User map(String userId);
 }

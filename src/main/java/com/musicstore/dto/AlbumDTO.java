@@ -1,5 +1,6 @@
 package com.musicstore.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
 import com.musicstore.model.Review;
@@ -47,6 +48,7 @@ public record AlbumDTO(
             artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
         );
     }
+    @JsonIgnore
     public static AlbumDTO fromAlbum(Album album) {
         if (album == null) return null;
         
