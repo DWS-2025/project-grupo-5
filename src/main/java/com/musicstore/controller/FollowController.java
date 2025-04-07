@@ -29,7 +29,7 @@ public class FollowController {
     @PostMapping("/add/{targetUserId}")
     public String followUser(@PathVariable Long targetUserId, HttpSession session, Model model) {
 
-        User currentUser = (User) session.getAttribute("user");
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
         
         if (currentUser == null) {
             model.addAttribute("error", "You must be logged in to follow users");
@@ -37,10 +37,10 @@ public class FollowController {
         }
 
         try {
-            userService.followUser(currentUser.getId(), targetUserId, session);
+            userService.followUser(currentUser.id(), targetUserId, session);
             // Update the session with the modified user
-            session.setAttribute("user", userService.getUserById(currentUser.getId())
-                    .map(userMapper::toEntity)
+            session.setAttribute("user", userService.getUserById(currentUser.id())
+                    .map(user -> userMapper.toDTO(user.toUser()))
                     .orElse(currentUser));
             return "redirect:/profile/" + userService.getUserById(targetUserId)
                     .map(UserDTO::username)
@@ -54,7 +54,7 @@ public class FollowController {
     @PostMapping("/remove/{targetUserId}")
     public String unfollowUser(@PathVariable Long targetUserId, HttpSession session, Model model) {
 
-        User currentUser = (User) session.getAttribute("user");
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
         
         if (currentUser == null) {
             model.addAttribute("error", "You must be logged in to unfollow users");
@@ -62,10 +62,10 @@ public class FollowController {
         }
 
         try {
-            userService.unfollowUser(currentUser.getId(), targetUserId, session);
+            userService.unfollowUser(currentUser.id(), targetUserId, session);
             // Update the session with the modified user
-            session.setAttribute("user", userService.getUserById(currentUser.getId())
-                    .map(userMapper::toEntity)
+            session.setAttribute("user", userService.getUserById(currentUser.id())
+                    .map(user -> userMapper.toDTO(user.toUser()))
                     .orElse(currentUser));
             return "redirect:/profile/" + userService.getUserById(targetUserId)
                     .map(UserDTO::username)
