@@ -1,5 +1,6 @@
 package com.musicstore.dto;
 
+import com.musicstore.model.Album;
 import com.musicstore.model.User;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public record UserDTO(
             user.getFollowers(),
             user.getFollowing(),
             user.getFavoriteAlbums().stream()
-                .map(album -> album.getId())
+                .map(Album::getId)
                 .collect(Collectors.toList())
         );
     }
@@ -43,6 +44,20 @@ public record UserDTO(
         user.setImageData(this.imageData());
         user.setFollowers(this.followers());
         user.setFollowing(this.following());
+        
+        if(this.favoriteAlbumIds != null) {
+            user.setFavoriteAlbums(
+                this.favoriteAlbumIds.stream()
+                    .map(id -> {
+                        Album album = new Album();
+                        album.setId(id);
+                        album.getFavoriteUsers().add(user);
+                        return album;
+                    })
+                    .collect(Collectors.toList())
+            );
+        }
+        
         return user;
     }
 
