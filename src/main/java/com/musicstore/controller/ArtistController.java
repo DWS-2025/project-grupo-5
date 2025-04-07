@@ -73,7 +73,7 @@ public class ArtistController {
 
             Artist artist = artistOpt.get().toArtist();
             // The albums are already associated with the artist through JPA relationships
-            List<Album> albums = artist.getAlbums();
+            List<AlbumDTO> albums = albumService.getAlbumsByIds(artistOpt.get().albumIds());
 
 
             model.addAttribute("artist", artist);

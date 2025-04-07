@@ -22,6 +22,10 @@ import java.util.Optional;
 @Service
 public class AlbumService {
 
+    public List<AlbumDTO> getAlbumsByIds(List<Long> ids) {
+    return albumMapper.toDTOList(albumRepository.findAllById(ids));
+}
+
     @Autowired
     private AlbumRepository albumRepository;
 

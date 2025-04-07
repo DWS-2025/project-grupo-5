@@ -48,7 +48,7 @@ public class ArtistService {
             throw new IllegalArgumentException("Artist ID cannot be null");
         }
 
-        return artistRepository.findById(id)
+        return artistRepository.findByIdWithAlbums(id)
                 .map(artistMapper::toDTO);
     }
 
