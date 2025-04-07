@@ -164,25 +164,25 @@ public class ProfileController{
 
     @GetMapping("/profile/{username}")
     public String viewProfile(@PathVariable String username, Model model, HttpSession session) {
-        // Usuario logueado
-        UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
-        model.addAttribute("currentUser", currentUserDTO);
+        // Get the current logged-in user if any
+        User currentUser = (User) session.getAttribute("user");
+        model.addAttribute("currentUser", currentUser);
 
-        // Usuario del perfil
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
             model.addAttribute("error", "User not found");
             return "error";
         }
 
-        UserDTO profileUserDTO = userOpt.get();
-        model.addAttribute("profileUser", profileUserDTO);
+        User profileUser = userOpt.get().toUser();
+        model.addAttribute("profileUser", profileUser);
 
-        // Seguidores
-        Map<String, String> followersUsers = profileUserDTO.followers().stream()
-                .map(userService::getUserById) // Optional<UserDTO>
+        // Get followers and following usernames with their profile images
+        Map<String, String> followersUsers = profileUser.getFollowers().stream()
+                .map(id -> userService.getUserById(id))
                 .filter(Optional::isPresent)
-                .map(Optional::get) // UserDTO directamente
+                .map(Optional::get)
+                .map(user -> userMapper.toDTO(user.toUser())) // aquí explícitamente usamos el User
                 .collect(Collectors.toMap(
                         UserDTO::username,
                         UserDTO::imageUrl,
@@ -190,12 +190,11 @@ public class ProfileController{
                         HashMap::new
                 ));
 
-
-        // Siguiendo
-        Map<String, String> followingUsers = profileUserDTO.following().stream()
-                .map(userService::getUserById)
+        Map<String, String> followingUsers = profileUser.getFollowing().stream()
+                .map(id -> userService.getUserById(id))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .map(user -> userMapper.toDTO(user.toUser())) // aquí explícitamente usamos el User
                 .collect(Collectors.toMap(
                         UserDTO::username,
                         UserDTO::imageUrl,
@@ -206,19 +205,25 @@ public class ProfileController{
         model.addAttribute("followersUsers", followersUsers);
         model.addAttribute("followingUsers", followingUsers);
 
-        // Álbumes favoritos
+        // Get favorite albums and convert them to DTOs
         List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
-        List<AlbumDTO> favoriteAlbums = favoriteAlbumIds.stream()
-                .map(albumService::getAlbumById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-
+        List<AlbumDTO> favoriteAlbums = !favoriteAlbumIds.isEmpty() ?
+                favoriteAlbumIds.stream()
+                        .map(albumService::getAlbumById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()) :
+                Collections.emptyList();
         model.addAttribute("favoriteAlbums", favoriteAlbums);
         model.addAttribute("totalLikes", favoriteAlbums);
 
-        // Reseñas
-        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUserDTO.id());
+
+
+
+
+        // Get reviews and associate them with albums
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
+        List<ReviewDTO> userReviews2 = reviewService.getReviewsByUserId(profileUser.getId());
 
         userReviews.forEach(review -> {
             albumService.getAlbumById(review.albumId()).ifPresent(album -> {
@@ -230,11 +235,9 @@ public class ProfileController{
         Collections.reverse(userReviews);
         model.addAttribute("totalReviews", userReviews);
 
-        List<ReviewDTO> userReviews2 = userReviews.stream().limit(5).collect(Collectors.toList());
+        userReviews2 = userReviews.stream().limit(5).collect(Collectors.toList());
         model.addAttribute("userReviews", userReviews2);
 
         return "user/profile-view";
     }
-
-
 }

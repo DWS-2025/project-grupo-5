@@ -42,8 +42,8 @@ public class ReviewController {
             @RequestParam String content,
             @RequestParam int rating,
             HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 System.err.println("Datos inválidos. Reseña no guardada.");
                 return "redirect:/" + albumId;
@@ -52,22 +52,22 @@ public class ReviewController {
             ReviewDTO reviewDTO = new ReviewDTO(
                     null,
                     albumId,
-                    user.getId(),
-                    user.getUsername(),
-                    user.getImageUrl(),
+                    userDTO.id(),
+                    userDTO.username(),
+                    userDTO.imageUrl(),
                     null,
                     null,
                     content,
                     rating
             );
 
-            System.out.println("Guardando reseña del usuario: " + user.getUsername());
+            System.out.println("Guardando reseña del usuario: " + userDTO.username());
             reviewService.addReview(albumId, reviewDTO);
 
             // Update album's average rating
-            albumService.getAlbumById(albumId).ifPresent(album -> {
-                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                albumService.saveAlbum(album);
+            albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                albumService.saveAlbum(albumDTO);
             });
         }
         return "redirect:/" + albumId;
@@ -79,22 +79,27 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @RequestParam String content,
             @RequestParam int rating,
-            HttpSession session
+            HttpSession session,
+            Model model
     ) {
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
+        try {
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
+            if (userDTO == null) {
+                return "redirect:/" + albumId;
+            }
+
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 return "redirect:/" + albumId;
             }
 
             ReviewDTO existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (existingReview != null && existingReview.username().equals(user.getUsername())) {
+            if (existingReview != null && existingReview.username().equals(userDTO.username())) {
                 ReviewDTO reviewDTO = new ReviewDTO(
                         reviewId,
                         albumId,
-                        user.getId(),
-                        user.getUsername(),
-                        user.getImageUrl(),
+                        userDTO.id(),
+                        userDTO.username(),
+                        userDTO.imageUrl(),
                         null,
                         null,
                         content,
@@ -103,35 +108,44 @@ public class ReviewController {
                 reviewService.updateReview(albumId, reviewId, reviewDTO);
 
                 // Update album's average rating
-                albumService.getAlbumById(albumId).ifPresent(album -> {
-                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbum(album);
+                albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                    albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                    albumService.saveAlbum(albumDTO);
                 });
             }
+            return "redirect:/" + albumId;
+        } catch (Exception e) {
+            return "redirect:/" + albumId;
         }
-        return "redirect:/" + albumId;
     }
 
     @PostMapping("/{albumId}/delete/{reviewId}")
     public String deleteReview(
             @PathVariable Long albumId,
             @PathVariable Long reviewId,
-            HttpSession session
+            HttpSession session,
+            Model model
     ) {
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
+        try {
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
+            if (userDTO == null) {
+                return "redirect:/" + albumId;
+            }
+
             ReviewDTO review = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (review != null && (review.username().equals(user.getUsername()) || user.isAdmin())) {
+            if (review != null && (review.username().equals(userDTO.username()) || userDTO.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
 
                 // Update album's average rating
-                albumService.getAlbumById(albumId).ifPresent(album -> {
-                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbum(album);
+                albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                    albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                    albumService.saveAlbum(albumDTO);
                 });
             }
+            return "redirect:/" + albumId;
+        } catch (Exception e) {
+            return "redirect:/" + albumId;
         }
-        return "redirect:/" + albumId;
     }
 
 
@@ -146,27 +160,21 @@ public class ReviewController {
             return "error";
         }
 
-        User profileUser = userOpt.get().toUser();
+        UserDTO profileUser = userOpt.get();
         model.addAttribute("profileUser", profileUser);
+        model.addAttribute("profileImageUrl", profileUser.imageUrl());
 
-        String profileImageUrl = profileUser.getImageUrl();
-        model.addAttribute("profileImageUrl", profileImageUrl);
-
-        List<Album> favoriteAlbums = new ArrayList<>(profileUser.getFavoriteAlbums());
-
+        ArrayList<Long> favoriteAlbums = new ArrayList<>(profileUser.favoriteAlbumIds());
         Collections.reverse(favoriteAlbums);
-        favoriteAlbums = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
+        favoriteAlbums = (ArrayList<Long>) favoriteAlbums.stream().limit(5).collect(Collectors.toList());
         model.addAttribute("favoriteAlbums", favoriteAlbums);
 
-        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
-
-
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.id());
         Collections.reverse(userReviews);
         model.addAttribute("userReviews", userReviews);
 
         return "reviews/user-review";
     }
-
 
 }
 
