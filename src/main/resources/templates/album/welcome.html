@@ -40,7 +40,17 @@
             <a href="/artists" class="btn btn-success">Artists</a>
         </div>
         <div class="d-flex gap-2">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search albums..." oninput="filterAlbums()">
+            <div class="d-flex flex-column">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search albums..." oninput="filterAlbums()">
+                <div class="btn-group mt-2" role="group" aria-label="Search filters">
+                    <input type="radio" class="btn-check" name="searchFilter" id="titleFilter" value="title" checked>
+                    <label class="btn btn-outline-success" for="titleFilter">Title</label>
+                    <input type="radio" class="btn-check" name="searchFilter" value="artist" id="artistFilter">
+                    <label class="btn btn-outline-success" for="artistFilter">Artist</label>
+                    <input type="radio" class="btn-check" name="searchFilter" value="year" id="yearFilter">
+                    <label class="btn btn-outline-success" for="yearFilter">Year</label>
+                </div>
+            </div>
             <button id="viewToggle" class="btn btn-outline-success" onclick="toggleView()">
                 <i class="bi bi-grid-3x3-gap-fill"></i>
             </button>
@@ -99,28 +109,53 @@
     let allAlbumsLoaded = false;
 
     function filterAlbums() {
-        const searchInput = document.getElementById("searchInput").value.toLowerCase();
-        const albumCards = document.querySelectorAll(".album-item");
-        let hasResults = false;
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const selectedFilter = document.querySelector('input[name="searchFilter"]:checked').value;
 
-        albumCards.forEach(card => {
-            if (card.style.display !== 'none') {
-                const albumTitle = card.textContent.toLowerCase();
-                if (albumTitle.includes(searchInput)) {
-                    card.style.display = "";
-                    hasResults = true;
-                } else {
-                    card.style.display = "none";
-                }
+        const url = new URL('/api/albums/search', window.location.origin);
+        
+        if (searchTerm) {
+            if (selectedFilter === 'title') {
+                url.searchParams.append('title', searchTerm);
+            } else if (selectedFilter === 'artist') {
+                url.searchParams.append('artist', searchTerm);
+            } else if (selectedFilter === 'year' && !isNaN(searchTerm)) {
+                url.searchParams.append('year', parseInt(searchTerm));
             }
-        });
-
-        const noResultsAlert = document.getElementById("noResults");
-        if (hasResults) {
-            noResultsAlert.classList.add("d-none");
-        } else {
-            noResultsAlert.classList.remove("d-none");
         }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(albums => {
+                const albumsGrid = document.getElementById('albumsGrid');
+                albumsGrid.innerHTML = '';
+                
+                if (albums.length === 0) {
+                    document.getElementById('noResults').classList.remove('d-none');
+                    return;
+                }
+                
+                document.getElementById('noResults').classList.add('d-none');
+                albums.forEach(album => {
+                    const albumElement = `
+                        <div class="col album-item" data-id="${album.id}" data-artist="${album.artistNames}">
+                            <a href="/${album.id}" class="text-decoration-none">
+                                <div class="card h-100 shadow-sm hover-effect">
+                                    <img src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${album.title}</h5>
+                                        <p class="card-text">
+                                            <strong>Artists:</strong> <span>${album.artistNames}</span><br>
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    `;
+                    albumsGrid.insertAdjacentHTML('beforeend', albumElement);
+                });
+            })
+            .catch(error => console.error('Error:', error));
     }
 
     function loadMore() {

@@ -1308,3 +1308,6 @@ org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-22
 2025-04-03 18:08:54.413944+02:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM USER_FOLLOWING USER_FOLLOWING [*]USER_FOLLOWERS"; SQL statement:
 SELECT * FROM USER_FOLLOWING USER_FOLLOWING USER_FOLLOWERS [42000-224]
+2025-04-07 19:20:23.688251+02:00 jdbc[8]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: El objeto ya está cerrado
+The object is already closed [90007-224]

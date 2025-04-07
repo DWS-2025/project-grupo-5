@@ -32,6 +32,37 @@ public class AlbumService {
         return albumMapper.toDTOList(albumRepository.findAll());
     }
 
+    public List<AlbumDTO> searchAlbums(String title, String artist, Integer year) {
+        if ((title == null || title.trim().isEmpty()) &&
+            (artist == null || artist.trim().isEmpty()) &&
+            year == null) {
+            return getAllAlbums();
+        }
+
+        List<Album> result = albumRepository.findAll();
+
+        if (title != null && !title.trim().isEmpty()) {
+            result = result.stream()
+                .filter(album -> album.getTitle().toLowerCase().contains(title.trim().toLowerCase()))
+                .toList();
+        }
+
+        if (artist != null && !artist.trim().isEmpty()) {
+            result = result.stream()
+                .filter(album -> album.getArtists().stream()
+                    .anyMatch(a -> a.getName().toLowerCase().contains(artist.trim().toLowerCase())))
+                .toList();
+        }
+
+        if (year != null) {
+            result = result.stream()
+                .filter(album -> album.getYear().equals(year))
+                .toList();
+        }
+
+        return albumMapper.toDTOList(result);
+    }
+
     public Optional<AlbumDTO> getAlbumById(Long id) {
         return albumRepository.findById(id)
                 .map(albumMapper::toDTO);

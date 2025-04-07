@@ -51,7 +51,24 @@ public class Album {
     private List<Artist> artists = new ArrayList<>();
 
     public Artist getArtist() {
-        return artist != null ? artist : (artists != null && !artists.isEmpty() ? artists.get(0) : null);
+        if (artist != null) {
+            return artist;
+        }
+        if (artists != null && !artists.isEmpty()) {
+            return artists.get(0);
+        }
+        return null;
+    }
+
+    public List<Artist> getArtists() {
+        if (artists == null) {
+            artists = new ArrayList<>();
+        }
+        return artists;
+    }
+
+    public void setArtists(List<Artist> artists) {
+        this.artists = artists != null ? artists : new ArrayList<>();
     }
 
     public void setArtist(Artist artist) {

@@ -122,4 +122,12 @@ public class AlbumRestController {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<AlbumDTO>> searchAlbums(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String artist,
+            @RequestParam(required = false) Integer year) {
+        List<AlbumDTO> albums = albumService.searchAlbums(title, artist, year);
+        return ResponseEntity.ok(albums);
+    }
 }
