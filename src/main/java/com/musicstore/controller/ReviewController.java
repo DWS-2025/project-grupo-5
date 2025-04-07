@@ -137,7 +137,7 @@ public class ReviewController {
 
     @GetMapping("/user/{username}")
     public String viewReviews(@PathVariable String username, Model model, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
         model.addAttribute("currentUser", currentUser);
 
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);

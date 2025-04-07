@@ -115,40 +115,36 @@ public class FavoriteController {
         }
     }
 
+
     @GetMapping("/{username}")
     public String showFavorites(@PathVariable String username, HttpSession session, Model model) {
 
-        // Get the requested user's favorite albums
-        // Primero verificar si el usuario existe
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
             model.addAttribute("error", "Usuario no encontrado.");
             return "error";
         }
 
-        // Obtener álbumes favoritos
         List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
-        List<AlbumDTO> favoriteAlbums = !favoriteAlbumIds.isEmpty() ? 
-            favoriteAlbumIds.stream()
-                .map(albumService::getAlbumById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList()) : 
-            Collections.emptyList();
-        if (userOpt.isPresent()) {
-            User user = userOpt.get().toUser();
-            model.addAttribute("userProfileImage", user.getImageUrl()); // Add user profile image URL
-        }
+        List<AlbumDTO> favoriteAlbums = !favoriteAlbumIds.isEmpty() ?
+                favoriteAlbumIds.stream()
+                        .map(albumService::getAlbumById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()) :
+                Collections.emptyList();
 
-        // Get the current logged-in user (if any)
-        User currentUser = (User) session.getAttribute("user");
-        boolean isOwnProfile = currentUser != null && currentUser.getUsername().equals(username);
+        UserDTO user = userOpt.get();
+        model.addAttribute("userProfileImage", user.imageUrl());
 
-        // Add data to the model
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
+        boolean isOwnProfile = currentUser != null && currentUser.username().equals(username);
+
         model.addAttribute("username", username);
         model.addAttribute("favoriteAlbums", favoriteAlbums);
         model.addAttribute("isOwnProfile", isOwnProfile);
         return "album/favorites";
     }
+
 }
 

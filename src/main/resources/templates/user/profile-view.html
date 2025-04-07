@@ -101,7 +101,7 @@
                         <small style="color: white;">Following</small>
                     </div>
                 </div>
-                <div class="ms-3 d-flex align-items-center" th:if="${session.user != null && session.user.username != username}">
+                <div class="ms-3 d-flex align-items-center" th:if="${session.user != null && session.user.username() != username}">
                     <div th:replace="~{user/follow-button :: follow-button(${profileUser.id})}"></div>
                 </div>
             </div>
