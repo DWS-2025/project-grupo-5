@@ -1,8 +1,10 @@
 package com.musicstore.controller.api;
 
+import com.musicstore.model.Review;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,14 @@ public class ReviewRestController {
 
     @Autowired
     private AlbumService albumService;
+
+    @GetMapping
+    public ResponseEntity<Page<Review>> getAllReviewsPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Review> reviews = reviewService.getReviewsPaged(page, size);
+        return ResponseEntity.ok(reviews);
+    }
 
     @GetMapping("/album/{albumId}")
     public ResponseEntity<List<ReviewDTO>> getReviewsByAlbum(@PathVariable Long albumId) {

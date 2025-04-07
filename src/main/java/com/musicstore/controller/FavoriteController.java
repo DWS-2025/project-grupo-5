@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import com.musicstore.dto.UserDTO;
@@ -116,20 +119,22 @@ public class FavoriteController {
     public String showFavorites(@PathVariable String username, HttpSession session, Model model) {
 
         // Get the requested user's favorite albums
-        List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
-
-        if (favoriteAlbumIds == null) {
+        // Primero verificar si el usuario existe
+        Optional<UserDTO> userOpt = userService.getUserByUsername(username);
+        if (userOpt.isEmpty()) {
             model.addAttribute("error", "Usuario no encontrado.");
             return "error";
         }
 
-        List<AlbumDTO> favoriteAlbums = favoriteAlbumIds.stream()
-                .map(albumId -> albumService.getAlbumById(albumId).orElse(null))
-                .filter(album -> album != null)
-                .collect(Collectors.toList());
-
-        // Get the user information (including the profile image)
-        Optional<UserDTO> userOpt = userService.getUserByUsername(username);
+        // Obtener álbumes favoritos
+        List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
+        List<AlbumDTO> favoriteAlbums = !favoriteAlbumIds.isEmpty() ? 
+            favoriteAlbumIds.stream()
+                .map(albumService::getAlbumById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList()) : 
+            Collections.emptyList();
         if (userOpt.isPresent()) {
             User user = userOpt.get().toUser();
             model.addAttribute("userProfileImage", user.getImageUrl()); // Add user profile image URL

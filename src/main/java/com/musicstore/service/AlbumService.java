@@ -9,6 +9,9 @@ import com.musicstore.dto.AlbumDTO;
 import com.musicstore.mapper.AlbumMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +33,11 @@ public class AlbumService {
 
     public List<AlbumDTO> getAllAlbums() {
         return albumMapper.toDTOList(albumRepository.findAll());
+    }
+
+    public Page<Album> getAllAlbumsPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return albumRepository.findAll(pageable);
     }
 
     public List<AlbumDTO> searchAlbums(String title, String artist, Integer year) {
