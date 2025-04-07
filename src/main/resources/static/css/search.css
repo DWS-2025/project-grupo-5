@@ -1,0 +1,154 @@
+
+body {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+#viewToggle {
+    background-color: #1a5f42;
+    color: white;
+    border: none;
+}
+
+#viewToggle:hover {
+    background-color: #236b4e;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+.noselect .text {
+    transform: translateX(35px);
+    color: white;
+    font-weight: bold;
+}
+
+.noselect .icon {
+    position: absolute;
+    border-left: 1px solid #c41b1b;
+    transform: translateX(110px);
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.noselect svg {
+    width: 15px;
+    fill: #eee;
+}
+
+.noselect:hover .text {
+    color: transparent;
+}
+
+.noselect:hover .icon {
+    width: 150px;
+    border-left: none;
+    transform: translateX(0);
+}
+
+.noselect:active .icon svg {
+    transform: scale(0.8);
+}
+
+header {
+    background: #333;
+    padding: 20px;
+    text-align: center;
+}
+
+.card {
+    background-color: #333;
+    color: white;
+}
+
+.noselect {
+    width: 150px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    background: #e62222;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.noselect, .noselect span {
+    transition: 200ms;
+}
+
+.noselect:hover {
+    background: #ff3636;
+}
+
+.noselect:focus {
+    outline: none;
+}
+
+
+.btn-info {
+    background-color: #1db954; /* Verde claro de Spotify */
+    border-color: #1db954;
+    font-weight: bold;
+    color: white !important;
+}
+
+/* From Uiverse.io by alexruix */
+.search-container {
+    margin-left: auto;
+    margin-right: 0.1rem;
+    width: 200px;
+}
+
+.group {
+    display: flex;
+    line-height: 28px;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.input {
+    width: 100%;
+    height: 40px;
+    line-height: 28px;
+    padding: 0 1rem;
+    padding-left: 2.5rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    outline: none;
+    background-color: #f3f3f4;
+    color: #0d0c22;
+    transition: .3s ease;
+}
+
+.input::placeholder {
+    color: #9e9ea7;
+}
+
+.input:focus, input:hover {
+    outline: none;
+    border-color: rgb(51, 69, 51);
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgb(37, 50, 37);
+}
+
+.icon {
+    position: absolute;
+    left: 1rem;
+    fill: #9e9ea7;
+    width: 1rem;
+    height: 1rem;
+}

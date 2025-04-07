@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Album • EchoReviews</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/header-footer.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+
+</head>
+
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<div class="container">
+    <h1 class="text-center mb-4" th:text="${album.id == null ? 'Add New Album' : 'Edit Album'}">Album Form</h1>
+
+    <form th:action="${album.id == null ? '/admin' : '/admin/' + album.id}" th:object="${album}" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+        </div>
+
+        <div id="artistsContainer">
+            <div th:each="artist, stat : *{artists}" class="mb-3">
+                <div class="d-flex gap-2 align-items-start">
+                    <div class="flex-grow-1">
+                        <label th:for="'artist' + ${stat.index}" class="form-label">Artist</label>
+                        <input type="text" class="form-control" th:id="'artist' + ${stat.index}" th:field="*{artists[__${stat.index}__].name}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('artists[' + stat.index + '].name')}" th:errors="*{artists[__${stat.index}__].name}"></div>
+                    </div>
+                    <button type="button" class="btn btn-danger mt-4" th:onclick="'removeArtist(' + ${stat.index} + ')'" th:if="${stat.index > 0}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary mt-2" onclick="addArtist()">
+                <i class="bi bi-plus-circle me-1"></i>Add Artist
+            </button>
+        </div>
+
+        <script th:inline="javascript">
+            function addArtist() {
+                const container = document.getElementById('artistsContainer');
+                const artistCount = container.querySelectorAll('.mb-3').length;
+                const newArtistDiv = document.createElement('div');
+                newArtistDiv.className = 'mb-3';
+                newArtistDiv.innerHTML = `
+                    <div class="d-flex gap-2 align-items-start">
+                        <div class="flex-grow-1">
+                            <label for="artist${artistCount}" class="form-label">Artist*</label>
+                            <input type="text" class="form-control" id="artist${artistCount}" name="artists[${artistCount}].name" required>
+                        </div>
+                        <button type="button" class="btn btn-danger mt-4" onclick="removeArtist(${artistCount})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.insertBefore(newArtistDiv, container.lastElementChild);
+            }
+
+            function removeArtist(index) {
+                const container = document.getElementById('artistsContainer');
+                const artistDivs = container.querySelectorAll('.mb-3');
+                if (index < artistDivs.length) {
+                    artistDivs[index].remove();
+                    // Reindex remaining artists
+                    const remainingArtists = container.querySelectorAll('.mb-3');
+                    remainingArtists.forEach((div, i) => {
+                        const input = div.querySelector('input');
+                        const label = div.querySelector('label');
+                        const deleteButton = div.querySelector('button');
+                        
+                        input.id = `artist${i}`;
+                        input.name = `artists[${i}].name`;
+                        label.setAttribute('for', `artist${i}`);
+                        if (deleteButton) {
+                            deleteButton.setAttribute('onclick', `removeArtist(${i})`);
+                        }
+                    });
+                }
+            }
+            
+            function validateArtists() {
+                const container = document.getElementById('artistsContainer');
+                const artists = container.querySelectorAll('input[type="text"]');
+                if (artists.length === 0) {
+                    alert('Por favor, añade al menos un artista');
+                    return false;
+                }
+                return true;
+            }
+        </script>
+
+
+        <div class="mb-3">
+            <label for="genre" class="form-label">Genre</label>
+            <input type="text" class="form-control" id="genre" th:field="*{genre}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="year" class="form-label">Year</label>
+            <input type="number" class="form-control" id="year" th:field="*{year}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="imageFile" class="form-label">Album Cover Image</label>
+            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+            <input type="hidden" th:field="*{imageUrl}">
+        </div>
+
+        <p>Imagen subida actualmente: <span th:text="${album.imageUrl}">No hay imagen subida</span></p>
+
+
+        <div class="mb-3">
+            <label for="audioFile2" class="form-label">Audio File</label>
+            <input type="file" class="form-control" id="audioFile2" name="audioFile2">
+        </div>
+
+
+        <p>Audio subido actualmente: <span th:text="${album.audioFile}">No hay audio subido</span></p>
+
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="tracklist" class="form-label">Tracklist</label>
+            <textarea class="form-control" id="tracklist" th:field="*{tracklist}" rows="5" placeholder="Enter each song on a new line"></textarea>
+            <small class="form-text text-muted">Enter each song on a new line to create the tracklist.</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="spotifyUrl" class="form-label">Spotify URL</label>
+            <input type="url" class="form-control" id="spotifyUrl" name="spotify_url" th:value="${album.spotify_url}">
+        </div>
+
+
+        <div class="mb-3">
+            <label for="applemusic_url" class="form-label">Apple Music URL</label>
+            <input type="url" class="form-control" id="applemusic_url" name="applemusic_url" th:field = "*{applemusic_url}">
+        </div>
+
+        <div class="mb-3">
+            <label for="tidal_url" class="form-label">Tidal URL</label>
+            <input type="url" class="form-control" id="tidal_url" name="tidal_url" th:field = "*{tidal_url}">
+        </div>
+
+
+        <div class="mb-3 d-flex justify-content-between">
+            <a href="/admin" class="btn btn-secondary">Cancel</a>
+            <div class="d-flex gap-2">
+                <button th:if="${album.id != null}" type="button" class="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <svg viewBox="0 0 448 512" class="svgIcon"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path></svg>
+                </button>
+                <button type="submit" class="btn btn-primary" onclick="return validateArtists()">Save Album</button>
+            </div>
+        </div>
+
+
+
+    </form>
+</div>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this album? This action cannot be undone.
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form th:action="@{/admin/{id}/delete(id=${album.id})}" method="post" style="display: inline;">
+                    <input type="hidden" name="_method" value="delete">
+                    <button type="submit" class="btn btn-danger">Delete Album</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

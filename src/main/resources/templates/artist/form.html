@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Form • EchoReviews</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/header-footer.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div class="container mt-4">
+        <h2 th:text="${artist.id == null ? 'Add New Artist' : 'Edit Artist'}">Artist Form</h2>
+        <form th:action="${artist.id == null ? '/artists' : '/artists/' + artist.id}" 
+              method="post" 
+              th:object="${artist}" 
+              enctype="multipart/form-data"
+              class="needs-validation" 
+              novalidate>
+            <input type="hidden" th:field="*{id}">
+            
+            <div class="mb-3">
+                <label for="name" class="form-label">Artist Name</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" required minlength="2" maxlength="100" pattern="^[\p{L}\s'-]+$">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Please provide a valid artist name.</div>
+                <div class="invalid-feedback">Artist name must be between 2 and 100 characters and contain only letters, spaces, hyphens and apostrophes.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" th:field="*{country}" required minlength="2" maxlength="100" pattern="^[\p{L}\s'-]+$">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('country')}" th:errors="*{country}">Please provide a valid country name.</div>
+                <div class="invalid-feedback">Country name must be between 2 and 100 characters and contain only letters, spaces, hyphens and apostrophes.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">Profile Image</label>
+                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpeg,image/png,image/gif" onchange="validateFileSize(this)">
+                <div class="form-text">Upload a profile image for the artist (optional). Max size: 5MB. Accepted formats: JPG, PNG, GIF.</div>
+                <div class="invalid-feedback" id="imageError"></div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save Artist</button>
+                <a href="/admin/artists" class="btn btn-secondary">Cancel</a>
+                <button th:if="${artist.id != null}" type="button" class="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <svg viewBox="0 0 448 512" class="svgIcon"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path></svg>
+                </button>
+            </div>
+
+
+
+        </form>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+
+        // File validation
+        function validateFileSize(input) {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const errorElement = document.getElementById('imageError');
+            
+            if (input.files && input.files[0]) {
+                if (input.files[0].size > maxSize) {
+                    input.value = '';
+                    errorElement.textContent = 'File size must be less than 5MB';
+                    input.classList.add('is-invalid');
+                } else {
+                    errorElement.textContent = '';
+                    input.classList.remove('is-invalid');
+                }
+            }
+        }
+    </script>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this artist? This action cannot be undone and all of his/her albums will be deleted.
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form th:action="@{/artists/{id}/delete(id=${artist.id})}" method="post" style="display: inline;">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-danger">Delete Artist</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

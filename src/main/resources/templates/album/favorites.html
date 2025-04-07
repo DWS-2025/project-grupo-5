@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${username + '‘s favorite albums • EchoReviews'}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/favorites.css">
+    <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Image profile left -->
+        <div class="d-flex align-items-center">
+            <div class="me-2" style="width: 55px; height: 55px;">
+                <img th:if="${userProfileImage != null}" th:src="${userProfileImage}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
+                <i th:unless="${userProfileImage != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>
+            </div>
+            <!-- Username right -->
+            <h2 class="ms-2" th:text="${username + '‘s Favorite Albums'}"></h2>
+        </div>
+        <!--  viewToggle right -->
+        <button id="viewToggle" class="btn btn-outline-light ms-auto" onclick="toggleView()">
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+        </button>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="albumsGrid">
+        <div th:each="album : ${favoriteAlbums}" class="col">
+            <a th:href="@{/{id}(id=${album.id})}" style="text-decoration: none;">
+                <div class="card h-100" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <img th:if="${album.imageUrl != null}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
+                    <img th:unless="${album.imageUrl != null}" src="/resources/uploads/error.png" class="card-img-top" alt="Placeholder">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${album.title}">Album Title</h5>
+                        <p class="card-text">
+                            <strong>Artist:</strong> <span th:text="${album.artist.name}">Artist Name</span><br>
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleView() {
+        const grid = document.getElementById('albumsGrid');
+        const button = document.getElementById('viewToggle');
+        const currentCols = grid.classList.contains('row-cols-md-3') ? 3 : 5;
+
+        if (currentCols === 3) {
+            grid.classList.replace('row-cols-md-3', 'row-cols-md-5');
+        } else {
+            grid.classList.replace('row-cols-md-5', 'row-cols-md-3');
+        }
+    }
+</script>
+</body>
+</html>

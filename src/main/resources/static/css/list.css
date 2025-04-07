@@ -1,0 +1,381 @@
+/* PRIMER CSS */
+body {
+  background-color: #1e1e1e;
+  color: white;
+}
+#viewToggle {
+  background-color: #1a5f42;
+  color: white;
+  border: none;
+}
+#viewToggle:hover {
+  background-color: #236b4e;
+}
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+}
+.card {
+  background-color: #333;
+  color: white;
+}
+.noselect {
+  width: 150px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background: #e62222;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+  position: relative;
+}
+.noselect, .noselect span {
+  transition: 200ms;
+}
+.noselect .text {
+  transform: translateX(35px);
+  color: white;
+  font-weight: bold;
+}
+.noselect .icon {
+  position: absolute;
+  border-left: 1px solid #c41b1b;
+  transform: translateX(110px);
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.noselect svg {
+  width: 15px;
+  fill: #eee;
+}
+.noselect:hover {
+  background: #ff3636;
+}
+.noselect:hover .text {
+  color: transparent;
+}
+.noselect:hover .icon {
+  width: 150px;
+  border-left: none;
+  transform: translateX(0);
+}
+.noselect:focus {
+  outline: none;
+}
+.noselect:active .icon svg {
+  transform: scale(0.8);
+}
+.btn-info {
+  background-color: #1db954; /* Verde claro de Spotify */
+  border-color: #1db954;
+  font-weight: bold;
+  color: white !important;
+}
+header {
+  background: #333;
+  padding: 20px;
+  text-align: center;
+}
+body {
+  background-color: #1e1e1e;
+  color: white;
+}
+.card {
+  background-color: #333;
+  color: white;
+}
+.noselect {
+  width: 150px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background: #e62222;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+.noselect span {
+  transition: 200ms;
+}
+.noselect .text {
+  transform: translateX(35px);
+  color: white;
+  font-weight: bold;
+}
+.noselect .icon {
+  position: absolute;
+  border-left: 1px solid #c41b1b;
+  transform: translateX(110px);
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.noselect svg {
+  width: 15px;
+  fill: #eee;
+}
+.noselect:hover {
+  background: #ff3636;
+}
+.noselect:hover .text {
+  color: transparent;
+}
+.noselect:hover .icon {
+  width: 150px;
+  border-left: none;
+  transform: translateX(0);
+}
+.noselect:focus {
+  outline: none;
+}
+.noselect:active .icon svg {
+  transform: scale(0.8);
+}
+.btn-info {
+  background-color: #1db954;
+  /* Verde claro de Spotify */
+  border-color: #1db954;
+  font-weight: bold;
+  color: white !important;
+}
+.btn-primary {
+  background-color: #1a5f42 !important;
+  /* Verde oscuro oscuro de Spotify */
+  border-color: #1a5f42 !important;
+  font-weight: bold;
+  color: white !important;
+}
+.button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgb(20, 20, 20);
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  cursor: pointer;
+  transition-duration: .3s;
+  overflow: hidden;
+  position: relative;
+}
+.svgIcon {
+  width: 12px;
+  transition-duration: .3s;
+}
+.svgIcon path {
+  fill: white;
+}
+.button:hover {
+  width: 140px;
+  border-radius: 50px;
+  transition-duration: .3s;
+  background-color: rgb(69, 123, 255);
+  align-items: center;
+}
+.button:hover .svgIcon {
+  width: 50px;
+  transition-duration: .3s;
+  transform: translateY(100000%);
+}
+.button::before {
+  position: absolute;
+  top: -20px;
+  content: "Edit";
+  color: white;
+  transition-duration: .3s;
+  font-size: 2px;
+}
+.button:hover::before {
+  font-size: 13px;
+  opacity: 1;
+  transform: translateY(35px);
+  transition-duration: .3s;
+}
+
+/* SEGUNDO CSS */
+body {
+  background-color: #1e1e1e;
+  color: white;
+}
+header {
+  background: #333;
+  padding: 20px;
+  text-align: center;
+}
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+}
+.card {
+  background-color: #333;
+  color: white;
+}
+.card a {
+  color: white !important;
+  text-decoration: none;
+}
+.noselect {
+  width: 150px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background: #e62222;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+  position: relative;
+}
+.noselect, .noselect span {
+  transition: 200ms;
+}
+.noselect .text {
+  transform: translateX(35px);
+  color: white;
+  font-weight: bold;
+}
+.noselect .icon {
+  position: absolute;
+  border-left: 1px solid #c41b1b;
+  transform: translateX(110px);
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.noselect svg {
+  width: 15px;
+  fill: #eee;
+}
+.noselect:hover {
+  background: #ff3636;
+}
+.noselect:hover .text {
+  color: transparent;
+}
+.noselect:hover .icon {
+  width: 150px;
+  border-left: none;
+  transform: translateX(0);
+}
+.noselect:focus {
+  outline: none;
+}
+.noselect:active .icon svg {
+  transform: scale(0.8);
+}
+.btn-info {
+  background-color: #1db954; /* Verde claro de Spotify */
+  border-color: #1db954;
+  font-weight: bold;
+  color: white !important;
+}
+.main-header {
+  background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.main-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.main-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+.main-nav a:hover {
+  background-color: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+.main-footer {
+  background: #333;
+  color: white;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  text-align: center;
+}
+.main-footer p {
+  margin: 0;
+}
+/* From Uiverse.io by alexruix */
+.group {
+  display: flex;
+  line-height: 28px;
+  align-items: center;
+  position: relative;
+  max-width: 190px;
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  line-height: 28px;
+  padding: 0 1rem;
+  padding-left: 2.5rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  background-color: #f3f3f4;
+  color: #0d0c22;
+  transition: .3s ease;
+}
+
+.input::placeholder {
+  color: #9e9ea7;
+}
+
+.input:focus, input:hover {
+  outline: none;
+  border-color: rgba(234,76,137,0.4);
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgb(234 76 137 / 10%);
+}
+
+.icon {
+  position: absolute;
+  left: 1rem;
+  fill: #9e9ea7;
+  width: 1rem;
+  height: 1rem;
+}
+
+
+
+

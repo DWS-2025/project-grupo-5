@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="albumId" th:content="${album.id}">
+    <title th:text="${album.title + ' • EchoReviews'}">Album Details • EchoReviews</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/view.css">
+    <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+
+
+</head>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 offset-md-0">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Albums</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${album.title}">Album Details
+                    </li>
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="album-details-container">
+                        <div class="album-image">
+                            <img th:if="${album.imageUrl}" th:src="@{${album.imageUrl}}" class="img-fluid rounded" alt="Album Cover">
+                            <img th:unless="${album.imageUrl}" src="/resources/uploads/error.png" class="card-img-top" alt="Placeholder">
+                        </div>
+
+
+
+                        <div class="album-info">
+                            <h1 class="card-title" th:text="${album.title}">Album Title</h1>
+                            <p class="card-text">
+                                <strong>Artist:</strong>
+                                <a th:href="@{/artists/{id}(id=${album.artist.id})}"
+                                   th:text="${#strings.listJoin(album.artists.![name], ', ')}"
+                                   style="color: white; text-decoration: none;">Artist Name</a>
+                            </p>
+
+                            <p class="card-text"><strong>Genre:</strong> <span th:text="${album.genre}">Genre</span></p>
+                            <p class="card-text"><strong>Year:</strong> <span th:text="${album.year}">Year</span></p>
+                            <p class="card-text" th:text="${album.description}">Description</p>
+
+                            <div class="d-flex gap-3">
+                                <form th:action="${album.spotify_url}" method="get" target="_blank">
+                                    <button type="submit" class="spotify-button">
+                                        <a class="socialContainer containerOne">
+
+                                            <svg class="socialSvg spotifySvg" viewBox="0 0 16 16"> <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.669 11.538a.498.498 0 0 1-.686.165c-1.879-1.147-4.243-1.407-7.028-.77a.499.499 0 0 1-.222-.973c3.048-.696 5.662-.397 7.77.892a.5.5 0 0 1 .166.686zm.979-2.178a.624.624 0 0 1-.858.205c-2.15-1.321-5.428-1.704-7.972-.932a.625.625 0 0 1-.362-1.194c2.905-.881 6.517-.454 8.986 1.063a.624.624 0 0 1 .206.858zm.084-2.268C10.154 5.56 5.9 5.419 3.438 6.166a.748.748 0 1 1-.434-1.432c2.825-.857 7.523-.692 10.492 1.07a.747.747 0 1 1-.764 1.288z"></path> </svg>
+                                        </a>
+                                    </button>
+                                </form>
+
+                                <form th:action="${album.applemusic_url}" method="get" target="_blank">
+                                    <button type="submit" class="spotify-button">
+                                        <a class="socialContainer containerTwo">
+                                            <svg class="socialSvg appleSvg" width="256px" height="256px" viewBox="0.5 -124.5 328 328" xmlns="http://www.w3.org/2000/svg" fill="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g fill="#ffffff"> <path d="M52.244 41.844c-.104-6.346 2.637-11.286 8.217-14.822-3.147-4.576-7.788-7.148-13.925-7.723-2.183-.205-4.974.311-8.369 1.561-3.652 1.354-5.708 2.027-6.164 2.027-.964 0-2.815-.569-5.558-1.716-2.737-1.144-5.072-1.716-7-1.716-3.246.053-6.266.95-9.055 2.691-2.79 1.743-5.021 4.124-6.694 7.137C1.563 33.029.5 37.502.5 42.701c0 4.68.784 9.359 2.356 14.042 1.471 4.473 3.351 8.399 5.631 11.776 2.027 3.069 3.809 5.305 5.326 6.711 2.184 2.183 4.413 3.225 6.699 3.119 1.47-.054 3.396-.599 5.781-1.642 2.23-.983 4.464-1.478 6.697-1.478 2.079 0 4.233.492 6.468 1.478 2.484 1.043 4.515 1.562 6.087 1.562 2.334-.102 4.514-1.117 6.546-3.039.707-.627 1.482-1.484 2.318-2.576a79.861 79.861 0 0 0 2.779-3.9 57.237 57.237 0 0 0 2.093-3.51 35.298 35.298 0 0 0 1.864-3.979c.251-.572.479-1.156.684-1.754.202-.598.405-1.207.608-1.832-1.877-.83-3.577-2.005-5.098-3.514-3.344-3.323-5.044-7.433-5.095-12.321zM107.421 55.75h-.369L91.599 20.436H79.464v56.977H90.04V40.512h.491l12.914 29.302h7.417l12.873-29.302h.493v36.901h10.698V20.436h-12.052zM42.654 12.982c2.69-3.381 4.035-7.021 4.035-10.922v-.779c0-.262-.026-.521-.076-.781-1.878.104-3.868.703-5.975 1.793-2.104 1.094-3.841 2.474-5.213 4.135-2.738 3.279-4.109 6.787-4.109 10.532v.739c0 .236.026.482.076.744 4.212.415 7.966-1.406 11.262-5.461zM258.534 20.436h11.887v56.978h-11.887zM306.323 29.493c7.05 0 10.778 5.427 10.778 11.271H328.5v-1.211c0-11.019-8.404-20.201-22.26-20.201-14.84 0-23.693 9.767-23.693 26.423v6.429c0 16.651 8.771 26.297 23.651 26.297 14.225 0 22.302-9.312 22.302-19.662v-1.252h-11.398c0 5.888-3.647 10.771-10.695 10.771-7.217 0-11.809-5.135-11.809-16.115v-6.424c0-10.942 4.634-16.326 11.725-16.326zM180.39 56.416c0 7.641-4.468 11.855-11.026 11.855-6.6 0-11.067-4.174-11.067-11.855v-35.98H146.49v37.65c0 12.15 8.607 20.414 22.872 20.414 14.225 0 22.873-8.264 22.873-20.414v-37.65H180.39v35.98zM231.564 44.229l-8.484-1.918c-5-1.047-7.624-3.258-7.624-6.557 0-4.381 3.565-7.137 9.307-7.137 6.476 0 9.714 3.715 10 7.723h11.068c-.123-10.061-8.525-17.073-21.029-17.073-11.845 0-21.192 6.221-21.192 17.407 0 9.684 6.56 14.189 14.43 15.905l8.402 1.96c5.657 1.294 8.526 3.174 8.526 7.053 0 4.428-3.526 7.434-10.124 7.434-7.092 0-10.823-3.758-11.149-7.975h-11.397c.167 8.057 5.495 17.449 21.974 17.449 13.854 0 22.423-6.887 22.423-18.078-.004-10.352-6.932-14.401-15.131-16.193z"></path> </g> </g></svg>
+                                        </a>
+                                    </button>
+                                </form>
+
+                                <form th:action="${album.tidal_url}" method="get" target="_blank">
+                                    <button type="submit" class="spotify-button">
+                                        <a class="socialContainer containerThree">
+                                            <svg class="socialSvg tidalSvg" fill="#000000" width="256px" height="256px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16.016 5.323l-5.339 5.339-5.339-5.339-5.339 5.339 5.339 5.339 5.339-5.339 5.339 5.339-5.339 5.339 5.339 5.339 5.339-5.339-5.339-5.339 5.339-5.339zM21.391 10.661l5.302-5.307 5.307 5.307-5.307 5.307z"></path> </g></svg>
+                                        </a>
+                                    </button>
+                                </form>
+                            </div>
+
+                            </p>
+
+
+                        </div>
+
+
+
+                    </div>
+                    <div class="audio-container">
+                        <strong class="audio-preview-text">Audio Preview:</strong>
+                        <audio th:if="${album.audioFile}" autoplay loop controls controlsList="nodownload noremoteplayback">
+                            <source th:src="@{${album.audioFile}}" type="audio/mpeg">
+                            Your browser does not support audio playback.
+                        </audio>
+                        <input type="checkbox" id="checkboxInput">
+                        <label for="checkboxInput" class="toggleSwitch">
+                            <div class="speaker">
+                                <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 75 75">
+                                    <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" style="stroke:#fff;stroke-width:5;stroke-linejoin:round;fill:#fff;"></path>
+                                    <path d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6" style="fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round"></path>
+                                </svg>
+                            </div>
+                            <div class="mute-speaker">
+                                <svg version="1.0" viewBox="0 0 75 75" stroke="#fff" stroke-width="5">
+                                    <path d="m39,14-17,15H6V48H22l17,15z" fill="#fff" stroke-linejoin="round"></path>
+                                    <path d="m49,26 20,24m0-24-20,24" fill="#fff" stroke-linecap="round"></path>
+                                </svg>
+                            </div>
+                        </label>
+                    </div>
+                    <p th:unless="${album.audioFile}">
+                        No audio associated.
+                    </p>
+
+                    <div class="review-card2">
+                        <div class="stats-wrapper">
+                            <p class="heading">Rating</p>
+                            <div class="bottom-wrapper">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="star">
+                                    <g data-name="Layer 2">
+                                        <g data-name="star">
+                                            <rect
+                                                    opacity="0"
+                                                    transform="rotate(90 12 12)"
+                                                    height="24"
+                                                    width="24"
+                                            ></rect>
+                                            <path
+                                                    d="M17.56 21a1 1 0 0 1-.46-.11L12 18.22l-5.1 2.67a1 1 0 0 1-1.45-1.06l1-5.63-4.12-4a1 1 0 0 1-.25-1 1 1 0 0 1 .81-.68l5.7-.83 2.51-5.13a1 1 0 0 1 1.8 0l2.54 5.12 5.7.83a1 1 0 0 1 .81.68 1 1 0 0 1-.25 1l-4.12 4 1 5.63a1 1 0 0 1-.4 1 1 1 0 0 1-.62.18z"
+                                            ></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                                <p class="count" th:text="${#numbers.formatDecimal(album.averageRating, 1, 1)}"></p>
+                            </div>
+                        </div>
+
+                        <div class="stats-wrapper">
+                            <p class="heading">Reviews</p>
+                            <div class="bottom-wrapper">
+                                <svg
+                                        viewBox="0 0 512 512"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="thumb"
+                                >
+                                    <path
+                                            d="M472.06 334l-144.16-6.13c-4.61-.36-23.9-1.21-23.9-25.87 0-23.81 19.16-25.33 24.14-25.88L472.06 270c12.67.13 23.94 14.43 23.94 32s-11.27 31.87-23.94 32zM330.61 202.33L437.35 194C450 194 464 210.68 464 227.88v.33c0 16.32-11.14 29.62-24.88 29.79l-108.45-1.73C304 253 304 236.83 304 229.88c0-22.88 21.8-27.15 26.61-27.55zM421.85 480l-89.37-8.93C308 470.14 304 453.82 304 443.59c0-18.38 13.41-24.6 26.67-24.6l91-3c14.54.23 26.32 14.5 26.32 32s-11.67 31.67-26.14 32.01zm34.36-71.5l-126.4-6.21c-9.39-.63-25.81-3-25.81-26.37 0-12 4.35-25.61 25-27.53l127.19-3.88c13.16.14 23.81 13.49 23.81 31.4s-10.65 32.43-23.79 32.58z"
+                                    ></path>
+                                    <path
+                                            fill="none"
+                                            d="M133.55 238.06A15.85 15.85 0 01126 240a15.82 15.82 0 007.51-1.92zM174.14 168.78l.13-.23-.13.23c-20.5 35.51-30.36 54.95-33.82 62 3.47-7.07 13.34-26.51 33.82-62z"
+                                    ></path>
+                                    <path
+                                            d="M139.34 232.84l1-2a16.27 16.27 0 01-6.77 7.25 16.35 16.35 0 005.77-5.25z"
+                                    ></path>
+                                    <path
+                                            d="M316.06 52.62C306.63 39.32 291 32 272 32a16 16 0 00-14.31 8.84c-3 6.07-15.25 24-28.19 42.91-18 26.33-40.35 59.07-55.23 84.8l-.13.23c-20.48 35.49-30.35 54.93-33.82 62l-1 2a16.35 16.35 0 01-5.79 5.22 15.82 15.82 0 01-7.53 2h-25.31A84.69 84.69 0 0016 324.69v38.61a84.69 84.69 0 0084.69 84.7h48.79a17.55 17.55 0 019.58 2.89C182 465.87 225.34 480 272 480c7.45 0 14.19-.14 20.27-.38a8 8 0 006.2-12.68l-.1-.14C289.8 454.41 288 441 288 432a61.2 61.2 0 015.19-24.77 17.36 17.36 0 000-14.05 63.81 63.81 0 010-50.39 17.32 17.32 0 000-14 62.15 62.15 0 010-49.59 18.13 18.13 0 000-14.68A60.33 60.33 0 01288 239c0-8.2 2-21.3 8-31.19a15.63 15.63 0 001.14-13.64c-.38-1-.76-2.07-1.13-3.17a24.84 24.84 0 01-.86-11.58c3-19.34 9.67-36.29 16.74-54.16 3.08-7.78 6.27-15.82 9.22-24.26 6.14-17.57 4.3-35.2-5.05-48.38z"
+                                    ></path>
+                                </svg>
+                                <p class="count" th:text="${#lists.size(reviews)}">0</p>
+                            </div>
+                        </div>
+                        <div class="stats-wrapper"
+                             th:attr="title=${'Usuarios a los que les gusta: ' + #strings.arrayJoin(favoriteUsernames, ', ')}">
+                            <p class="heading">Likes</p>
+
+                            <div class="bottom-wrapper">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="star">
+                                    <g data-name="Layer 2">
+                                        <g data-name="star">
+                                            <rect
+                                                    opacity="0"
+                                                    transform="rotate(90 12 12)"
+                                                    height="24"
+                                                    width="24"
+                                            ></rect>
+                                            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 107.39">
+                                                <defs><style>.cls-1{fill:#ed1b24;fill-rule:evenodd;}</style></defs>
+                                                <title>red-heart</title>
+                                                <path class="cls-1" d="M60.83,17.18c8-8.35,13.62-15.57,26-17C110-2.46,131.27,21.26,119.57,44.61c-3.33,6.65-10.11,14.56-17.61,22.32-8.23,8.52-17.34,16.87-23.72,23.2l-17.4,17.26L46.46,93.55C29.16,76.89,1,55.92,0,29.94-.63,11.74,13.73.08,30.25.29c14.76.2,21,7.54,30.58,16.89Z"/>
+                                            </svg>
+                                        </g>
+                                    </g>
+                                </svg>
+                                <p class="count" th:text="${album.favoriteUsers.size()}">0</p>
+                            </div>
+                        </div>
+
+                    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content bg-dark text-white">
+                                <div class="modal-header border-secondary">
+                                    <h5 class="modal-title" id="loginModalLabel">Login Required</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    To add to favorites you need to login.
+                                </div>
+                                <div class="modal-footer border-secondary">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <a href="/login" class="btn btn-primary">Login</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/favorites/add}" method="post">
+                        <input type="hidden" name="albumId" th:value="${album.id}"/>
+                        <input type="hidden" name="username" th:value="${session.user != null ? session.user.id : ''}"/>
+
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" th:if="${session.user == null or session.user.username == null}" style="background: none; border: none; padding: 0;">
+                            <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                        </button>
+
+                        <button type="submit" class="btn-primary" th:if="${session.user != null and session.user.id != null and !userService.isAlbumInFavorites(session.user.username, album.id)}" style="background: none; border: none; padding: 0;">
+                            <svg class="heart heart-gray" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                        </button>
+                    </form>
+                    <form th:if="${session.user != null and session.user.id != null and userService.isAlbumInFavorites(session.user.username, album.id)}"
+                          th:action="@{/favorites/delete}" method="post">
+                        <input type="hidden" name="albumId" th:value="${album.id}"/>
+                        <input type="hidden" name="username" th:value="${session.user.username}"/>
+                        <button type="submit" class="btn" style="background: none; border: none; padding: 0;">
+                            <svg class="heart heart-red" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                        </button>
+                    </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <div class="row">
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mt-4">
+                        <h4>Tracklist</h4>
+                        <ol class="list-group list-group-numbered">
+                            <li th:each="track, iterStat : ${#strings.listSplit(album.tracklist, '+')}" class="listitem">
+                                <div class="track-item">
+                                    <span class="track-number" th:text="${iterStat.index + 1}">1</span>-
+                                    <span class="track-name" th:text="${track}">Track name</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mt-3">
+                        <h4 style="margin-bottom: 1.5rem;">Add a review:</h4>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <form th:action="@{'/reviews/' + ${album.id}}" method="post">
+                                    <div class="mb-3">
+                                        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'Login is needed to post a review' : ''}" required></textarea>
+                                    </div>
+
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <label class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Rate:</label>
+                                        <div class="rating" style="display: inline-block;">
+                                            <input value="5" name="rating" id="star5" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star5"></label>
+                                            <input value="4" name="rating" id="star4" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star4"></label>
+                                            <input value="3" name="rating" id="star3" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star3"></label>
+                                            <input value="2" name="rating" id="star2" type="radio" th:disabled="${session.user == null}">
+                                            <label for="star2"></label>
+                                            <input value="1" name="rating" id="star1" type="radio" required th:disabled="${session.user == null}">
+                                            <label for="star1"></label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" th:disabled="${session.user == null}">Save review</button>
+
+                                </form>
+
+
+
+                                </div>
+
+
+
+                                <section class="reviews-section">
+                                    <h2>Reviews</h2>
+                                    <div th:if="${#lists.isEmpty(reviews)}">
+                                        <p>Be the first to review this album!</p>
+                                    </div>
+                                    <div th:each="review : ${reviews}" class="review-card">
+                                        <div class="card-review">
+                                            <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
+                                                <button type="button" class="edit-review" th:data-review-id="${review.id}" th:if="${session.user.username == review.username}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
+                                                <button type="button" class="delete-review" th:data-review-id="${review.id}" th:onclick="'deleteReview(' + ${review.id} + ')'">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="stars">
+                                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                                    <svg th:class="${i <= review.rating ? 'star filled' : 'star'}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" />
+                                                    </svg>
+                                                </th:block>
+                                            </div>
+
+                                            <div class="infos d-flex flex-column">
+                                                <!-- Contenedor de la imagen y el nombre de usuario -->
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-2" style="width: 40px; height: 40px;">
+                                                        <a th:href="@{/profile/{username}(username=${review.username})}">
+                                                            <img th:if="${review.userImageUrl != null}" th:src="${review.userImageUrl}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
+                                                            <i th:unless="${review.userImageUrl != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="username" style="font-weight: bold;">
+                                                        <a th:href="@{/profile/{username}(username=${review.username})}" class="author" th:text="${review.username}"></a>
+                                                    </div>
+                                                </div>
+                                                <!-- Contenedor del contenido, debajo del nombre de usuario -->
+                                                <div class="description review-content mt-2" th:text="${review.content}"></div>
+                                            </div>
+
+
+
+
+
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editReviewModalLabel">Edit Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editReviewForm" th:action="@{'/reviews/' + ${album.id} + '/edit/0'}" method="post">
+                            <div class="mb-3">
+                                <label for="editReviewContent" class="form-label">Your review:</label>
+                                <textarea id="editReviewContent" name="content" class="form-control" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rate:</label>
+                                <div class="rating edit-rating">
+                                    <input value="5" name="rating" id="editStar5" type="radio">
+                                    <label title="text" for="editStar5"></label>
+                                    <input value="4" name="rating" id="editStar4" type="radio">
+                                    <label title="text" for="editStar4"></label>
+                                    <input value="3" name="rating" id="editStar3" type="radio">
+                                    <label title="text" for="editStar3"></label>
+                                    <input value="2" name="rating" id="editStar2" type="radio">
+                                    <label title="text" for="editStar2"></label>
+                                    <input value="1" name="rating" id="editStar1" type="radio" required>
+                                    <label title="text" for="editStar1"></label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" form="editReviewForm" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Delete Review Modal -->
+<div class="modal fade" id="deleteReviewModal" tabindex="-1" aria-labelledby="deleteReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="deleteReviewModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this review?
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteReview">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <script>
+            function editReview(reviewId) {
+                const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.card-review');
+                const content = reviewCard.querySelector('.review-content').textContent;
+                const rating = reviewCard.querySelectorAll('.star.filled').length;
+
+                document.getElementById('editReviewContent').value = content;
+                document.querySelector(`#editReviewForm input[value="${rating}"]`).checked = true;
+
+                const form = document.getElementById('editReviewForm');
+                form.action = form.action.replace('/edit/0', `/edit/${reviewId}`);
+
+                new bootstrap.Modal(document.getElementById('editReviewModal')).show();
+            }
+
+            function deleteReview(reviewId) {
+                const modal = new bootstrap.Modal(document.getElementById('deleteReviewModal'));
+                const form = document.createElement('form');
+                form.method = 'POST';
+                const albumId = document.querySelector('meta[name="albumId"]').content;
+                form.action = `/reviews/${albumId}/delete/${reviewId}`;
+
+                document.getElementById('confirmDeleteReview').onclick = function() {
+                    document.body.appendChild(form);
+                    form.submit();
+                };
+
+                modal.show();
+            }
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const audio = document.querySelector('audio');
+                const checkbox = document.getElementById('checkboxInput');
+
+                if (audio) {
+                    audio.style.display = 'none';
+                    checkbox.addEventListener('change', function() {
+                        audio.muted = this.checked;
+                    });
+                }
+            });
+        </script>
+</html>
