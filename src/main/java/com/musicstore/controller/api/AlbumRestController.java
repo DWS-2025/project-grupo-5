@@ -35,9 +35,7 @@ public class AlbumRestController {
     @GetMapping
     public ResponseEntity<List<AlbumDTO>> getAllAlbums() {
         List<AlbumDTO> albums = albumService.getAllAlbums();
-        return ResponseEntity.ok(albums.stream()
-                .map(albumMapper::toDTO)
-                .toList());
+        return ResponseEntity.ok(albums);
     }
 
     @GetMapping("/{id}")
@@ -58,9 +56,8 @@ public class AlbumRestController {
     @PostMapping
     public ResponseEntity<AlbumDTO> createAlbum(@RequestBody AlbumDTO albumDTO) {
         try {
-            Album album = albumMapper.toEntity(albumDTO);
-            Album savedAlbum = albumService.saveAlbum(album);
-            return ResponseEntity.status(HttpStatus.CREATED).body(albumMapper.toDTO(savedAlbum));
+            AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
@@ -75,11 +72,10 @@ public class AlbumRestController {
         try {
             return (ResponseEntity<AlbumDTO>) albumService.getAlbumById(id)
                     .map(existingAlbum -> {
-                        Album album = albumMapper.toEntity(albumDTO);
-                        album.setId(id);
+                        AlbumDTO updatedAlbumDTO = albumDTO.withId(id);
                         try {
-                            Album updatedAlbum = albumService.saveAlbum(album);
-                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum));
+                            AlbumDTO savedAlbum = albumService.saveAlbum(updatedAlbumDTO);
+                            return ResponseEntity.ok(savedAlbum);
                         } catch (RuntimeException e) {
                             return ResponseEntity.status(HttpStatus.CONFLICT).build();
                         }
@@ -110,9 +106,12 @@ public class AlbumRestController {
             return (ResponseEntity<AlbumDTO>) albumService.getAlbumById(id)
                     .map(album -> {
                         try {
-                            album.setImageData(image.getBytes());
+                            // Aquí estamos trabajando con la entidad Album
+                            album.withImageData(image.getBytes()); // Modificamos la entidad directamente
+                            // Guardamos la entidad en la base de datos
                             Album updatedAlbum = albumService.saveAlbum(album).toAlbum();
-                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum));
+                            // Convertimos la entidad de vuelta a un DTO para devolverlo
+                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum)); // Respondemos con el DTO
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }
@@ -122,4 +121,5 @@ public class AlbumRestController {
             return ResponseEntity.badRequest().build();
         }
     }
+
 }

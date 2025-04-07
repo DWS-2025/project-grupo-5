@@ -5,6 +5,7 @@ import com.musicstore.model.Artist;
 import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public record AlbumDTO(
@@ -22,7 +23,9 @@ public record AlbumDTO(
     List<Long> artistIds,
     List<Long> reviewIds,
     List<String> artistNames,
-    List<String> favoriteUsers
+    List<String> favoriteUsers,
+    byte[] imageData,
+    byte[] audioData
 ) {
     public double getAverageRating() {
         return averageRating != null ? averageRating : 0.0;
@@ -41,7 +44,7 @@ public record AlbumDTO(
         return new AlbumDTO(
             id, title, genre, imageUrl, description, tracklist, year,
             spotify_url, applemusic_url, tidal_url, newAverageRating,
-            artistIds, reviewIds, artistNames, favoriteUsers
+            artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
         );
     }
     public static AlbumDTO fromAlbum(Album album) {
@@ -68,7 +71,9 @@ public record AlbumDTO(
                 .collect(Collectors.toList()),
             album.getFavoriteUsers().stream()
                 .map(User::getUsername)
-                .collect(Collectors.toList())
+                .collect(Collectors.toList()),
+            album.getImageData(),
+            album.getAudioData()
         );
     }
 
@@ -85,6 +90,16 @@ public record AlbumDTO(
         album.setApplemusic_url(this.applemusic_url());
         album.setTidal_url(this.tidal_url());
         album.setAverageRating(this.averageRating());
+        // Inicializamos la lista de artistas
+        List<Artist> artists = new ArrayList<>();
+        if (this.artistIds != null) {
+            for (Long artistId : this.artistIds) {
+                Artist artist = new Artist();
+                artist.setId(artistId);
+                artists.add(artist);
+            }
+        }
+        album.setArtists(artists);
         // No asignamos favoriteUsers aquí ya que necesitamos las entidades User completas
         // La lista de favoriteUsers se manejará en el servicio
         return album;
@@ -92,5 +107,30 @@ public record AlbumDTO(
 
     public List<String> getFavoriteUsers() {
         return favoriteUsers;
+    }
+
+    public List<Long> getArtists() {
+        return artistIds;
+    }
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public byte[] getAudioData() {
+        return audioData;
+    }
+    public AlbumDTO withId(Long newId) {
+        return new AlbumDTO(
+            newId, title, genre, imageUrl, description, tracklist, year,
+            spotify_url, applemusic_url, tidal_url, averageRating,
+            artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
+        );
+    }
+    public AlbumDTO withImageData(byte[] newImageData) {
+        return new AlbumDTO(
+            id, title, genre, imageUrl, description, tracklist, year,
+            spotify_url, applemusic_url, tidal_url, averageRating,
+            artistIds, reviewIds, artistNames, favoriteUsers, newImageData, audioData
+        );
     }
 }

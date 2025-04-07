@@ -11,7 +11,8 @@ public record ArtistDTO(
     String country,
     String imageUrl,
     List<Long> albumIds,
-    List<String> albumTitles
+    List<String> albumTitles,
+    byte[] imageData
 ) {
     public static ArtistDTO fromArtist(Artist artist) {
         return new ArtistDTO(
@@ -24,7 +25,8 @@ public record ArtistDTO(
                 .collect(Collectors.toList()),
             artist.getAlbums().stream()
                 .map(Album::getTitle)
-                .collect(Collectors.toList())
+                .collect(Collectors.toList()),
+            artist.getImageData()
         );
     }
 
@@ -34,6 +36,19 @@ public record ArtistDTO(
         artist.setName(this.name());
         artist.setCountry(this.country());
         artist.setImageUrl(this.imageUrl());
+        artist.setImageData(this.imageData());
         return artist;
+    }
+
+    public ArtistDTO withId(Long newId) {
+        return new ArtistDTO(
+            newId,
+            this.name,
+            this.country,
+            this.imageUrl,
+            this.albumIds,
+            this.albumTitles,
+            this.imageData
+        );
     }
 }

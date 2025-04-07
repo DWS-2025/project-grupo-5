@@ -27,10 +27,7 @@ public class ArtistRestController {
     @GetMapping
     public ResponseEntity<List<ArtistDTO>> getAllArtists() {
         List<ArtistDTO> artists = artistService.getAllArtists();
-        List<ArtistDTO> artistDTOs = artists.stream()
-                .map(artistMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(artistDTOs);
+        return ResponseEntity.ok(artists);
     }
 
     @GetMapping("/{id}")
@@ -41,7 +38,7 @@ public class ArtistRestController {
 
         try {
             return artistService.getArtistById(id)
-                    .map(artist -> ResponseEntity.ok(artistMapper.toDTO(artist.toArtist())))
+                    .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -80,16 +77,16 @@ public class ArtistRestController {
         try {
             return (ResponseEntity<ArtistDTO>) artistService.getArtistById(id)
                     .map(existingArtist -> {
-                        Artist artistToUpdate = artistMapper.toEntity(artistDTO);
-                        artistToUpdate.setId(id);
+                        ArtistDTO artistToUpdate = artistDTO.withId(id);
                         try {
-                            Artist updatedArtist = artistService.updateArtist(artistToUpdate);
-                            return ResponseEntity.ok(artistMapper.toDTO(updatedArtist));
+                            ArtistDTO updatedArtist = artistService.updateArtist(artistToUpdate);
+                            return ResponseEntity.ok(updatedArtist); // <-- OK
                         } catch (RuntimeException e) {
-                            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                            return ResponseEntity.<ArtistDTO>status(HttpStatus.CONFLICT).build(); // <-- OK
                         }
                     })
-                    .orElse(ResponseEntity.notFound().build());
+                    .orElseGet(() -> ResponseEntity.<ArtistDTO>notFound().build()); // <-- PERFECTO
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

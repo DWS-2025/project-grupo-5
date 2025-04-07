@@ -34,8 +34,8 @@ public class ArtistImageController {
     public ResponseEntity<byte[]> getArtistImage(@PathVariable Long id) {
         Optional<ArtistDTO> artistOpt = artistService.getArtistById(id);
 
-        if (artistOpt.isPresent() && artistOpt.get().getImageData() != null) {
-            byte[] imageBytes = artistOpt.get().getImageData();
+        if (artistOpt.isPresent() && artistOpt.get().imageData() != null) {
+            byte[] imageBytes = artistOpt.get().imageData();
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_JPEG)
                     .body(imageBytes);

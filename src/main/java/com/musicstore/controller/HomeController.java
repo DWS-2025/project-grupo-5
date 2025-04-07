@@ -67,17 +67,11 @@ public class HomeController {
         albumService.getAlbumById(id).ifPresent(album -> {
             model.addAttribute("album", album);
             // Get username and map users and albums
-            List<String> usernames = userService.getUsernamesByAlbumId(album.getId());
+            List<String> usernames = userService.getUsernamesByAlbumId(album.id());
             model.addAttribute("favoriteUsernames", usernames);
 
             // Get reviews and map user IDs to usernames and profile images
             List<ReviewDTO> reviews = reviewService.getReviewsByAlbumId(id);
-            reviews.forEach(review -> {
-                if (review.getUser() != null) {
-                    review.setUsername(review.getUser().getUsername());
-                    review.setUserImageUrl(review.getUser().getImageUrl());
-                }
-            });
             model.addAttribute("reviews", reviews);
         });
         return "album/view";

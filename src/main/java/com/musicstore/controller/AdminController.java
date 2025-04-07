@@ -111,11 +111,13 @@ public class AdminController {
         } else {
             albumService.getAlbumById(id).ifPresent(album -> {
                 // Si la lista de artistas es nula o está vacía, inicializamos con un nuevo artista
-                if (album.getArtists() == null || album.getArtists().isEmpty()) {
-                    album.setArtists(new ArrayList<>());
-                    album.getArtists().add(new Artist()); // Añadimos un artista vacío
+                Album albumEntity = album.toAlbum();
+                if (albumEntity.getArtists() == null || albumEntity.getArtists().isEmpty()) {
+                    albumEntity.setArtists(new ArrayList<>());
+                    Artist emptyArtist = new Artist();
+                    albumEntity.getArtists().add(emptyArtist);
                 }
-                model.addAttribute("album", album);
+                model.addAttribute("album", AlbumDTO.fromAlbum(albumEntity));
             });
             return "album/form";
         }
