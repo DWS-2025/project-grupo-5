@@ -33,9 +33,19 @@ public class AlbumRestController {
     private AlbumMapper albumMapper;
 
     @GetMapping
-    public ResponseEntity<List<AlbumDTO>> getAllAlbums() {
-        List<AlbumDTO> albums = albumService.getAllAlbums();
-        return ResponseEntity.ok(albums);
+    public ResponseEntity<Map<String, Object>> getAllAlbums(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Album> pageResult = albumService.getAllAlbumsPaged(page, size);
+        List<AlbumDTO> albums = albumMapper.toDTOList(pageResult.getContent());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("albums", albums);
+        response.put("currentPage", pageResult.getNumber());
+        response.put("totalItems", pageResult.getTotalElements());
+        response.put("totalPages", pageResult.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

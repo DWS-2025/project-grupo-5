@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 import com.musicstore.dto.ReviewDTO;
 import com.musicstore.mapper.ReviewMapper;
 
@@ -26,6 +30,11 @@ public class ReviewService {
         return reviews.stream()
                 .map(reviewMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Page<Review> getReviewsPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reviewRepository.findAll(pageable);
     }
 
     public Optional<ReviewDTO> getReviewById(Long albumId, Long reviewId) {
