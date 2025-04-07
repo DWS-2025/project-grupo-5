@@ -46,19 +46,15 @@ public class AlbumService {
 
         if (album.getArtists() != null && !album.getArtists().isEmpty()) {
             List<Artist> processedArtists = album.getArtists().stream()
-                    .map(artist -> {
-                        String name = artist.getName().trim();
-                        return artistRepository.findByNameContainingIgnoreCase(name)
-                                .stream()
-                                .findFirst()
-                                .orElseGet(() -> artistRepository.save(new Artist(name)));
-                    })
+                    .map(artist -> artistRepository.findByNameContainingIgnoreCase(artist.getName().trim())
+                            .stream()
+                            .findFirst()
+                            .orElseGet(() -> artistRepository.save(new Artist(artist.getName().trim()))))
                     .toList();
             album.setArtists(processedArtists);
         }
 
-        Album savedAlbum = albumRepository.save(album);
-        return albumMapper.toDTO(savedAlbum);
+        return albumMapper.toDTO(albumRepository.save(album));
     }
 
     public AlbumDTO saveAlbumWithImage(AlbumDTO albumDTO, MultipartFile imageFile) throws IOException {
@@ -67,13 +63,13 @@ public class AlbumService {
         }
 
         AlbumDTO savedAlbumDTO = saveAlbum(albumDTO);
-        Album album = albumMapper.toEntity(savedAlbumDTO);
-
+        
         if (imageFile != null && !imageFile.isEmpty()) {
+            Album album = albumMapper.toEntity(savedAlbumDTO);
             try {
                 album.setImageData(imageFile.getBytes());
                 album.setImageUrl("/api/albums/" + album.getId() + "/image");
-                return albumMapper.toDTO(albumRepository.save(album));
+                savedAlbumDTO = albumMapper.toDTO(albumRepository.save(album));
             } catch (IOException e) {
                 throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
             }
@@ -87,13 +83,13 @@ public class AlbumService {
         }
 
         AlbumDTO savedAlbumDTO = saveAlbum(albumDTO);
-        Album album = albumMapper.toEntity(savedAlbumDTO);
-
+        
         if (audioFile != null && !audioFile.isEmpty()) {
+            Album album = albumMapper.toEntity(savedAlbumDTO);
             try {
                 album.setAudioData(audioFile.getBytes());
                 album.setAudioFile("/api/albums/" + album.getId() + "/audio");
-                return albumMapper.toDTO(albumRepository.save(album));
+                savedAlbumDTO = albumMapper.toDTO(albumRepository.save(album));
             } catch (IOException e) {
                 throw new RuntimeException("Failed to process audio file: " + e.getMessage(), e);
             }
@@ -102,14 +98,10 @@ public class AlbumService {
     }
 
     public void deleteAlbum(Long id) {
-        Optional<Album> albumOpt = albumRepository.findById(id);
-        if (albumOpt.isPresent()) {
-            Album album = albumOpt.get();
-            for (User user : album.getFavoriteUsers()) {
-                user.getFavoriteAlbums().remove(album);
-            }
+        albumRepository.findById(id).ifPresent(album -> {
+            album.getFavoriteUsers().forEach(user -> user.getFavoriteAlbums().remove(album));
             album.getFavoriteUsers().clear();
             albumRepository.delete(album);
-        }
+        });
     }
 }

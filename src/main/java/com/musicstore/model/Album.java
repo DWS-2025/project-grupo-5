@@ -1,6 +1,5 @@
 package com.musicstore.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
@@ -12,12 +11,20 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.CascadeType;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.sql.Blob;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParser;
+import java.io.IOException;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 @Data
 @Entity
@@ -29,22 +36,53 @@ public class Album {
     @NotBlank(message = "Title is required")
     private String title;
 
+    @ManyToOne
+    @JoinColumn(name = "artist_id")
+    private Artist artist;
 
+    @JsonDeserialize(using = ArtistListDeserializer.class)
+    @JsonAlias({"artist", "artists"})
     @ManyToMany
     @JoinTable(
             name = "album_artists",
             joinColumns = @JoinColumn(name = "album_id"),
             inverseJoinColumns = @JoinColumn(name = "artist_id")
     )
-    @JsonIgnoreProperties({"albums", "imageData"})
     private List<Artist> artists = new ArrayList<>();
 
     public Artist getArtist() {
-        return artists != null && !artists.isEmpty() ? artists.get(0) : null;
+        return artist != null ? artist : (artists != null && !artists.isEmpty() ? artists.get(0) : null);
+    }
+
+    public void setArtist(Artist artist) {
+        this.artist = artist;
+    }
+
+    public static class ArtistListDeserializer extends StdDeserializer<List<Artist>> {
+        public ArtistListDeserializer() {
+            super(List.class);
+        }
+
+        @Override
+        public List<Artist> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode node = p.getCodec().readTree(p);
+            List<Artist> artists = new ArrayList<>();
+            
+            if (node.isArray()) {
+                for (JsonNode artistNode : node) {
+                    if (artistNode.isTextual()) {
+                        artists.add(new Artist(artistNode.asText()));
+                    }
+                }
+            } else if (node.isTextual()) {
+                artists.add(new Artist(node.asText()));
+            }
+            
+            return artists;
+        }
     }
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"album", "user"})
     private List<Review> reviews = new ArrayList<>();
 
     @NotBlank(message = "Genre is required")
@@ -54,21 +92,45 @@ public class Album {
 
     @Lob
     @Column(name = "image_data")
-    @JsonIgnoreProperties
     private byte[] imageData;
 
     @Lob
+    @Column(name = "audio_preview")
+    private byte[] audioFile2;
+
+    @Lob
     @Column(name = "audio_data")
-    @JsonIgnoreProperties
     private byte[] audioData;
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
 
     private String audioFile;
 
-    @Lob
-    @Column(name = "description", columnDefinition = "LONGTEXT")
+    public byte[] getAudioData() {
+        return audioData;
+    }
+
+    public void setAudioData(byte[] audioData) {
+        this.audioData = audioData;
+    }
+
+    public String getAudioFile() {
+        return audioFile;
+    }
+
+    public void setAudioFile(String audioFile) {
+        this.audioFile = audioFile;
+    }
+
     private String description;
 
-
+    @Lob
     @Column(name = "tracklist", columnDefinition = "TEXT")
     private String tracklist;
 
@@ -82,8 +144,8 @@ public class Album {
 
     private String tidal_url;
 
-    @ManyToMany(mappedBy = "favoriteAlbums")
-    @JsonIgnoreProperties({"favoriteAlbums", "password", "email", "imageData", "followers", "following"})
+    @ManyToMany(mappedBy = "favoriteUsers")
+    @JsonDeserialize(contentAs = User.class)
     private List<User> favoriteUsers = new ArrayList<>();
 
     private Double averageRating = 0.0;
@@ -94,7 +156,6 @@ public class Album {
             return;
         }
         double sum = reviews.stream()
-                .filter(review -> review != null)
                 .mapToInt(Review::getRating)
                 .sum();
         this.averageRating = sum / reviews.size();
