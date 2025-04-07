@@ -2,6 +2,7 @@ package com.musicstore.dto;
 
 import com.musicstore.model.User;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public record UserDTO(
@@ -16,6 +17,11 @@ public record UserDTO(
     List<Long> following,
     List<Long> favoriteAlbumIds
 ) {
+    public UserDTO {
+        followers = followers != null ? followers : new ArrayList<>();
+        following = following != null ? following : new ArrayList<>();
+        favoriteAlbumIds = favoriteAlbumIds != null ? favoriteAlbumIds : new ArrayList<>();
+    }
     public static UserDTO fromUser(User user) {
         return new UserDTO(
             user.getId(),

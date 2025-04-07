@@ -35,7 +35,7 @@ public class AuthController {
     public String login(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
         return userService.authenticateUser(user.getUsername(), user.getPassword())
                 .map(authenticatedUser -> {
-                    session.setAttribute("user", authenticatedUser);
+                    session.setAttribute("user", authenticatedUser); // Already storing UserDTO
                     return "redirect:/";
                 })
                 .orElseGet(() -> {

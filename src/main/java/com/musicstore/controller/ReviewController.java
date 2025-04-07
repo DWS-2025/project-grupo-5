@@ -42,7 +42,7 @@ public class ReviewController {
             @RequestParam String content,
             @RequestParam int rating,
             HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
         if (user != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 System.err.println("Datos inválidos. Reseña no guardada.");
@@ -52,16 +52,16 @@ public class ReviewController {
             ReviewDTO reviewDTO = new ReviewDTO(
                 null,
                 albumId,
-                user.getId(),
-                user.getUsername(),
-                user.getImageUrl(),
+                user.id(),
+                user.username(),
+                user.imageUrl(),
                 null,
                 null,
                 content,
                 rating
             );
 
-            System.out.println("Guardando reseña del usuario: " + user.getUsername());
+            System.out.println("Guardando reseña del usuario: " + user.username());
             reviewService.addReview(albumId, reviewDTO);
 
             // Update album's average rating
@@ -81,20 +81,20 @@ public class ReviewController {
             @RequestParam int rating,
             HttpSession session
     ) {
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
         if (user != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 return "redirect:/" + albumId;
             }
 
             ReviewDTO existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (existingReview != null && existingReview.username().equals(user.getUsername())) {
+            if (existingReview != null && existingReview.username().equals(user.username())) {
                 ReviewDTO reviewDTO = new ReviewDTO(
                     reviewId,
                     albumId,
-                    user.getId(),
-                    user.getUsername(),
-                    user.getImageUrl(),
+                    user.id(),
+                    user.username(),
+                    user.imageUrl(),
                     null,
                     null,
                     content,
@@ -118,10 +118,10 @@ public class ReviewController {
             @PathVariable Long reviewId,
             HttpSession session
     ) {
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
         if (user != null) {
             ReviewDTO review = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (review != null && (review.username().equals(user.getUsername()) || user.isAdmin())) {
+            if (review != null && (review.username().equals(user.username()) || user.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
 
                 // Update album's average rating
@@ -137,7 +137,7 @@ public class ReviewController {
 
     @GetMapping("/user/{username}")
     public String viewReviews(@PathVariable String username, Model model, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
         model.addAttribute("currentUser", currentUser);
 
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);

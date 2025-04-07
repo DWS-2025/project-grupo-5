@@ -1,7 +1,5 @@
 package com.musicstore.controller;
 
-import com.musicstore.dto.AlbumDTO;
-import com.musicstore.dto.ArtistDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.User;
 import com.musicstore.model.Artist;
@@ -16,9 +14,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.mapper.UserMapper;
+import com.musicstore.mapper.AlbumMapper;
+import com.musicstore.mapper.ReviewMapper;
+import com.musicstore.mapper.ArtistMapper;
 
 @Controller
 @RequestMapping("/artists")
@@ -40,12 +47,12 @@ public class ArtistController {
 
             model.addAttribute("artists", artists);
             model.addAttribute("albums", albums);
-            User user = (User) session.getAttribute("user");
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
 
-            if (user != null) {
-                model.addAttribute("user", user);
+            if (userDTO != null) {
+                model.addAttribute("user", userDTO);
             } else {
-                User anonymousUser = new User();
+                UserDTO anonymousUser = new UserDTO(null, null, null, null, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
                 model.addAttribute("user", anonymousUser);
             }
             return "artist/welcome";
@@ -71,8 +78,8 @@ public class ArtistController {
 
             model.addAttribute("artist", artist);
             model.addAttribute("albums", albums);
-            User user = (User) session.getAttribute("user");
-            model.addAttribute("user", user);
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
+            model.addAttribute("user", userDTO);
             return "artist/view";
         } catch (Exception e) {
             model.addAttribute("error", "Error viewing artist: " + e.getMessage());
@@ -82,8 +89,8 @@ public class ArtistController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -95,8 +102,8 @@ public class ArtistController {
     public String createArtist(@Valid Artist artist, BindingResult result,
                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                               Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -121,8 +128,8 @@ public class ArtistController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -148,8 +155,8 @@ public class ArtistController {
                               BindingResult result,
                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                               Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -175,8 +182,8 @@ public class ArtistController {
 
     @PostMapping("/{id}/delete")
     public String deleteArtist(@PathVariable Long id, Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !user.isAdmin()) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }

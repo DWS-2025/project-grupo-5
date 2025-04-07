@@ -236,16 +236,17 @@
         </div>
     </div>
 </div>
+
 <div class="container mt-4">
     <div class="row">
-
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
                     <div class="mt-4">
                         <h4>Tracklist</h4>
                         <ol class="list-group list-group-numbered">
-                            <li th:each="track, iterStat : ${#strings.listSplit(album.tracklist, '+')}" class="listitem">
+                            <li th:each="track, iterStat : ${#strings.listSplit(album.tracklist, '+')}"
+                                class="listitem">
                                 <div class="track-item">
                                     <span class="track-number" th:text="${iterStat.index + 1}">1</span>-
                                     <span class="track-name" th:text="${track}">Track name</span>
@@ -266,121 +267,79 @@
                             <div class="col-md-12">
                                 <form th:action="@{'/reviews/' + ${album.id()}}" method="post">
                                     <div class="mb-3">
-                                        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'Login is needed to post a review' : ''}" required></textarea>
+                                        <textarea id="reviewContent" name="content" class="form-control mb-4"
+                                                  style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;"
+                                                  th:disabled="${session.user == null}"
+                                                  th:placeholder="${session.user == null ? 'Login is needed to post a review' : ''}"
+                                                  required></textarea>
                                     </div>
 
                                     <div class="mb-3 d-flex align-items-center">
                                         <label class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Rate:</label>
                                         <div class="rating" style="display: inline-block;">
-                                            <input value="5" name="rating" id="star5" type="radio" th:disabled="${session.user == null}">
+                                            <input value="5" name="rating" id="star5" type="radio"
+                                                   th:disabled="${session.user == null}">
                                             <label for="star5"></label>
-                                            <input value="4" name="rating" id="star4" type="radio" th:disabled="${session.user == null}">
+                                            <input value="4" name="rating" id="star4" type="radio"
+                                                   th:disabled="${session.user == null}">
                                             <label for="star4"></label>
-                                            <input value="3" name="rating" id="star3" type="radio" th:disabled="${session.user == null}">
+                                            <input value="3" name="rating" id="star3" type="radio"
+                                                   th:disabled="${session.user == null}">
                                             <label for="star3"></label>
-                                            <input value="2" name="rating" id="star2" type="radio" th:disabled="${session.user == null}">
+                                            <input value="2" name="rating" id="star2" type="radio"
+                                                   th:disabled="${session.user == null}">
                                             <label for="star2"></label>
-                                            <input value="1" name="rating" id="star1" type="radio" required th:disabled="${session.user == null}">
+                                            <input value="1" name="rating" id="star1" type="radio" required
+                                                   th:disabled="${session.user == null}">
                                             <label for="star1"></label>
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary" th:disabled="${session.user == null}">Save review</button>
-
                                 </form>
-
-
-
-                                </div>
-
-
-
-                                <section class="reviews-section">
-                                    <h2>Reviews</h2>
-                                    <div th:if="${#lists.isEmpty(reviews)}">
-                                        <p>Be the first to review this album!</p>
-                                    </div>
-                                    <div th:each="review : ${reviews}" class="review-card">
-                                        <div class="card-review">
-                                            <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
-                                                <button type="button" class="edit-review" th:data-review-id="${review.id()}" th:if="${session.user.username == review.username()}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
-                                                <button type="button" class="delete-review" th:data-review-id="${review.id()}" th:onclick="'deleteReview(' + ${review.id} + ')'">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                            <div class="stars">
-                                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                                    <svg th:class="${i <= review.rating() ? 'star filled' : 'star'}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" />
-                                                    </svg>
-                                                </th:block>
-                                            </div>
-
-                                            <div class="infos d-flex flex-column">
-                                                <!-- Contenedor de la imagen y el nombre de usuario -->
-                                                <div class="d-flex align-items-center">
-                                                    <div class="me-2" style="width: 40px; height: 40px;">
-                                                        <a th:href="@{/profile/{username}(username=${review.username()})}">
-                                                            <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
-                                                            <i th:unless="${review.userImageUrl() != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                                                        </a>
-                                                    </div>
-                                                    <div class="username" style="font-weight: bold;">
-                                                        <a th:href="@{/profile/{username}(username=${review.username()})}" class="author" th:text="${review.username()}"></a>
-                                                    </div>
-                                                </div>
-                                                <!-- Contenedor del contenido, debajo del nombre de usuario -->
-                                                <div class="description review-content mt-2" th:text="${review.content()}"></div>
-                                            </div>
-
-
-
-
-
-                                        </div>
-                                    </div>
-                                </section>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
+                    <section class="reviews-section">
+                        <h2>Reviews</h2>
+                        <div th:if="${#lists.isEmpty(reviews)}">
+                            <p>Be the first to review this album!</p>
+                        </div>
+                        <div th:each="review : ${reviews}" class="review-card">
+                            <div class="card-review">
+                                <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
+                                    <button type="button" class="edit-review" th:data-review-id="${review.id()}" th:if="${session.user.username == review.username()}" th:onclick="'editReview(' + ${review.id} + ')'">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="delete-review" th:data-review-id="${review.id()}" th:onclick="'deleteReview(' + ${review.id} + ')'">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="stars">
+                                    <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                        <svg th:class="${i <= review.rating() ? 'star filled' : 'star'}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" />
+                                        </svg>
+                                    </th:block>
+                                </div>
 
-        <div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editReviewModalLabel">Edit Review</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editReviewForm" th:action="@{'/reviews/' + ${album.id()} + '/edit/0'}" method="post">
-                            <div class="mb-3">
-                                <label for="editReviewContent" class="form-label">Your review:</label>
-                                <textarea id="editReviewContent" name="content" class="form-control" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Rate:</label>
-                                <div class="rating edit-rating">
-                                    <input value="5" name="rating" id="editStar5" type="radio">
-                                    <label title="text" for="editStar5"></label>
-                                    <input value="4" name="rating" id="editStar4" type="radio">
-                                    <label title="text" for="editStar4"></label>
-                                    <input value="3" name="rating" id="editStar3" type="radio">
-                                    <label title="text" for="editStar3"></label>
-                                    <input value="2" name="rating" id="editStar2" type="radio">
-                                    <label title="text" for="editStar2"></label>
-                                    <input value="1" name="rating" id="editStar1" type="radio" required>
-                                    <label title="text" for="editStar1"></label>
+                                <div class="infos d-flex flex-column">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-2" style="width: 40px; height: 40px;">
+                                            <a th:href="@{/profile/{username}(username=${review.username()})}">
+                                                <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
+                                                <i th:unless="${review.userImageUrl() != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                            </a>
+                                        </div>
+                                        <div class="username" style="font-weight: bold;">
+                                            <a th:href="@{/profile/{username}(username=${review.username()})}" class="author" th:text="${review.username()}"></a>
+                                        </div>
+                                    </div>
+                                    <div class="description review-content mt-2" th:text="${review.content()}"></div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" form="editReviewForm" class="btn btn-primary">Save changes</button>
-                    </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>

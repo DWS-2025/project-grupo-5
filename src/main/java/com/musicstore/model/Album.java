@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.core.JsonParser;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import lombok.Setter;
 
 @Data
 @Entity
@@ -36,6 +37,7 @@ public class Album {
     @NotBlank(message = "Title is required")
     private String title;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "artist_id")
     private Artist artist;
@@ -52,10 +54,6 @@ public class Album {
 
     public Artist getArtist() {
         return artist != null ? artist : (artists != null && !artists.isEmpty() ? artists.get(0) : null);
-    }
-
-    public void setArtist(Artist artist) {
-        this.artist = artist;
     }
 
     public static class ArtistListDeserializer extends StdDeserializer<List<Artist>> {

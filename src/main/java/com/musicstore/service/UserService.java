@@ -131,21 +131,19 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO addFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
+    public void addFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
         UserDTO userDTO = getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return albumService.getAlbumById(albumId).map(albumDTO -> {
+        albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
             if (!userDTO.favoriteAlbumIds().contains(albumId)) {
                 List<Long> updatedFavorites = new ArrayList<>(userDTO.favoriteAlbumIds());
                 updatedFavorites.add(albumId);
                 UserDTO updatedUserDTO = userDTO.withFavoriteAlbumIds(updatedFavorites);
                 UserDTO savedUserDTO = saveUser(updatedUserDTO);
                 session.setAttribute("user", savedUserDTO);
-                return savedUserDTO;
             }
-            return userDTO;
-        }).orElseThrow(() -> new RuntimeException("Album not found"));
+        });
     }
 
     public List<Long> getFavoriteAlbums(String username) {
@@ -161,22 +159,23 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
+    public void deleteFavoriteAlbum(Long userId, Long albumId, HttpSession session) {
         UserDTO userDTO = getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return albumService.getAlbumById(albumId).map(albumDTO -> {
+        albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
             if (userDTO.favoriteAlbumIds().contains(albumId)) {
                 List<Long> updatedFavorites = new ArrayList<>(userDTO.favoriteAlbumIds());
                 updatedFavorites.remove(albumId);
                 UserDTO updatedUserDTO = userDTO.withFavoriteAlbumIds(updatedFavorites);
                 UserDTO savedUserDTO = saveUser(updatedUserDTO);
                 session.setAttribute("user",savedUserDTO);
-                return savedUserDTO;
+            } else {
+                throw new RuntimeException("Album not found in user's favorites");
             }
-            throw new RuntimeException("Album not found in user's favorites");
-        }).orElseThrow(() -> new RuntimeException("Album not found"));
+        });
     }
+    
 
     /*
     @Transactional
@@ -248,7 +247,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO followUser(Long followerId, Long targetUserId, HttpSession session) {
+    public void followUser(Long followerId, Long targetUserId, HttpSession session) {
         if (followerId.equals(targetUserId)) {
             throw new RuntimeException("Users cannot follow themselves");
         }
@@ -272,13 +271,11 @@ public class UserService {
             saveUser(updatedTargetDTO);
 
             session.setAttribute("user", savedFollowerDTO);
-            return savedFollowerDTO;
         }
-        return followerDTO;
     }
 
     @Transactional
-    public UserDTO unfollowUser(Long followerId, Long targetUserId, HttpSession session) {
+    public void unfollowUser(Long followerId, Long targetUserId, HttpSession session) {
         UserDTO followerDTO = getUserById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower user not found"));
         UserDTO targetDTO = getUserById(targetUserId)
@@ -298,9 +295,7 @@ public class UserService {
             saveUser(updatedTargetDTO);
 
             session.setAttribute("user", savedFollowerDTO);
-            return savedFollowerDTO;
         }
-        return followerDTO;
     }
 
     public boolean isFollowing(Long followerId, Long targetUserId) {

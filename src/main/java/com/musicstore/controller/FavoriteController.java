@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import com.musicstore.dto.UserDTO;
@@ -37,13 +38,13 @@ public class FavoriteController {
                               Model model) {
         try {
             // Obtain the user in the actual session
-            User user = (User) session.getAttribute("user");
-            if (user == null || user.getId() == null) {
+            UserDTO user = (UserDTO) session.getAttribute("user");
+            if (user == null || user.id() == null) {
                 model.addAttribute("error", "No session started.");
                 return "error";
             }
 
-            Long auxUserId = user.getId();
+            Long auxUserId = user.id();
 
             // Search album
             Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
@@ -57,10 +58,11 @@ public class FavoriteController {
             // Add album to the favorites section of the user
             userService.addFavoriteAlbum(auxUserId, albumId, session);
 
-            User currentUser = userMapper.toEntity(userService.getUserById(auxUserId)
-                .orElseThrow(() -> new RuntimeException("User not found")));
-            if (!album.getFavoriteUsers().contains(currentUser)) {
-                album.getFavoriteUsers().add(currentUser);
+            UserDTO currentUser = userService.getUserById(auxUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            User userEntity = currentUser.toUser();
+            if (!album.getFavoriteUsers().contains(userEntity)) {
+                album.getFavoriteUsers().add(userEntity);
                 albumService.saveAlbum(AlbumDTO.fromAlbum(album)); // Save changes
             }
 
@@ -77,13 +79,13 @@ public class FavoriteController {
                                  Model model) {
         try {
             // Obtain the user in the actual session
-            User user = (User) session.getAttribute("user");
-            if (user == null || user.getId() == null) {
+            UserDTO user = (UserDTO) session.getAttribute("user");
+            if (user == null || user.id() == null) {
                 model.addAttribute("error", "No session started.");
                 return "error";
             }
 
-            Long userId = user.getId();
+            Long userId = user.id();
 
             // Search album
             Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
@@ -98,10 +100,11 @@ public class FavoriteController {
             userService.deleteFavoriteAlbum(userId, albumId, session);
 
             // Delete the user from the album's favorite users list
-            User currentUser = userMapper.toEntity(userService.getUserById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found")));
-            if (album.getFavoriteUsers().contains(currentUser)) {
-                album.getFavoriteUsers().remove(currentUser);
+            UserDTO currentUser = userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            User userEntity = currentUser.toUser();
+            if (album.getFavoriteUsers().contains(userEntity)) {
+                album.getFavoriteUsers().remove(userEntity);
                 albumService.saveAlbum(AlbumDTO.fromAlbum(album)); // Save the album
             }
 
@@ -125,7 +128,7 @@ public class FavoriteController {
 
         List<AlbumDTO> favoriteAlbums = favoriteAlbumIds.stream()
                 .map(albumId -> albumService.getAlbumById(albumId).orElse(null))
-                .filter(album -> album != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         // Get the user information (including the profile image)
@@ -136,8 +139,8 @@ public class FavoriteController {
         }
 
         // Get the current logged-in user (if any)
-        User currentUser = (User) session.getAttribute("user");
-        boolean isOwnProfile = currentUser != null && currentUser.getUsername().equals(username);
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
+        boolean isOwnProfile = currentUser != null && currentUser.username().equals(username);
 
         // Add data to the model
         model.addAttribute("username", username);

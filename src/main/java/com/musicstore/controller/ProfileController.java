@@ -66,10 +66,10 @@ public class ProfileController{
             HttpSession session,
             Model model
     ) {
-        User currentUser = (User) session.getAttribute("user");
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
         if (currentUser != null) {
             // Verify current password
-            if (!userService.authenticateUser(currentUser.getUsername(), currentPassword).isPresent()) {
+            if (userService.authenticateUser(currentUser.username(), currentPassword).isEmpty()) {
                 model.addAttribute("error", "Current Password is incorrect");
                 model.addAttribute("user", currentUser);
                 return "error";
@@ -84,23 +84,21 @@ public class ProfileController{
                 }
                 updatedUser.setPassword(newPassword);
             } else {
-                updatedUser.setPassword(currentUser.getPassword());
+                updatedUser.setPassword(currentUser.password());
             }
 
             // Create DTO with updated parameters
             UserDTO updatedUserDTO = new UserDTO(
-                currentUser.getId(),
+                currentUser.id(),
                 updatedUser.getUsername(),
                 updatedUser.getPassword(),
                 updatedUser.getEmail(),
                 currentUser.isAdmin(),
-                currentUser.getImageUrl(),
-                currentUser.getImageData(),
-                currentUser.getFollowers(),
-                currentUser.getFollowing(),
-                currentUser.getFavoriteAlbums().stream()
-                    .map(album -> album.getId())
-                    .collect(Collectors.toList())
+                currentUser.imageUrl(),
+                currentUser.imageData(),
+                currentUser.followers(),
+                currentUser.following(),
+                currentUser.favoriteAlbumIds()
             );
 
             try {
@@ -131,13 +129,13 @@ public class ProfileController{
 
     @PostMapping("/profile/delete")
     public String deleteAccount(HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
         if (currentUser == null) {
             return "redirect:/login";
         }
 
         // Get all reviews by this user
-        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(currentUser.getId());
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(currentUser.id());
 
         // Collect all affected album IDs before deleting reviews
         List<Long> affectedAlbumIds = userReviews.stream()
@@ -146,7 +144,7 @@ public class ProfileController{
                 .toList();
 
         // Delete the user account (this will also delete all reviews and update favorites)
-        userService.deleteUser(currentUser.getUsername());
+        userService.deleteUser(currentUser.username());
 
         // Update average ratings for all affected albums
         for (Long albumId : affectedAlbumIds) {
@@ -165,7 +163,7 @@ public class ProfileController{
     @GetMapping("/profile/{username}")
     public String viewProfile(@PathVariable String username, Model model, HttpSession session) {
         // Get the current logged-in user if any
-        User currentUser = (User) session.getAttribute("user");
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
         model.addAttribute("currentUser", currentUser);
 
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);
@@ -182,7 +180,6 @@ public class ProfileController{
                 .map(id -> userService.getUserById(id))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(user -> userMapper.toDTO(user.toUser())) // aquí explícitamente usamos el User
                 .collect(Collectors.toMap(
                         UserDTO::username,
                         UserDTO::imageUrl,
@@ -194,7 +191,6 @@ public class ProfileController{
                 .map(id -> userService.getUserById(id))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(user -> userMapper.toDTO(user.toUser())) // aquí explícitamente usamos el User
                 .collect(Collectors.toMap(
                         UserDTO::username,
                         UserDTO::imageUrl,
@@ -206,8 +202,12 @@ public class ProfileController{
         model.addAttribute("followingUsers", followingUsers);
 
         // Get favorite albums
-        List<Album> favoriteAlbums = new ArrayList<>(profileUser.getFavoriteAlbums());
-        List<Album> favoriteAlbums2 = new ArrayList<>(profileUser.getFavoriteAlbums());
+        List<AlbumDTO> favoriteAlbums = profileUser.getFavoriteAlbums().stream()
+            .map(album -> albumService.getAlbumById(album.getId())
+                .orElse(null))
+            .filter(album -> album != null)
+            .collect(Collectors.toList());
+        List<AlbumDTO> favoriteAlbums2 = new ArrayList<>(favoriteAlbums);
 
         Collections.reverse(favoriteAlbums);
         model.addAttribute("totalLikes", favoriteAlbums);
