@@ -30,18 +30,18 @@
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-4" id="albumsGrid">
         <div th:each="album : ${albums}" class="col">
-            <a th:href="@{/{id}(id=${album.id})}" style="text-decoration: none;">
+            <a th:href="@{/{id}(id=${album.id()})}" style="text-decoration: none;">
                 <div class="card h-100" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="position: relative; padding-bottom: 100%; height: 0;">
-                        <img th:if="${album.imageUrl != null}" th:src="${album.imageUrl}" class="card-img-top" alt="Album Cover" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                        <img th:unless="${album.imageUrl != null}" src="/resources/uploads/error.png" class="card-img-top" alt="Placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                        <img th:if="${album.imageUrl() != null}" th:src="${album.imageUrl()}" class="card-img-top" alt="Album Cover" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                        <img th:unless="${album.imageUrl() != null}" src="/resources/uploads/error.png" class="card-img-top" alt="Placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title" th:text="${album.title}">Album Title</h5>
+                        <h5 class="card-title" th:text="${album.title()}">Album Title</h5>
                         <p class="card-text">
                             <strong>Artists:</strong>
-                            <span th:each="artist, iterStat : ${album.artists}">
-                                <span th:text="${artist.name}"></span><span th:unless="${iterStat.last}">, </span>
+                            <span th:each="artist, iterStat : ${album.artistNames()}">
+                                <span th:text="${artist}"></span><span th:unless="${iterStat.last}">, </span>
                             </span>
                         </p>
                     </div>

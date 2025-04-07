@@ -2,6 +2,8 @@ package com.musicstore.dto;
 
 import com.musicstore.model.Artist;
 import com.musicstore.model.Album;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +22,9 @@ public record ArtistDTO(
             artist.getName(),
             artist.getCountry(),
             artist.getImageUrl(),
-            artist.getAlbums().stream()
+            artist.getAlbums() != null ? artist.getAlbums().stream()
                 .map(Album::getId)
-                .collect(Collectors.toList()),
+                .collect(Collectors.toList()) : Collections.emptyList(),
             artist.getAlbums().stream()
                 .map(Album::getTitle)
                 .collect(Collectors.toList()),
