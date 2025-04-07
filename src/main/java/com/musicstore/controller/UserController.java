@@ -28,12 +28,13 @@ public class UserController {
 
     @PostMapping("/follow")
     public ResponseEntity<?> followUser(@RequestBody Map<String, String> request, HttpSession session) {
-        try {
-            UserDTO currentUser = userMapper.toDTO((User) session.getAttribute("user"));
-            if (currentUser == null) {
-                return ResponseEntity.status(401).body("User not authenticated");
-            }
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
 
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("User not authenticated");
+        }
+
+        try {
             String targetUsername = request.get("username");
             UserDTO targetUser = userService.getUserByUsername(targetUsername)
                     .orElseThrow(() -> new RuntimeException("Target user not found"));
@@ -41,18 +42,19 @@ public class UserController {
             userService.followUser(currentUser.id(), targetUser.id(), session);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Error following user: " + e.getMessage());
         }
     }
 
     @PostMapping("/unfollow")
     public ResponseEntity<?> unfollowUser(@RequestBody Map<String, String> request, HttpSession session) {
-        try {
-            UserDTO currentUser = userMapper.toDTO((User) session.getAttribute("user"));
-            if (currentUser == null) {
-                return ResponseEntity.status(401).body("User not authenticated");
-            }
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
 
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("User not authenticated");
+        }
+
+        try {
             String targetUsername = request.get("username");
             UserDTO targetUser = userService.getUserByUsername(targetUsername)
                     .orElseThrow(() -> new RuntimeException("Target user not found"));
@@ -60,7 +62,7 @@ public class UserController {
             userService.unfollowUser(currentUser.id(), targetUser.id(), session);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Error unfollowing user: " + e.getMessage());
         }
     }
 }
