@@ -22,8 +22,9 @@ public class Artist {
 
     private String country;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "artists")
-    @JsonIgnoreProperties({"artists", "reviews", "imageData", "audioData", "favoriteUsers"})
+    @JsonIgnoreProperties({"reviews", "imageData", "audioData", "favoriteUsers"})
     private List<Album> albums = new ArrayList<>();
 
     private String imageUrl = "/images/default.jpg";

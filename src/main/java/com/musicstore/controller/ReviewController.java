@@ -159,11 +159,7 @@ public class ReviewController {
         model.addAttribute("favoriteAlbums", favoriteAlbums);
 
         List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.getId());
-        userReviews.forEach(review -> {
-            albumService.getAlbumById(review.albumId()).ifPresent(album -> {
-                // No need to set album title and image URL as they are already in the DTO
-            });
-        });
+        
 
         Collections.reverse(userReviews);
         model.addAttribute("userReviews", userReviews);

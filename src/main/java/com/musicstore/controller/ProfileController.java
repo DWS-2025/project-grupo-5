@@ -205,15 +205,21 @@ public class ProfileController{
         model.addAttribute("followersUsers", followersUsers);
         model.addAttribute("followingUsers", followingUsers);
 
-        // Get favorite albums
-        List<Album> favoriteAlbums = new ArrayList<>(profileUser.getFavoriteAlbums());
-        List<Album> favoriteAlbums2 = new ArrayList<>(profileUser.getFavoriteAlbums());
-
-        Collections.reverse(favoriteAlbums);
+        // Get favorite albums and convert them to DTOs
+        List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
+        List<AlbumDTO> favoriteAlbums = !favoriteAlbumIds.isEmpty() ?
+                favoriteAlbumIds.stream()
+                        .map(albumService::getAlbumById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()) :
+                Collections.emptyList();
+        model.addAttribute("favoriteAlbums", favoriteAlbums);
         model.addAttribute("totalLikes", favoriteAlbums);
 
-        favoriteAlbums2 = favoriteAlbums.stream().limit(5).collect(Collectors.toList());
-        model.addAttribute("favoriteAlbums", favoriteAlbums2);
+
+
+
 
         // Get reviews and associate them with albums
         List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUser.getId());

@@ -29,6 +29,8 @@ public interface UserMapper {
     User toEntity(UserDTO userDTO);
 
     @Mapping(target = "favoriteAlbumIds", source = "favoriteAlbums", qualifiedBy = AlbumEntityToId.class)
+    @Mapping(target = "followers", source = "followers")
+    @Mapping(target = "following", source = "following")
     UserDTO toDTO(User user);
 
     @AlbumIdToEntity

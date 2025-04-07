@@ -1,21 +1,11 @@
 package com.musicstore.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.CascadeType;
 import java.sql.Blob;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -28,6 +18,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"reviews", "imageData", "audioData", "favoriteUsers"})
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +33,7 @@ public class Album {
 
     @JsonDeserialize(using = ArtistListDeserializer.class)
     @JsonAlias({"artist", "artists"})
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "album_artists",
             joinColumns = @JoinColumn(name = "album_id"),
@@ -161,7 +152,7 @@ public class Album {
 
     private String tidal_url;
 
-    @ManyToMany(mappedBy = "favoriteAlbums")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "favoriteAlbums")
     @JsonDeserialize(contentAs = User.class)
     private List<User> favoriteUsers = new ArrayList<>();
 

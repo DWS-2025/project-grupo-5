@@ -173,7 +173,7 @@
                         <img th:src="${album.imageUrl}" class="album-mini-image" th:alt="${album.title}">
                         <div>
                             <h5 class="mb-1" th:text="${album.title}"></h5>
-                            <small class="text-white" th:text="${album.artists}"></small>
+                            <small class="text-white" th:text="${album.artistNames()}"></small>
                         </div>
                     </a>
                 </div>

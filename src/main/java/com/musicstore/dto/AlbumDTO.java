@@ -48,6 +48,17 @@ public record AlbumDTO(
         );
     }
     public static AlbumDTO fromAlbum(Album album) {
+        if (album == null) return null;
+        
+        List<Artist> artists = album.getArtists();
+        if (artists == null) artists = new ArrayList<>();
+        
+        List<Review> reviews = album.getReviews();
+        if (reviews == null) reviews = new ArrayList<>();
+        
+        List<User> favoriteUsers = album.getFavoriteUsers();
+        if (favoriteUsers == null) favoriteUsers = new ArrayList<>();
+        
         return new AlbumDTO(
             album.getId(),
             album.getTitle(),
@@ -60,16 +71,16 @@ public record AlbumDTO(
             album.getApplemusic_url(),
             album.getTidal_url(),
             album.getAverageRating(),
-            album.getArtists().stream()
+            artists.stream()
                 .map(Artist::getId)
                 .collect(Collectors.toList()),
-            album.getReviews().stream()
+            reviews.stream()
                 .map(Review::getId)
                 .collect(Collectors.toList()),
-            album.getArtists().stream()
+            artists.stream()
                 .map(Artist::getName)
                 .collect(Collectors.toList()),
-            album.getFavoriteUsers().stream()
+            favoriteUsers.stream()
                 .map(User::getUsername)
                 .collect(Collectors.toList()),
             album.getImageData(),

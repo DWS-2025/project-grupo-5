@@ -4,6 +4,8 @@ import com.musicstore.model.Review;
 import com.musicstore.model.User;
 import com.musicstore.model.Album;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -14,5 +16,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByUserAndAlbum(User user, Album album);
     List<Review> findByRatingGreaterThanEqual(Integer rating);
     List<Review> findByAlbum_Id(Long albumId);
-    List<Review> findByUser_Id(Long userId);
+    @Query("SELECT r FROM Review r JOIN FETCH r.album WHERE r.user.id = :userId") List<Review> findByUser_Id(@Param("userId") Long userId);
 }

@@ -1,5 +1,6 @@
 package com.musicstore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,32 +30,32 @@ public class User {
     private String username;
 
     @NotBlank(message = "Password is required")
-    @JsonIgnoreProperties
+    @JsonIgnore
     private String password;
 
     @Email(message = "Please provide a valid email address")
     @NotBlank(message = "Email is required")
-    @JsonIgnoreProperties
+    @JsonIgnore
     private String email;
 
     private boolean isAdmin = false;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_favorite_albums",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "album_id")
     )
-    @JsonIgnoreProperties({"favoriteUsers", "reviews", "imageData", "audioData"})
+    @JsonIgnoreProperties({"favoriteUsers"})
     private List<Album> favoriteAlbums = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_followers",
             joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "follower_id")
     private List<Long> followers = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_following",
             joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "following_id")
@@ -66,4 +67,8 @@ public class User {
     @Column(name = "image_data")
     @JsonIgnoreProperties
     private byte[] imageData;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"user", "album"})
+    private List<Review> reviews = new ArrayList<>();
 }
