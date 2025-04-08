@@ -75,7 +75,7 @@ EchoReview is a web-based platform that allows users to explore, review, and man
 3. Enter your review text and rating
 4. Submit the review
 
-# Important Commits
+# IMPORTANT COMMITS
 ## ```@all```
 - [6abaa14](https://github.com/DWS-2025/project-grupo-5/commit/6abaa14bc397178b8cb04eb55f1177e0df9df65b)
   - Functional login @noegomezz
@@ -98,9 +98,54 @@ EchoReview is a web-based platform that allows users to explore, review, and man
   - DataLoader added
   - Some errors solved
 - [f341b7d](https://github.com/DWS-2025/project-grupo-5/commit/f341b7d71b1f8d2a04c373e9829fc98c02d016de)
-  - IMPORTANT COMMIT - Solve problems with H2 
-  
+  - IMPORTANT COMMIT - Solve problems with H2
+ 
 
+## @M0ntoto
+
+- [numero comit](url.es)
+
+
+## @paaul19
+
+- [d8fb735](https://github.com/DWS-2025/project-grupo-5/commit/d8fb7358058ba8d1884c14405938734ad3028dc8)
+  - Album view fixed.
+  - Reviews and likes in bbdd.
+    
+- [caca0a5](https://github.com/DWS-2025/project-grupo-5/commit/caca0a509f20c1cb14af9864ac93784debde0ce0)
+  - Admin artists view done.
+  - Artists now can be deleted.
+  - Albums can have more than 1 artist.
+    
+- [f73fd81](https://github.com/DWS-2025/project-grupo-5/commit/f73fd8133e6cd8d9845f3b755e9ee44e61a0652f)
+  - Bbdd integration finished
+    
+- [c610762](https://github.com/DWS-2025/project-grupo-5/commit/c610762ea7edeb74b023a571edbe48dc180f4901)
+  - Several issues have been fixed
+
+## @noegomezz
+
+- [f3bcfb8](https://github.com/DWS-2025/project-grupo-5/commit/f3bcfb8744ee35e97eeb234a2f2bd2eb8c9d4423)
+
+   - Services finished using DTOs
+  
+- [2c982dd](https://github.com/DWS-2025/project-grupo-5/commit/2c982dd54bf241bf2dd51752af72935f03578a7a)
+
+   - Refactoring multiple services and controllers 
+
+- [5f1b58f](https://github.com/DWS-2025/project-grupo-5/commit/5f1b58f52a28e96da135aa281bda30a8a048b2d9)
+ 
+   - All DTOs created
+
+- [28c5410](https://github.com/DWS-2025/project-grupo-5/commit/28c54106b1cc4740f0b3fb1dc871f897633d2b61)
+
+   - Classes migration to Database
+
+- [df32fa8](https://github.com/DWS-2025/project-grupo-5/commit/df32fa8a31e4648401c9e504b548d250571fa660)
+
+   - Class Artist created and almost completed
+   
+---
 ## Project Structure
 ```
 project-grupo-5/
