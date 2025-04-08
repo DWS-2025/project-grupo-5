@@ -108,7 +108,20 @@ EchoReview is a web-based platform that allows users to explore, review, and man
 
 ## @paaul19
 
-- [numero comit](url.es)
+- [d8fb735](https://github.com/DWS-2025/project-grupo-5/commit/d8fb7358058ba8d1884c14405938734ad3028dc8)
+  - Album view fixed.
+  - Reviews and likes in bbdd.
+    
+- [caca0a5](https://github.com/DWS-2025/project-grupo-5/commit/caca0a509f20c1cb14af9864ac93784debde0ce0)
+  - Admin artists view done.
+  - Artists now can be deleted.
+  - Albums can have more than 1 artist.
+    
+- [f73fd81](https://github.com/DWS-2025/project-grupo-5/commit/f73fd8133e6cd8d9845f3b755e9ee44e61a0652f)
+  - Bbdd integration finished
+    
+- [c610762](https://github.com/DWS-2025/project-grupo-5/commit/c610762ea7edeb74b023a571edbe48dc180f4901)
+  - Several issues have been fixed
 
 ## @noegomezz
 
