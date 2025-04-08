@@ -103,10 +103,12 @@ public class ReviewController {
                 reviewService.updateReview(albumId, reviewId, reviewDTO);
 
                 // Update album's average rating
-                albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
+                if (albumOptional.isPresent()) {
+                    AlbumDTO albumDTO = albumOptional.get();
                     albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbum(albumDTO);
-                });
+                    albumService.saveAlbumReview(albumDTO);
+                }
             }
         }
         return "redirect:/" + albumId;
@@ -125,10 +127,12 @@ public class ReviewController {
                 reviewService.deleteReview(albumId, reviewId);
 
                 // Update album's average rating
-                albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
+                if (albumOptional.isPresent()) {
+                    AlbumDTO albumDTO = albumOptional.get();
                     albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbum(albumDTO);
-                });
+                    albumService.saveAlbumReview(albumDTO);
+                }
             }
         }
         return "redirect:/" + albumId;
