@@ -14,6 +14,7 @@ public record AlbumDTO(
         String title,
         String genre,
         String imageUrl,
+        String audioFile,
         String description,
         String tracklist,
         Integer year,
@@ -43,7 +44,7 @@ public record AlbumDTO(
             newAverageRating = sum / reviews.size();
         }
         return new AlbumDTO(
-                id, title, genre, imageUrl, description, tracklist, year,
+                id, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, newAverageRating,
                 artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
         );
@@ -66,6 +67,7 @@ public record AlbumDTO(
                 album.getTitle(),
                 album.getGenre(),
                 album.getImageUrl(),
+                album.getAudioFile(),
                 album.getDescription(),
                 album.getTracklist(),
                 album.getYear(),
@@ -134,14 +136,14 @@ public record AlbumDTO(
     }
     public AlbumDTO withId(Long newId) {
         return new AlbumDTO(
-                newId, title, genre, imageUrl, description, tracklist, year,
+                newId, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, averageRating,
                 artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
         );
     }
     public AlbumDTO withImageData(byte[] newImageData) {
         return new AlbumDTO(
-                id, title, genre, imageUrl, description, tracklist, year,
+                id, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, averageRating,
                 artistIds, reviewIds, artistNames, favoriteUsers, newImageData, audioData
         );

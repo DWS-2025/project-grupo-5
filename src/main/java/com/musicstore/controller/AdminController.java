@@ -75,15 +75,27 @@ public class AdminController {
                 return "form";
             }
 
-            AlbumDTO savedAlbum = AlbumDTO.fromAlbum(albumService.saveAlbum(AlbumDTO.fromAlbum(album)).toAlbum());
+            AlbumDTO albumDTO = AlbumDTO.fromAlbum(album);
+
+// Guarda el álbum inicial
+            AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
+
+// Si hay imagen, la sube
             try {
                 if (imageFile != null && !imageFile.isEmpty()) {
-                    savedAlbum = AlbumDTO.fromAlbum(albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(savedAlbum.toAlbum()), imageFile).toAlbum());
+                    savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
                 }
             } catch (IOException e) {
-                // Handle the error appropriately
+                e.printStackTrace();
+                model.addAttribute("error", "Error al subir la imagen: " + e.getMessage());
                 return "album/form";
             }
+
+// Si hay audio, lo sube
+            if (audioFile2 != null && !audioFile2.isEmpty()) {
+                albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
+            }
+
 
             if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
                 // Convert the tracklist. When introduce with enters, will separate the diferents tracks with a "+".
