@@ -75,7 +75,7 @@ EchoReview is a web-based platform that allows users to explore, review, and man
 3. Enter your review text and rating
 4. Submit the review
 
-# Important Commits
+# IMPORTANT COMMITS
 ## ```@all```
 - [6abaa14](https://github.com/DWS-2025/project-grupo-5/commit/6abaa14bc397178b8cb04eb55f1177e0df9df65b)
   - Functional login @noegomezz
@@ -98,9 +98,23 @@ EchoReview is a web-based platform that allows users to explore, review, and man
   - DataLoader added
   - Some errors solved
 - [f341b7d](https://github.com/DWS-2025/project-grupo-5/commit/f341b7d71b1f8d2a04c373e9829fc98c02d016de)
-  - IMPORTANT COMMIT - Solve problems with H2 
-  
+  - IMPORTANT COMMIT - Solve problems with H2
+ 
 
+## @M0ntoto
+
+- [numero comit](url.es)
+
+
+## @paaul19
+
+- [numero comit](url.es)
+
+## @noegomezz
+
+- [numero comit](url.es)
+
+---
 ## Project Structure
 ```
 project-grupo-5/
