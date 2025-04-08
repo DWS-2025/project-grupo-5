@@ -203,7 +203,7 @@ public class ProfileController{
         model.addAttribute("followersUsers", followersUsers);
         model.addAttribute("followingUsers", followingUsers);
 
-        // Álbumes favoritos
+        // Favorite albums
         List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
         List<AlbumDTO> favoriteAlbums = favoriteAlbumIds.stream()
                 .map(albumService::getAlbumById)
@@ -214,7 +214,7 @@ public class ProfileController{
         model.addAttribute("favoriteAlbums", favoriteAlbums);
         model.addAttribute("totalLikes", favoriteAlbums);
 
-        // Reseñas
+        // Reviews
         List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(profileUserDTO.id());
 
         userReviews.forEach(review -> {

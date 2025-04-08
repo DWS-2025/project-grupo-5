@@ -75,7 +75,7 @@ public class ReviewService {
 
         Review updated = reviewMapper.toEntity(reviewDTO);
         updated.setId(reviewId);
-        updated.setAlbum(existing.getAlbum()); // Aseguramos que no cambie el álbum
+        updated.setAlbum(existing.getAlbum()); // Ensure the album doesn't change
         Review savedReview = reviewRepository.save(updated);
         return reviewMapper.toDTO(savedReview);
     }
@@ -86,7 +86,7 @@ public class ReviewService {
         
         Review updated = reviewMapper.toEntity(reviewDTO);
         updated.setId(reviewId);
-        updated.setAlbum(existing.getAlbum()); // Aseguramos que no cambie el álbum
+        updated.setAlbum(existing.getAlbum()); // Ensure the album doesn't change
         Review savedReview = reviewRepository.save(updated);
         return reviewMapper.toDTO(savedReview);
     }

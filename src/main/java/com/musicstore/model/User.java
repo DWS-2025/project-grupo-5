@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Blob;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data

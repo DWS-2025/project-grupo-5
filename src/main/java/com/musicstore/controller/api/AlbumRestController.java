@@ -116,11 +116,11 @@ public class AlbumRestController {
             return (ResponseEntity<AlbumDTO>) albumService.getAlbumById(id)
                     .map(album -> {
                         try {
-                            // Aquí estamos trabajando con la entidad Album
+                            // Here we are working with the Album entity
                             album.withImageData(image.getBytes()); // Modificamos la entidad directamente
                             // Guardamos la entidad en la base de datos
                             Album updatedAlbum = albumService.saveAlbum(album).toAlbum();
-                            // Convertimos la entidad de vuelta a un DTO para devolverlo
+                            // Convert the entity back to a DTO to return it
                             return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum)); // Respondemos con el DTO
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

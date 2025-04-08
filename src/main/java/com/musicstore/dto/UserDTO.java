@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record UserDTO(
-    Long id,
-    String username,
-    String password,
-    String email,
-    boolean isAdmin,
-    String imageUrl,
-    byte[] imageData,
-    List<Long> followers,
-    List<Long> following,
-    List<Long> favoriteAlbumIds
+        Long id,
+        String username,
+        String password,
+        String email,
+        boolean isAdmin,
+        String imageUrl,
+        byte[] imageData,
+        List<Long> followers,
+        List <Long> following,
+        List<Long> favoriteAlbumIds
 ) {
     public static UserDTO fromUser(User user) {
         return new UserDTO(
@@ -131,7 +131,7 @@ public record UserDTO(
             this.imageUrl(),
             this.imageData(),
             this.followers(),
-            newFollowing,
+            this.following(),
             this.favoriteAlbumIds
         );
     }
@@ -150,4 +150,6 @@ public record UserDTO(
             this.favoriteAlbumIds
         );
     }
+
+
 }

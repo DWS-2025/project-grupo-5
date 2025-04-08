@@ -1,7 +1,6 @@
 package com.musicstore.controller;
 
 import com.musicstore.dto.AlbumDTO;
-import com.musicstore.dto.UserDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
 import com.musicstore.model.User;
@@ -31,9 +30,9 @@ public class AdminController {
     @GetMapping
     public String listAlbums(Model model, HttpSession session) {
 
-        UserDTO user = (UserDTO) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (user.username() == null || !user.username().equals("admin")) {
+        if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -45,10 +44,10 @@ public class AdminController {
     @GetMapping("/new")
     public String showCreateForm(Model model, HttpSession session) {
 
-        UserDTO user = (UserDTO) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         model.addAttribute("artists", artistService.getAllArtists());
 
-        if (user == null || !user.username().equals("admin")) {
+        if (user == null || !user.getUsername().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else{
@@ -63,9 +62,9 @@ public class AdminController {
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
                               Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
 
-        UserDTO user = (UserDTO) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
+        if (user == null || !user.getUsername().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -75,10 +74,10 @@ public class AdminController {
                 return "form";
             }
 
-            AlbumDTO savedAlbum = AlbumDTO.fromAlbum(albumService.saveAlbum(AlbumDTO.fromAlbum(album)).toAlbum());
+            Album savedAlbum = albumService.saveAlbum(AlbumDTO.fromAlbum(album)).toAlbum();
             try {
                 if (imageFile != null && !imageFile.isEmpty()) {
-                    savedAlbum = AlbumDTO.fromAlbum(albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(savedAlbum.toAlbum()), imageFile).toAlbum());
+                    savedAlbum = albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(savedAlbum), imageFile).toAlbum();
                 }
             } catch (IOException e) {
                 // Handle the error appropriately
@@ -86,7 +85,7 @@ public class AdminController {
             }
 
             if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
-                // Convert the tracklist. When introduce with enters, will separate the diferents tracks with a "+".
+                // Convert the tracklist. When introduced with line breaks, will separate the different tracks with a "+".
                 String[] tracklistArray = album.getTracklist().split("\\r?\\n");
                 String concatenatedTracklist = String.join(" + ", tracklistArray);
                 album.setTracklist(concatenatedTracklist);
@@ -104,14 +103,14 @@ public class AdminController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
-        UserDTO user = (UserDTO) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
+        if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
             albumService.getAlbumById(id).ifPresent(album -> {
-                // Si la lista de artistas es nula o está vacía, inicializamos con un nuevo artista
+                // If the artist list is null or empty, initialize with a new artist
                 Album albumEntity = album.toAlbum();
                 if (albumEntity.getArtists() == null || albumEntity.getArtists().isEmpty()) {
                     albumEntity.setArtists(new ArrayList<>());
@@ -134,9 +133,9 @@ public class AdminController {
             @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
             Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
 
-        UserDTO user = (UserDTO) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
+        if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
@@ -191,23 +190,23 @@ public class AdminController {
     @PostMapping("/{id}/delete")
     public String deleteAlbum(@PathVariable Long id,  Model model, HttpSession session) {
 
-        UserDTO user = (UserDTO) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
+        if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
 
-            albumService.deleteAlbum(id);
-            return "redirect:/admin";
+        albumService.deleteAlbum(id);
+        return "redirect:/admin";
         }
     }
 
     @GetMapping("/artists")
     public String listArtists(Model model, HttpSession session) {
-        UserDTO user = (UserDTO) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
+        if (user == null || !user.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {

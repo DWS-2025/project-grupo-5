@@ -37,7 +37,7 @@ public class FavoriteController {
     @PostMapping("/add")
     public String addFavorite(@RequestParam Long albumId, HttpSession session, Model model) {
         try {
-            // Obtener el usuario de la sesión
+            // Get the user from the session
             UserDTO userDTO = (UserDTO) session.getAttribute("user");
             if (userDTO == null || userDTO.id() == null) {
                 model.addAttribute("error", "No session started.");
@@ -46,7 +46,7 @@ public class FavoriteController {
 
             Long auxUserId = userDTO.id();
 
-            // Buscar el álbum
+            // Find the album
             Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
             if (albumOptional.isEmpty()) {
                 model.addAttribute("error", "Album not found.");
@@ -55,7 +55,7 @@ public class FavoriteController {
 
             AlbumDTO albumDTO = albumOptional.get();
 
-            // Añadir el álbum a la lista de favoritos del usuario
+            // Add the album to the user's favorites list
             userService.addFavoriteAlbum(auxUserId, albumId, session);
 
             // Mapear UserDTO a User
@@ -67,10 +67,10 @@ public class FavoriteController {
                 albumService.saveAlbum(AlbumDTO.fromAlbum(albumDTO.toAlbum())); // Save the album
             }
 
-            return "redirect:/" + albumId; // Redirigir a la página del álbum
+            return "redirect:/" + albumId; // Redirect to the album page
         } catch (Exception e) {
-            model.addAttribute("error", "Ocurrió un error al añadir el álbum a favoritos: " + e.getMessage());
-            return "error"; // Mostrar página de error
+            model.addAttribute("error", "An error occurred while adding the album to favorites: " + e.getMessage());
+            return "error"; // Show error page
         }
     }
 

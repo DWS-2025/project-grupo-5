@@ -139,7 +139,7 @@ public class Album {
     private String description;
 
     @Lob
-    @Column(name = "tracklist", columnDefinition = "TEXT")
+    @Column(name = "tracklist")
     private String tracklist;
 
 

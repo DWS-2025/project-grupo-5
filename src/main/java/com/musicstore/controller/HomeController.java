@@ -84,8 +84,8 @@ public class HomeController {
         // Get reviews and map user IDs to usernames and profile images
         List<ReviewDTO> reviews = reviewService.getReviewsByAlbumId(id);
         reviews.forEach(review -> {
-            // Los campos de usuario ya están en el ReviewDTO
-            // No necesitamos obtener ni establecer información adicional del usuario
+            // User fields are already in the ReviewDTO
+            // We don't need to get or set additional user information
         });
         model.addAttribute("reviews", reviews);
         return "album/view";

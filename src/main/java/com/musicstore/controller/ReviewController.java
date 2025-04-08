@@ -79,15 +79,10 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @RequestParam String content,
             @RequestParam int rating,
-            HttpSession session,
-            Model model
+            HttpSession session
     ) {
-        try {
-            UserDTO userDTO = (UserDTO) session.getAttribute("user");
-            if (userDTO == null) {
-                return "redirect:/" + albumId;
-            }
-
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 return "redirect:/" + albumId;
             }
@@ -113,25 +108,18 @@ public class ReviewController {
                     albumService.saveAlbum(albumDTO);
                 });
             }
-            return "redirect:/" + albumId;
-        } catch (Exception e) {
-            return "redirect:/" + albumId;
         }
+        return "redirect:/" + albumId;
     }
 
     @PostMapping("/{albumId}/delete/{reviewId}")
     public String deleteReview(
             @PathVariable Long albumId,
             @PathVariable Long reviewId,
-            HttpSession session,
-            Model model
+            HttpSession session
     ) {
-        try {
-            UserDTO userDTO = (UserDTO) session.getAttribute("user");
-            if (userDTO == null) {
-                return "redirect:/" + albumId;
-            }
-
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO != null) {
             ReviewDTO review = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (review != null && (review.username().equals(userDTO.username()) || userDTO.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
@@ -142,10 +130,8 @@ public class ReviewController {
                     albumService.saveAlbum(albumDTO);
                 });
             }
-            return "redirect:/" + albumId;
-        } catch (Exception e) {
-            return "redirect:/" + albumId;
         }
+        return "redirect:/" + albumId;
     }
 
 
