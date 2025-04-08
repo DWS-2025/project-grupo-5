@@ -367,13 +367,13 @@ audio {
     align-items: center;
     overflow: hidden; /* Evita que el contenido sobresalga */
     position: relative;
-    max-height: 600px; /* Limita la altura máxima */
+    max-height: 600px; /* Limits the maximum height */
     border-radius: 8px; /* Bordes redondeados */
 }
 
 .album-image img {
     width: 100%; /* Ajusta el ancho a 100% */
-    height: auto; /* Mantiene la proporción de la imagen */
+    height: auto; /* Maintains the image proportion */
     object-fit: contain; /* Asegura que la imagen no se deforme */
     border-radius: 8px; /* Mantiene los bordes redondeados */
     margin-bottom: 10px;

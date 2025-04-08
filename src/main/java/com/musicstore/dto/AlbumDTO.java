@@ -115,8 +115,8 @@ public record AlbumDTO(
             }
         }
         album.setArtists(artists);
-        // No asignamos favoriteUsers aquí ya que necesitamos las entidades User completas
-        // La lista de favoriteUsers se manejará en el servicio
+        // We don't assign favoriteUsers here since we need the complete User entities
+        // The favoriteUsers list will be handled in the service
         return album;
     }
 

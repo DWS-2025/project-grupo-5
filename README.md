@@ -101,9 +101,21 @@ EchoReview is a web-based platform that allows users to explore, review, and man
   - IMPORTANT COMMIT - Solve problems with H2
  
 
+
 ## @M0ntoto
 
-- [numero comit](url.es)
+- [6e5b9b5](https://github.com/DWS-2025/project-grupo-5/commit/6e5b9b5c4bcd2a23f6d56c5e86a5a761e9423ca0)
+  - Functional Dinamic Query with 2 parameters (artist, release date).
+  - Name artist fixed
+    
+- [66cca20](https://github.com/DWS-2025/project-grupo-5/commit/66cca20d2200df86402d8dc4e7583290dedf0da1)
+  - Files (Albums Covers) can be upload in database
+
+- [afdad1a](https://github.com/DWS-2025/project-grupo-5/commit/afdad1aae10f9aefd02ef1a865d43883cb501be0)
+  - API REST Albums functionally (without DTOS)
+
+- [5fe1988](https://github.com/DWS-2025/project-grupo-5/commit/5fe19884a173899f9ce3d31e70da5d4cace66255)
+  - API REST Artist functionally (without DTOS)
 
 
 ## @paaul19
