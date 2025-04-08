@@ -48,7 +48,7 @@ public class ProfileController{
 
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        UserDTO user = (UserDTO) session.getAttribute("user");
         if (user != null) {
             model.addAttribute("user", user);
             return "user/profile";
@@ -58,7 +58,7 @@ public class ProfileController{
 
     @PostMapping("/profile/update")
     public String profileUpdate(
-            @ModelAttribute User updatedUser,
+            @ModelAttribute UserDTO updatedUserDTO,
             String currentPassword,
             String newPassword,
             String confirmPassword,
@@ -66,63 +66,60 @@ public class ProfileController{
             HttpSession session,
             Model model
     ) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser != null) {
+        UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
+        if (currentUserDTO != null) {
             // Verify current password
-            if (!userService.authenticateUser(currentUser.getUsername(), currentPassword).isPresent()) {
+            if (userService.authenticateUser(currentUserDTO.username(), currentPassword).isEmpty()) {
                 model.addAttribute("error", "Current Password is incorrect");
-                model.addAttribute("user", currentUser);
+                model.addAttribute("user", currentUserDTO);
                 return "error";
             }
 
             // Handle password update if new password is provided
+            String finalPassword = currentUserDTO.password();
             if (newPassword != null && !newPassword.trim().isEmpty()) {
                 if (!newPassword.equals(confirmPassword)) {
                     model.addAttribute("error", "New passwords do not match");
-                    model.addAttribute("user", currentUser);
+                    model.addAttribute("user", currentUserDTO);
                     return "user/profile";
                 }
-                updatedUser.setPassword(newPassword);
-            } else {
-                updatedUser.setPassword(currentUser.getPassword());
+                finalPassword = newPassword;
             }
 
-            // Create DTO with updated parameters
-            UserDTO updatedUserDTO = new UserDTO(
-                    currentUser.getId(),
-                    updatedUser.getUsername(),
-                    updatedUser.getPassword(),
-                    updatedUser.getEmail(),
-                    currentUser.isAdmin(),
-                    currentUser.getImageUrl(),
-                    currentUser.getImageData(),
-                    currentUser.getFollowers(),
-                    currentUser.getFollowing(),
-                    currentUser.getFavoriteAlbums().stream()
-                            .map(album -> album.getId())
-                            .collect(Collectors.toList())
+            // Create updated UserDTO
+            UserDTO newUserDTO = new UserDTO(
+                    currentUserDTO.id(),
+                    updatedUserDTO.username(),
+                    finalPassword,
+                    updatedUserDTO.email(),
+                    currentUserDTO.isAdmin(),
+                    currentUserDTO.imageUrl(),
+                    currentUserDTO.imageData(),
+                    currentUserDTO.followers(),
+                    currentUserDTO.following(),
+                    currentUserDTO.favoriteAlbumIds()
             );
 
             try {
                 // Handle profile image upload if provided
                 if (imageFile != null && !imageFile.isEmpty()) {
                     try {
-                        userService.saveUserWithProfileImage(updatedUserDTO, imageFile);
+                        userService.saveUserWithProfileImage(newUserDTO, imageFile);
                     } catch (IOException e) {
                         model.addAttribute("error", "Error uploading profile image");
-                        model.addAttribute("user", currentUser);
+                        model.addAttribute("user", currentUserDTO);
                         return "user/profile";
                     }
                 } else {
                     // If no new image, keep the existing one
-                    userService.saveUser(updatedUserDTO);
+                    userService.saveUser(newUserDTO);
                 }
 
-                session.setAttribute("user", updatedUser);
+                session.setAttribute("user", newUserDTO);
                 return "redirect:/profile?reload=" + System.currentTimeMillis();
             } catch (RuntimeException e) {
                 model.addAttribute("error", e.getMessage());
-                model.addAttribute("user", currentUser);
+                model.addAttribute("user", currentUserDTO);
                 return "user/profile";
             }
         }
@@ -131,13 +128,13 @@ public class ProfileController{
 
     @PostMapping("/profile/delete")
     public String deleteAccount(HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
+        UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
+        if (currentUserDTO == null) {
             return "redirect:/login";
         }
 
         // Get all reviews by this user
-        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(currentUser.getId());
+        List<ReviewDTO> userReviews = reviewService.getReviewsByUserId(currentUserDTO.id());
 
         // Collect all affected album IDs before deleting reviews
         List<Long> affectedAlbumIds = userReviews.stream()
@@ -146,13 +143,13 @@ public class ProfileController{
                 .toList();
 
         // Delete the user account (this will also delete all reviews and update favorites)
-        userService.deleteUser(currentUser.getUsername());
+        userService.deleteUser(currentUserDTO.username());
 
         // Update average ratings for all affected albums
         for (Long albumId : affectedAlbumIds) {
-            albumService.getAlbumById(albumId).ifPresent(album -> {
-                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                albumService.saveAlbum(album);
+            albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
+                albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                albumService.saveAlbum(albumDTO);
             });
         }
 

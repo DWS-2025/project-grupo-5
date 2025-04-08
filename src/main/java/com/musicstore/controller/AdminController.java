@@ -75,10 +75,10 @@ public class AdminController {
                 return "form";
             }
 
-            Album savedAlbum = albumService.saveAlbum(AlbumDTO.fromAlbum(album)).toAlbum();
+            AlbumDTO savedAlbum = AlbumDTO.fromAlbum(albumService.saveAlbum(AlbumDTO.fromAlbum(album)).toAlbum());
             try {
                 if (imageFile != null && !imageFile.isEmpty()) {
-                    savedAlbum = albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(savedAlbum), imageFile).toAlbum();
+                    savedAlbum = AlbumDTO.fromAlbum(albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(savedAlbum.toAlbum()), imageFile).toAlbum());
                 }
             } catch (IOException e) {
                 // Handle the error appropriately

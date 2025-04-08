@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AlbumService {
@@ -89,18 +90,24 @@ public class AlbumService {
 
         Album album = albumMapper.toEntity(albumDTO);
 
+        // Procesar artistas, si los hay
         if (album.getArtists() != null && !album.getArtists().isEmpty()) {
             List<Artist> processedArtists = album.getArtists().stream()
                     .map(artist -> artistRepository.findByNameContainingIgnoreCase(artist.getName().trim())
                             .stream()
                             .findFirst()
                             .orElseGet(() -> artistRepository.save(new Artist(artist.getName().trim()))))
-                    .toList();
+                    .collect(Collectors.toList());
             album.setArtists(processedArtists);
         }
 
-        return albumMapper.toDTO(albumRepository.save(album));
+        // Guardar el álbum en la base de datos
+        Album savedAlbum = albumRepository.save(album);
+
+        // Convertir el álbum guardado de nuevo a DTO y devolverlo
+        return albumMapper.toDTO(savedAlbum);
     }
+
 
     public AlbumDTO saveAlbumReview(AlbumDTO albumDTO) {
         if (albumDTO == null) {
