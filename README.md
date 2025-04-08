@@ -125,25 +125,25 @@ EchoReview is a web-based platform that allows users to explore, review, and man
 
 ## @noegomezz
 
-[f3bcfb8](https://github.com/DWS-2025/project-grupo-5/commit/f3bcfb8744ee35e97eeb234a2f2bd2eb8c9d4423)
+- [f3bcfb8](https://github.com/DWS-2025/project-grupo-5/commit/f3bcfb8744ee35e97eeb234a2f2bd2eb8c9d4423)
 
- - Services finished using DTOs
+   - Services finished using DTOs
+  
+- [2c982dd](https://github.com/DWS-2025/project-grupo-5/commit/2c982dd54bf241bf2dd51752af72935f03578a7a)
 
-[2c982dd](https://github.com/DWS-2025/project-grupo-5/commit/2c982dd54bf241bf2dd51752af72935f03578a7a)
+   - Refactoring multiple services and controllers 
 
- - Refactoring multiple services and controllers 
-
-[5f1b58f](https://github.com/DWS-2025/project-grupo-5/commit/5f1b58f52a28e96da135aa281bda30a8a048b2d9)
+- [5f1b58f](https://github.com/DWS-2025/project-grupo-5/commit/5f1b58f52a28e96da135aa281bda30a8a048b2d9)
  
- - All DTOs created
+   - All DTOs created
 
-[28c5410](https://github.com/DWS-2025/project-grupo-5/commit/28c54106b1cc4740f0b3fb1dc871f897633d2b61)
+- [28c5410](https://github.com/DWS-2025/project-grupo-5/commit/28c54106b1cc4740f0b3fb1dc871f897633d2b61)
 
- - Classes migration to Database
+   - Classes migration to Database
 
-[df32fa8](https://github.com/DWS-2025/project-grupo-5/commit/df32fa8a31e4648401c9e504b548d250571fa660)
+- [df32fa8](https://github.com/DWS-2025/project-grupo-5/commit/df32fa8a31e4648401c9e504b548d250571fa660)
 
- - Class Artist created and almost completed
+   - Class Artist created and almost completed
    
 ---
 ## Project Structure
