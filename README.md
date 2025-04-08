@@ -115,8 +115,8 @@ EchoReview is a web-based platform that allows users to explore, review, and man
 - [afdad1a](https://github.com/DWS-2025/project-grupo-5/commit/afdad1aae10f9aefd02ef1a865d43883cb501be0)
   - API REST Albums functionally (without DTOS)
 
--[5fe1988](https://github.com/DWS-2025/project-grupo-5/commit/5fe19884a173899f9ce3d31e70da5d4cace66255)
-  -API REST Artist functionally (without DTOS)
+- [5fe1988](https://github.com/DWS-2025/project-grupo-5/commit/5fe19884a173899f9ce3d31e70da5d4cace66255)
+  - API REST Artist functionally (without DTOS)
 
 
 ## @paaul19
