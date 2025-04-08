@@ -52,30 +52,6 @@ EchoReview is a web-based platform that allows users to explore, review, and man
 - Role-based access control
 - Input validation and sanitization
 
-## Installation
-
-1. Clone the repository:
-```bash
-git clone [repository-url]
-```
-
-2. Navigate to the project directory:
-```bash
-cd project-grupo-5
-```
-
-3. Build the project using Maven:
-```bash
-mvn clean install
-```
-
-4. Run the application:
-```bash
-mvn spring-boot:run
-```
-
-The application will be available at `http://localhost:8080`
-
 ## Usage
 
 ### User Registration
@@ -98,6 +74,32 @@ The application will be available at `http://localhost:8080`
 2. Click on "Write Review"
 3. Enter your review text and rating
 4. Submit the review
+
+# Important Commits
+## ```@all```
+- [6abaa14](https://github.com/DWS-2025/project-grupo-5/commit/6abaa14bc397178b8cb04eb55f1177e0df9df65b)
+  - Functional login @noegomezz
+  - Favorites and Reviews views @paaul19
+  - Dinamic queue @M0ntoto
+  - API for Users, albums, artist done @darkxvortex
+ 
+
+## @darkxvortex
+
+- [b46c56b](https://github.com/DWS-2025/project-grupo-5/commit/b46c56bef9343bcf7a8209654dd4046ccd57ebb6)
+  - API REST controllers for User, Artist, Reviews and Albums (need some fixed)
+
+- [e5d0171](https://github.com/DWS-2025/project-grupo-5/commit/e5d017153c8cbd89613453c8b5747b4ecd871963)
+  - AJAX pagination added on API
+  - All GET API functionality
+    
+- [4dd6b7d](https://github.com/DWS-2025/project-grupo-5/commit/4dd6b7da3c381a414701a94017d67d72a30e077e) 
+  - Functional Login with database
+  - DataLoader added
+  - Some errors solved
+  - [f341b7d](https://github.com/DWS-2025/project-grupo-5/commit/f341b7d71b1f8d2a04c373e9829fc98c02d016de)
+    - IMPORTANT COMMIT - Solve problems with H2 
+  
 
 ## Project Structure
 ```
