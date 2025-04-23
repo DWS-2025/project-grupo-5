@@ -61,59 +61,56 @@ public class AdminController {
     public String createAlbum(@Valid Album album, BindingResult result,
                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
-                              Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
+                              Model model, HttpSession session) throws IOException {
 
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
-        } else {
+        }
 
-            if (result.hasErrors()) {
-                model.addAttribute("album", album);
-                return "form";
+
+
+        try {
+            // Asegurarse de que la lista de artistas no sea null
+            if (album.getArtists() == null) {
+                album.setArtists(new ArrayList<>());
             }
 
-            AlbumDTO albumDTO = AlbumDTO.fromAlbum(album);
-
-// Guarda el álbum inicial
-            AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
-
-// Si hay imagen, la sube
-            try {
-                if (imageFile != null && !imageFile.isEmpty()) {
-                    savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                model.addAttribute("error", "Error al subir la imagen: " + e.getMessage());
-                return "album/form";
-            }
-
-// Si hay audio, lo sube
-            if (audioFile2 != null && !audioFile2.isEmpty()) {
-                albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
-            }
-
-
+            // Procesar tracklist si existe
             if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
-                // Convert the tracklist. When introduce with enters, will separate the diferents tracks with a "+".
                 String[] tracklistArray = album.getTracklist().split("\\r?\\n");
                 String concatenatedTracklist = String.join(" + ", tracklistArray);
                 album.setTracklist(concatenatedTracklist);
-            } albumService.saveAlbum(AlbumDTO.fromAlbum(album));
-
-            if (audioFile2 != null && !audioFile2.isEmpty()) {
-                albumService.saveAlbumWithAudio(AlbumDTO.fromAlbum(album), audioFile2);
-            } else {
-                // If there is no audio, it will save the album without audio.
-                albumService.saveAlbum(AlbumDTO.fromAlbum(album));
             }
+
+            // Convertir a DTO y guardar el álbum usando el servicio
+            AlbumDTO albumDTO = AlbumDTO.fromAlbum(album);
+            AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
+
+            // Procesar imagen si existe
+            if (imageFile != null && !imageFile.isEmpty()) {
+                savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
+            }
+
+            // Procesar audio si existe
+            if (audioFile2 != null && !audioFile2.isEmpty()) {
+                savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
+            }
+
             return "redirect:/admin";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", "Error en los datos del álbum: " + e.getMessage());
+            return "error";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", "Error al guardar el álbum: " + e.getMessage());
+            return "error";
+        } catch (IOException e) {
+            model.addAttribute("error", "Error al procesar los archivos multimedia: " + e.getMessage());
+            return "error";
         }
     }
-
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
