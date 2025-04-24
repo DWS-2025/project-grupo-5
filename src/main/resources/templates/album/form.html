@@ -15,105 +15,74 @@
 
 <body>
 
-<header th:replace="~{fragments/header :: header}"></header>
+<header th:replace="fragments/header :: header"></header>
 
 <div class="container">
     <h1 class="text-center mb-4" th:text="${album.id == null ? 'Add New Album' : 'Edit Album'}">Album Form</h1>
 
-    <form th:action="${album.id == null ? '/admin' : '/admin/' + album.id}" th:object="${album}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <form th:action="${album.id == null ? '/admin' : '/admin/' + album.id}" th:object="${album}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input type="text" class="form-control" id="title" th:field="*{title}" required>
             <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
         </div>
 
-        <div id="artistsContainer" th:if="${album.id == null}">
-            <div th:each="artist, stat : *{artists}" class="mb-3">
-                <div class="d-flex gap-2 align-items-start">
-                    <div class="flex-grow-1">
-                        <label th:for="'artist' + ${stat.index}" class="form-label">Artist</label>
-                        <input type="text" class="form-control" th:id="'artist' + ${stat.index}" th:field="*{artists[__${stat.index}__].name}" required>
-                        <div class="text-danger" th:if="${#fields.hasErrors('artists[' + stat.index + '].name')}" th:errors="*{artists[__${stat.index}__].name}"></div>
-                    </div>
-                    <button type="button" class="btn btn-danger mt-4" th:onclick="'removeArtist(' + ${stat.index} + ')'" th:if="${stat.index > 0}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
+        <div class="mb-3">
+            <label class="form-label">Artist</label>
+            <div class="d-flex gap-2">
+                <select id="artistId" name="artistId" class="form-select">
+                    <option value="">Select an existing artist</option>
+                    <option th:each="artist : ${artists}" th:value="${artist.id}" th:text="${artist.name}"></option>
+                </select>
+                <button type="button" class="btn btn-secondary" onclick="toggleNewArtistInput()">
+                    <i class="bi bi-plus-circle me-1"></i>New Artist
+                </button>
             </div>
-            <button type="button" class="btn btn-secondary mt-2" onclick="addArtist()">
-                <i class="bi bi-plus-circle me-1"></i>Add Artist
-            </button>
         </div>
 
-        <script th:inline="javascript" th:if="${album.id == null}">
-            function addArtist() {
-                const container = document.getElementById('artistsContainer');
-                const artistCount = container.querySelectorAll('.mb-3').length;
-                const newArtistDiv = document.createElement('div');
-                newArtistDiv.className = 'mb-3';
-                newArtistDiv.innerHTML = `
-                    <div class="d-flex gap-2 align-items-start">
-                        <div class="flex-grow-1">
-                            <label for="artist${artistCount}" class="form-label">Artist*</label>
-                            <input type="text" class="form-control" id="artist${artistCount}" name="artists[${artistCount}].name" required>
-                        </div>
-                        <button type="button" class="btn btn-danger mt-4" onclick="removeArtist(${artistCount})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                `;
-                container.insertBefore(newArtistDiv, container.lastElementChild);
-            }
+        <div id="newArtistInput" class="mb-3" style="display: none;">
+            <label for="newArtistName" class="form-label">New Artist Name</label>
+            <input type="text" class="form-control" id="newArtistName" name="newArtistName">
+        </div>
 
-            function removeArtist(index) {
-                const container = document.getElementById('artistsContainer');
-                const artistDivs = container.querySelectorAll('.mb-3');
-                if (index < artistDivs.length) {
-                    artistDivs[index].remove();
-                    // Reindex remaining artists
-                    const remainingArtists = container.querySelectorAll('.mb-3');
-                    remainingArtists.forEach((div, i) => {
-                        const input = div.querySelector('input');
-                        const label = div.querySelector('label');
-                        const deleteButton = div.querySelector('button');
-                        
-                        input.id = `artist${i}`;
-                        input.name = `artists[${i}].name`;
-                        label.setAttribute('for', `artist${i}`);
-                        if (deleteButton) {
-                            deleteButton.setAttribute('onclick', `removeArtist(${i})`);
-                        }
-                    });
-                }
-            }
-            
-            function validateForm() {
-                return validateArtists();
-            }
-            /*
-            function validateArtists() {
-                const container = document.getElementById('artistsContainer');
-                const artists = container.querySelectorAll('input[type="text"]');
-                let valid = true;
+        <script th:inline="javascript">
+            function toggleNewArtistInput() {
+                const newArtistInput = document.getElementById('newArtistInput');
+                const artistSelect = document.getElementById('artistId');
                 
-                if (artists.length === 0) {
-                    alert('Por favor, añade al menos un artista');
-                    valid = false;
+                if (newArtistInput.style.display === 'none') {
+                    newArtistInput.style.display = 'block';
+                    artistSelect.value = '';
+                    artistSelect.disabled = true;
+                } else {
+                    newArtistInput.style.display = 'none';
+                    artistSelect.disabled = false;
                 }
-            
-                artists.forEach(input => {
-                    if (!input.value.trim()) {
-                        input.classList.add('is-invalid');
-                        valid = false;
-                    } else {
-                        input.classList.remove('is-invalid');
-                    }
-                });
-            
-                return valid;
             }
 
-             */
+            function validateArtistSelection() {
+                const artistSelect = document.getElementById('artistId');
+                const newArtistInput = document.getElementById('newArtistName');
+                
+                if (artistSelect.disabled && (!newArtistInput.value || newArtistInput.value.trim() === '')) {
+                    alert('Por favor, ingresa el nombre del nuevo artista');
+                    newArtistInput.classList.add('is-invalid');
+                    return false;
+                } else if (!artistSelect.disabled && !artistSelect.value) {
+                    alert('Por favor, selecciona un artista existente');
+                    artistSelect.classList.add('is-invalid');
+                    return false;
+                }
+
+                // Limpiar el campo que no se está usando
+                if (artistSelect.disabled) {
+                    artistSelect.value = '';
+                } else {
+                    newArtistInput.value = '';
+                }
+                
+                return true;
+            }
         </script>
 
 
@@ -181,7 +150,7 @@
                 <button th:if="${album.id != null}" type="button" class="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
                     <svg viewBox="0 0 448 512" class="svgIcon"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path></svg>
                 </button>
-                <button type="submit" class="btn btn-primary" th:onclick="${album.id == null} ? 'return validateArtists()'">Save Album</button>
+                <button type="submit" class="btn btn-primary" onclick="return validateArtistSelection()">Save Album</button>
             </div>
         </div>
 
@@ -190,7 +159,7 @@
     </form>
 </div>
 
-<footer th:replace="~{fragments/footer :: footer}"></footer>
+<footer th:replace="fragments/footer :: footer"></footer>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

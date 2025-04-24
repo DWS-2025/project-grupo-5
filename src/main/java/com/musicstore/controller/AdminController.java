@@ -1,6 +1,7 @@
 package com.musicstore.controller;
 
 import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ArtistDTO;
 import com.musicstore.dto.UserDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
@@ -61,6 +62,8 @@ public class AdminController {
     public String createAlbum(@Valid Album album, BindingResult result,
                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
+                              @RequestParam(value = "artistId", required = false) Long artistId,
+                              @RequestParam(value = "newArtistName", required = false) String newArtistName,
                               Model model, HttpSession session) throws IOException {
 
         UserDTO user = (UserDTO) session.getAttribute("user");
@@ -70,12 +73,33 @@ public class AdminController {
             return "error";
         }
 
-
+        if (result.hasErrors()) {
+            model.addAttribute("album", album);
+            model.addAttribute("artists", artistService.getAllArtists());
+            return "album/form";
+        }
 
         try {
             // Asegurarse de que la lista de artistas no sea null
             if (album.getArtists() == null) {
                 album.setArtists(new ArrayList<>());
+            }
+
+            // Manejar la selección o creación de artista
+            if (artistId != null) {
+                // Usar artista existente
+                artistService.getArtistById(artistId).ifPresent(artistDTO -> {
+                    Artist artist = new Artist();
+                    artist.setId(artistDTO.id());
+                    artist.setName(artistDTO.name());
+                    album.getArtists().add(artist);
+                });
+            } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
+                // Crear nuevo artista
+                Artist newArtist = new Artist(newArtistName.trim());
+                ArtistDTO savedArtistDTO = artistService.saveArtist(ArtistDTO.fromArtist(newArtist));
+                newArtist.setId(savedArtistDTO.id());
+                album.getArtists().add(newArtist);
             }
 
             // Procesar tracklist si existe
@@ -85,7 +109,7 @@ public class AdminController {
                 album.setTracklist(concatenatedTracklist);
             }
 
-            // Convertir a DTO y guardar el álbum usando el servicio
+            // Convertir y guardar el álbum
             AlbumDTO albumDTO = AlbumDTO.fromAlbum(album);
             AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
 
@@ -101,18 +125,15 @@ public class AdminController {
 
             return "redirect:/admin";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", "Error en los datos del álbum: " + e.getMessage());
-            return "error";
-        } catch (RuntimeException e) {
             model.addAttribute("error", "Error al guardar el álbum: " + e.getMessage());
-            return "error";
-        } catch (IOException e) {
-            model.addAttribute("error", "Error al procesar los archivos multimedia: " + e.getMessage());
-            return "error";
+            model.addAttribute("artists", artistService.getAllArtists());
+            return "album/form";
         }
     }
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
+
+
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.username().equals("admin")) {
