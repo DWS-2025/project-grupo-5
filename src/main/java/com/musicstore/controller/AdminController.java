@@ -74,21 +74,30 @@ public class AdminController {
         }
 
         if (result.hasErrors()) {
-            model.addAttribute("album", album);
-            model.addAttribute("artists", artistService.getAllArtists());
-            return "album/form";
+            StringBuilder errorMsg = new StringBuilder("Errores de validación: ");
+            result.getAllErrors().forEach(error -> errorMsg.append(error.getDefaultMessage()).append(". "));
+            model.addAttribute("error", errorMsg.toString());
+            return "error";
         }
 
         try {
             // Asegurarse de que la lista de artistas no sea null
             if (album.getArtists() == null) {
                 album.setArtists(new ArrayList<>());
+            } else {
+                album.getArtists().clear(); // Limpiar artistas existentes para evitar duplicados
             }
 
             // Manejar la selección o creación de artista
-            if (artistId != null) {
+            if (artistId != null && artistId > 0) {
                 // Usar artista existente
-                artistService.getArtistById(artistId).ifPresent(artistDTO -> {
+                var artistOpt = artistService.getArtistById(artistId);
+                if (artistOpt.isEmpty()) {
+                    model.addAttribute("error", "Error: El artista seleccionado no existe en la base de datos");
+                    return "error";
+                }
+                
+                artistOpt.ifPresent(artistDTO -> {
                     Artist artist = new Artist();
                     artist.setId(artistDTO.id());
                     artist.setName(artistDTO.name());
@@ -96,61 +105,105 @@ public class AdminController {
                 });
             } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
                 // Crear nuevo artista
-                Artist newArtist = new Artist(newArtistName.trim());
-                ArtistDTO savedArtistDTO = artistService.saveArtist(ArtistDTO.fromArtist(newArtist));
-                newArtist.setId(savedArtistDTO.id());
-                album.getArtists().add(newArtist);
+                try {
+                    Artist newArtist = new Artist(newArtistName.trim());
+                    ArtistDTO savedArtistDTO = artistService.saveArtist(ArtistDTO.fromArtist(newArtist));
+                    newArtist.setId(savedArtistDTO.id());
+                    album.getArtists().add(newArtist);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al crear el nuevo artista: " + e.getMessage());
+                    return "error";
+                }
+            } else {
+                // Si no se seleccionó un artista ni se creó uno nuevo, mostrar error
+                model.addAttribute("error", "Error: Debe seleccionar un artista existente o crear uno nuevo");
+                return "error";
+            }
+
+            // Verificar que se haya añadido al menos un artista
+            if (album.getArtists().isEmpty()) {
+                model.addAttribute("error", "Error: No se pudo asociar ningún artista al álbum");
+                return "error";
             }
 
             // Procesar tracklist si existe
             if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
-                String[] tracklistArray = album.getTracklist().split("\\r?\\n");
-                String concatenatedTracklist = String.join(" + ", tracklistArray);
-                album.setTracklist(concatenatedTracklist);
+                try {
+                    String[] tracklistArray = album.getTracklist().split("\\r?\\n");
+                    String concatenatedTracklist = String.join(" + ", tracklistArray);
+                    album.setTracklist(concatenatedTracklist);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al procesar la lista de canciones: " + e.getMessage());
+                    return "error";
+                }
             }
 
             // Convertir y guardar el álbum
-            AlbumDTO albumDTO = AlbumDTO.fromAlbum(album);
-            AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
+            AlbumDTO albumDTO;
+            AlbumDTO savedAlbum;
+            try {
+                albumDTO = AlbumDTO.fromAlbum(album);
+                savedAlbum = albumService.saveAlbum(albumDTO);
+            } catch (Exception e) {
+                model.addAttribute("error", "Error al guardar la información básica del álbum: " + e.getMessage());
+                return "error";
+            }
 
             // Procesar imagen si existe
             if (imageFile != null && !imageFile.isEmpty()) {
-                savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
+                try {
+                    savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al guardar la imagen del álbum: " + e.getMessage());
+                    return "error";
+                }
             }
 
             // Procesar audio si existe
             if (audioFile2 != null && !audioFile2.isEmpty()) {
-                savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
+                try {
+                    savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al guardar el archivo de audio: " + e.getMessage());
+                    return "error";
+                }
             }
 
             return "redirect:/admin";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", "Error al guardar el álbum: " + e.getMessage());
-            model.addAttribute("artists", artistService.getAllArtists());
-            return "album/form";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error inesperado al guardar el álbum: " + e.getMessage());
+            return "error";
         }
     }
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
-
-
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
-        } else {
-            albumService.getAlbumById(id).ifPresent(album -> {
-                // Si la lista de artistas es nula o está vacía, inicializamos con un nuevo artista
-                Album albumEntity = album.toAlbum();
-                if (albumEntity.getArtists() == null || albumEntity.getArtists().isEmpty()) {
-                    albumEntity.setArtists(new ArrayList<>());
-                    Artist emptyArtist = new Artist();
-                    albumEntity.getArtists().add(emptyArtist);
-                }
-                model.addAttribute("album", AlbumDTO.fromAlbum(albumEntity));
-            });
+        }
+        
+        var albumOpt = albumService.getAlbumById(id);
+        if (albumOpt.isEmpty()) {
+            model.addAttribute("error", "Error: No se encontró el álbum con ID: " + id);
+            return "error";
+        }
+        
+        try {
+            // Si la lista de artistas es nula o está vacía, inicializamos con un nuevo artista
+            Album albumEntity = albumOpt.get().toAlbum();
+            if (albumEntity.getArtists() == null || albumEntity.getArtists().isEmpty()) {
+                albumEntity.setArtists(new ArrayList<>());
+                Artist emptyArtist = new Artist();
+                albumEntity.getArtists().add(emptyArtist);
+            }
+            model.addAttribute("album", AlbumDTO.fromAlbum(albumEntity));
+            model.addAttribute("artists", artistService.getAllArtists());
             return "album/form";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al cargar el formulario de edición: " + e.getMessage());
+            return "error";
         }
     }
 
@@ -162,25 +215,81 @@ public class AdminController {
             BindingResult result,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
-            Model model, HttpSession session) throws IOException, javax.sql.rowset.serial.SerialException, java.sql.SQLException {
+            @RequestParam(value = "artistId", required = false) Long artistId,
+            @RequestParam(value = "newArtistName", required = false) String newArtistName,
+            Model model, HttpSession session) throws IOException {
 
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
-        } else {
+        }
 
-            if (result.hasErrors()) {
-                model.addAttribute("album", album);
-                return "form";
+        if (result.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder("Errores de validación: ");
+            result.getAllErrors().forEach(error -> errorMsg.append(error.getDefaultMessage()).append(". "));
+            model.addAttribute("error", errorMsg.toString());
+            return "error";
+        }
+
+        try {
+            // Verificar si el álbum existe
+            var albumOpt = albumService.getAlbumById(id);
+            if (albumOpt.isEmpty()) {
+                model.addAttribute("error", "Error: El álbum que intentas actualizar no existe (ID: " + id + ")");
+                return "error";
             }
-
-            Album existingAlbum = albumService.getAlbumById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Album not found: " + id)).toAlbum();
+            
+            Album existingAlbum = albumOpt.get().toAlbum();
 
             existingAlbum.setTitle(album.getTitle());
-            existingAlbum.setArtists(album.getArtists());
+            // Asegurarse de que la lista de artistas no sea null
+            if (existingAlbum.getArtists() == null) {
+                existingAlbum.setArtists(new ArrayList<>());
+            } else {
+                existingAlbum.getArtists().clear(); // Limpiar artistas existentes
+            }
+            
+            // Manejar la selección o creación de artista
+            if (artistId != null && artistId > 0) {
+                // Usar artista existente
+                var artistOpt = artistService.getArtistById(artistId);
+                if (artistOpt.isEmpty()) {
+                    model.addAttribute("error", "Error: El artista seleccionado no existe en la base de datos");
+                    return "error";
+                }
+                
+                artistOpt.ifPresent(artistDTO -> {
+                    Artist artist = new Artist();
+                    artist.setId(artistDTO.id());
+                    artist.setName(artistDTO.name());
+                    existingAlbum.getArtists().add(artist);
+                });
+            } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
+                // Crear nuevo artista
+                try {
+                    Artist newArtist = new Artist(newArtistName.trim());
+                    ArtistDTO savedArtistDTO = artistService.saveArtist(ArtistDTO.fromArtist(newArtist));
+                    newArtist.setId(savedArtistDTO.id());
+                    existingAlbum.getArtists().add(newArtist);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al crear el nuevo artista: " + e.getMessage());
+                    return "error";
+                }
+            } else {
+                // Si no se seleccionó un artista ni se creó uno nuevo, mostrar error
+                model.addAttribute("error", "Error: Debe seleccionar un artista existente o crear uno nuevo");
+                return "error";
+            }
+            
+            // Verificar que se haya añadido al menos un artista
+            if (existingAlbum.getArtists().isEmpty()) {
+                model.addAttribute("error", "Error: No se pudo asociar ningún artista al álbum");
+                return "error";
+            }
+            
+            // Actualizar los demás campos del álbum
             existingAlbum.setGenre(album.getGenre());
             existingAlbum.setDescription(album.getDescription());
             existingAlbum.setTracklist(album.getTracklist());
@@ -189,32 +298,53 @@ public class AdminController {
             existingAlbum.setApplemusic_url(album.getApplemusic_url());
             existingAlbum.setTidal_url(album.getTidal_url());
 
+            // Procesar tracklist si existe
             if (existingAlbum.getTracklist() != null && !existingAlbum.getTracklist().isEmpty()) {
-                String[] tracklistArray = existingAlbum.getTracklist().split("\\r?\\n");
-                String concatenatedTracklist = String.join(" + ", tracklistArray);
-                existingAlbum.setTracklist(concatenatedTracklist);
-            }
-
-            albumService.saveAlbum(AlbumDTO.fromAlbum(existingAlbum));
-
-            try {
-                if (imageFile != null && !imageFile.isEmpty()) {
-                    albumService.saveAlbumWithImage(AlbumDTO.fromAlbum(existingAlbum), imageFile);
-                } else {
-                    albumService.saveAlbum(AlbumDTO.fromAlbum(existingAlbum));
+                try {
+                    String[] tracklistArray = existingAlbum.getTracklist().split("\\r?\\n");
+                    String concatenatedTracklist = String.join(" + ", tracklistArray);
+                    existingAlbum.setTracklist(concatenatedTracklist);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al procesar la lista de canciones: " + e.getMessage());
+                    return "error";
                 }
-            } catch (IOException e) {
-                // Handle the error appropriately
-                return "album" +
-                        "x/form";
             }
 
-            if (audioFile2 != null && !audioFile2.isEmpty()) {
-                albumService.saveAlbumWithAudio(AlbumDTO.fromAlbum(existingAlbum), audioFile2);
-            } else {
-                albumService.saveAlbum(AlbumDTO.fromAlbum(existingAlbum));
+            // Convertir y guardar el álbum
+            AlbumDTO albumDTO;
+            AlbumDTO savedAlbum;
+            try {
+                albumDTO = AlbumDTO.fromAlbum(existingAlbum);
+                savedAlbum = albumService.saveAlbum(albumDTO);
+            } catch (Exception e) {
+                model.addAttribute("error", "Error al guardar la información básica del álbum: " + e.getMessage());
+                return "error";
             }
+
+            // Procesar imagen si existe
+            if (imageFile != null && !imageFile.isEmpty()) {
+                try {
+                    savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al guardar la imagen del álbum: " + e.getMessage());
+                    return "error";
+                }
+            }
+
+            // Procesar audio si existe
+            if (audioFile2 != null && !audioFile2.isEmpty()) {
+                try {
+                    savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
+                } catch (Exception e) {
+                    model.addAttribute("error", "Error al guardar el archivo de audio: " + e.getMessage());
+                    return "error";
+                }
+            }
+
             return "redirect:/admin";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error inesperado al actualizar el álbum: " + e.getMessage());
+            return "error";
         }
     }
 
