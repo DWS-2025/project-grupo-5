@@ -104,7 +104,7 @@ public class Album {
 
     @Lob
     @Column(name = "audio_preview")
-    private byte[] audioFile2;
+    private byte[] audioPreview;
 
     @Lob
     @Column(name = "audio_data")
@@ -126,6 +126,14 @@ public class Album {
 
     public void setAudioData(byte[] audioData) {
         this.audioData = audioData;
+    }
+    
+    public byte[] getAudioPreview() {
+        return audioPreview;
+    }
+
+    public void setAudioPreview(byte[] audioPreview) {
+        this.audioPreview = audioPreview;
     }
 
     public String getAudioFile() {

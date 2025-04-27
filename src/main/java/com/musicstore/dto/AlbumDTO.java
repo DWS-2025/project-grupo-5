@@ -27,7 +27,8 @@ public record AlbumDTO(
         List<String> artistNames,
         List<String> favoriteUsers,
         byte[] imageData,
-        byte[] audioData
+        byte[] audioData,
+        byte[] audioPreview
 ) {
     public double getAverageRating() {
         return averageRating != null ? averageRating : 0.0;
@@ -46,7 +47,7 @@ public record AlbumDTO(
         return new AlbumDTO(
                 id, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, newAverageRating,
-                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
+                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData, audioPreview
         );
     }
     @JsonIgnore
@@ -88,7 +89,8 @@ public record AlbumDTO(
                         .map(User::getUsername)
                         .collect(Collectors.toList()),
                 album.getImageData(),
-                album.getAudioData()
+                album.getAudioData(),
+                album.getAudioPreview()
         );
     }
 
@@ -105,6 +107,9 @@ public record AlbumDTO(
         album.setApplemusic_url(this.applemusic_url());
         album.setTidal_url(this.tidal_url());
         album.setAverageRating(this.averageRating());
+        album.setImageData(this.imageData());
+        album.setAudioData(this.audioData());
+        album.setAudioPreview(this.audioPreview());
         // Inicializamos la lista de artistas
         List<Artist> artists = new ArrayList<>();
         if (this.artistIds != null) {
@@ -138,14 +143,18 @@ public record AlbumDTO(
         return new AlbumDTO(
                 newId, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, averageRating,
-                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData
+                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData, audioPreview
         );
     }
     public AlbumDTO withImageData(byte[] newImageData) {
         return new AlbumDTO(
                 id, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, averageRating,
-                artistIds, reviewIds, artistNames, favoriteUsers, newImageData, audioData
+                artistIds, reviewIds, artistNames, favoriteUsers, newImageData, audioData, audioPreview
         );
+    }
+    
+    public byte[] getAudioPreview() {
+        return audioPreview;
     }
 }

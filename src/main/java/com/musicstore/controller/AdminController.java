@@ -61,7 +61,7 @@ public class AdminController {
     @PostMapping
     public String createAlbum(@Valid Album album, BindingResult result,
                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-                              @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
+                              @RequestParam(value = "audioFile2", required = false) MultipartFile audioPreview,
                               @RequestParam(value = "artistId", required = false) Long artistId,
                               @RequestParam(value = "newArtistName", required = false) String newArtistName,
                               Model model, HttpSession session) throws IOException {
@@ -106,8 +106,17 @@ public class AdminController {
             } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
                 // Crear nuevo artista
                 try {
-                    Artist newArtist = new Artist(newArtistName.trim());
-                    ArtistDTO savedArtistDTO = artistService.saveArtist(ArtistDTO.fromArtist(newArtist));
+                    // Crear el artista con nombre validado
+                    String validatedName = newArtistName.trim();
+                    Artist newArtist = new Artist(validatedName);
+                    
+                    // Verificar explícitamente que el nombre no sea null antes de crear el DTO
+                    if (newArtist.getName() == null) {
+                        newArtist.setName(validatedName); // Asegurar que el nombre esté establecido
+                    }
+                    
+                    ArtistDTO artistDTO = ArtistDTO.fromArtist(newArtist);
+                    ArtistDTO savedArtistDTO = artistService.saveArtist(artistDTO);
                     newArtist.setId(savedArtistDTO.id());
                     album.getArtists().add(newArtist);
                 } catch (Exception e) {
@@ -160,9 +169,9 @@ public class AdminController {
             }
 
             // Procesar audio si existe
-            if (audioFile2 != null && !audioFile2.isEmpty()) {
+            if (audioPreview != null && !audioPreview.isEmpty()) {
                 try {
-                    savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
+                    savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioPreview);
                 } catch (Exception e) {
                     model.addAttribute("error", "Error al guardar el archivo de audio: " + e.getMessage());
                     return "error";
@@ -214,7 +223,7 @@ public class AdminController {
             @Valid Album album,
             BindingResult result,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-            @RequestParam(value = "audioFile2", required = false) MultipartFile audioFile2,
+            @RequestParam(value = "audioFile2", required = false) MultipartFile audioPreview,
             @RequestParam(value = "artistId", required = false) Long artistId,
             @RequestParam(value = "newArtistName", required = false) String newArtistName,
             Model model, HttpSession session) throws IOException {
@@ -269,8 +278,17 @@ public class AdminController {
             } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
                 // Crear nuevo artista
                 try {
-                    Artist newArtist = new Artist(newArtistName.trim());
-                    ArtistDTO savedArtistDTO = artistService.saveArtist(ArtistDTO.fromArtist(newArtist));
+                    // Crear el artista con nombre validado
+                    String validatedName = newArtistName.trim();
+                    Artist newArtist = new Artist(validatedName);
+                    
+                    // Verificar explícitamente que el nombre no sea null antes de crear el DTO
+                    if (newArtist.getName() == null) {
+                        newArtist.setName(validatedName); // Asegurar que el nombre esté establecido
+                    }
+                    
+                    ArtistDTO artistDTO = ArtistDTO.fromArtist(newArtist);
+                    ArtistDTO savedArtistDTO = artistService.saveArtist(artistDTO);
                     newArtist.setId(savedArtistDTO.id());
                     existingAlbum.getArtists().add(newArtist);
                 } catch (Exception e) {
@@ -332,9 +350,9 @@ public class AdminController {
             }
 
             // Procesar audio si existe
-            if (audioFile2 != null && !audioFile2.isEmpty()) {
+            if (audioPreview != null && !audioPreview.isEmpty()) {
                 try {
-                    savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioFile2);
+                    savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioPreview);
                 } catch (Exception e) {
                     model.addAttribute("error", "Error al guardar el archivo de audio: " + e.getMessage());
                     return "error";

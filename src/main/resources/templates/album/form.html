@@ -20,6 +20,8 @@
 <div class="container">
     <h1 class="text-center mb-4" th:text="${album.id == null ? 'Add New Album' : 'Edit Album'}">Album Form</h1>
 
+    <div class="alert alert-danger" th:if="${error != null}" th:text="${error}"></div>
+
     <form th:action="${album.id == null ? '/admin' : '/admin/' + album.id}" th:object="${album}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
@@ -68,16 +70,18 @@
                     alert('Por favor, ingresa el nombre del nuevo artista');
                     newArtistInput.classList.add('is-invalid');
                     return false;
-                } else if (!artistSelect.disabled && !artistSelect.value) {
+                } else if (!artistSelect.disabled && (!artistSelect.value || artistSelect.value === '')) {
                     alert('Por favor, selecciona un artista existente');
                     artistSelect.classList.add('is-invalid');
                     return false;
                 }
-
-                // Limpiar el campo que no se está usando
+                
+                // Asegurarse de que el campo correcto esté habilitado antes de enviar
                 if (artistSelect.disabled) {
+                    // Si estamos creando un nuevo artista, asegurarse de que el campo de selección no interfiera
                     artistSelect.value = '';
                 } else {
+                    // Si estamos seleccionando un artista existente, limpiar el campo de nuevo artista
                     newArtistInput.value = '';
                 }
                 

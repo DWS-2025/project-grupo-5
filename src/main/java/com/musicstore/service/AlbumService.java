@@ -93,10 +93,14 @@ public class AlbumService {
         // Procesar artistas, si los hay
         if (album.getArtists() != null && !album.getArtists().isEmpty()) {
             List<Artist> processedArtists = album.getArtists().stream()
-                    .map(artist -> artistRepository.findByNameContainingIgnoreCase(artist.getName().trim())
-                            .stream()
-                            .findFirst()
-                            .orElseGet(() -> artistRepository.save(new Artist(artist.getName().trim()))))
+                    .filter(artist -> artist != null && artist.getName() != null) // Filtrar artistas con nombre null
+                    .map(artist -> {
+                        String artistName = artist.getName().trim();
+                        return artistRepository.findByNameContainingIgnoreCase(artistName)
+                                .stream()
+                                .findFirst()
+                                .orElseGet(() -> artistRepository.save(new Artist(artistName)));
+                    })
                     .collect(Collectors.toList());
             album.setArtists(processedArtists);
         }
@@ -150,6 +154,7 @@ public class AlbumService {
             Album album = albumMapper.toEntity(savedAlbumDTO);
             try {
                 album.setAudioData(audioFile.getBytes());
+                album.setAudioPreview(audioFile.getBytes());
                 album.setAudioFile("/api/albums/" + album.getId() + "/audio");
                 savedAlbumDTO = albumMapper.toDTO(albumRepository.save(album));
             } catch (IOException e) {
