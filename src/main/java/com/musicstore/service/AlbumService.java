@@ -91,24 +91,28 @@ public class AlbumService {
         Album album = albumMapper.toEntity(albumDTO);
 
         // Procesar artistas, si los hay
-        if (album.getArtists() != null && !album.getArtists().isEmpty()) {
-            List<Artist> processedArtists = album.getArtists().stream()
-                    .filter(artist -> artist != null && artist.getName() != null) // Filtrar artistas con nombre null
-                    .map(artist -> {
-                        String artistName = artist.getName().trim();
-                        return artistRepository.findByNameContainingIgnoreCase(artistName)
-                                .stream()
-                                .findFirst()
-                                .orElseGet(() -> artistRepository.save(new Artist(artistName)));
-                    })
-                    .collect(Collectors.toList());
+        if (albumDTO.artistIds() != null && !albumDTO.artistIds().isEmpty()) {
+            List<Artist> processedArtists = albumDTO.artistIds().stream()
+                .map(artistId -> artistRepository.findById(artistId).orElse(null))
+                .filter(artist -> artist != null)
+                .collect(Collectors.toList());
+            album.setArtists(processedArtists);
+        } else if (albumDTO.artistNames() != null && !albumDTO.artistNames().isEmpty()) {
+            List<Artist> processedArtists = albumDTO.artistNames().stream()
+                .map(name -> {
+                    return artistRepository.findByNameContainingIgnoreCase(name.trim())
+                        .stream()
+                        .findFirst()
+                        .orElseGet(() -> artistRepository.save(new Artist(name.trim())));
+                })
+                .collect(Collectors.toList());
             album.setArtists(processedArtists);
         }
 
-        // Save the album in the database
+        // Guardar el álbum en la base de datos
         Album savedAlbum = albumRepository.save(album);
 
-        // Convert the saved album back to DTO and return it
+        // Convertir el álbum guardado de nuevo a DTO y devolverlo
         return albumMapper.toDTO(savedAlbum);
     }
 
