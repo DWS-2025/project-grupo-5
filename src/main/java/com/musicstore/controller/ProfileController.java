@@ -27,6 +27,7 @@ import com.musicstore.dto.UserDTO;
 import com.musicstore.dto.ArtistDTO;
 import com.musicstore.dto.AlbumDTO;
 import com.musicstore.dto.ReviewDTO;
+import com.musicstore.dto.ProfileUpdateDTO;
 import com.musicstore.mapper.UserMapper;
 import com.musicstore.mapper.AlbumMapper;
 import com.musicstore.mapper.ReviewMapper;
@@ -58,72 +59,77 @@ public class ProfileController{
 
     @PostMapping("/profile/update")
     public String profileUpdate(
-            @ModelAttribute UserDTO updatedUserDTO,
-            String currentPassword,
-            String newPassword,
-            String confirmPassword,
+            @ModelAttribute ProfileUpdateDTO profileUpdateDTO,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             HttpSession session,
             Model model
     ) {
         UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
-        if (currentUserDTO != null) {
-            // Verify current password
-            if (userService.authenticateUser(currentUserDTO.username(), currentPassword).isEmpty()) {
-                model.addAttribute("error", "Current Password is incorrect");
+        if (currentUserDTO == null) {
+            return "redirect:/login";
+        }
+        
+        // Validar los datos de actualización
+        if (profileUpdateDTO.isPasswordChangeRequested()) {
+            // Validar cambio de contraseña
+            if (!profileUpdateDTO.isPasswordChangeValid()) {
+                model.addAttribute("error", "Datos de cambio de contraseña inválidos");
                 model.addAttribute("user", currentUserDTO);
-                return "error";
+                return "user/profile";
             }
-
-            // Handle password update if new password is provided
-            String finalPassword = currentUserDTO.password();
-            if (newPassword != null && !newPassword.trim().isEmpty()) {
-                if (!newPassword.equals(confirmPassword)) {
-                    model.addAttribute("error", "New passwords do not match");
-                    model.addAttribute("user", currentUserDTO);
-                    return "user/profile";
-                }
-                finalPassword = newPassword;
-            }
-
-            // Create updated UserDTO
-            UserDTO newUserDTO = new UserDTO(
-                    currentUserDTO.id(),
-                    updatedUserDTO.username(),
-                    finalPassword,
-                    updatedUserDTO.email(),
-                    currentUserDTO.isAdmin(),
-                    currentUserDTO.imageUrl(),
-                    currentUserDTO.imageData(),
-                    currentUserDTO.followers(),
-                    currentUserDTO.following(),
-                    currentUserDTO.favoriteAlbumIds()
-            );
-
-            try {
-                // Handle profile image upload if provided
-                if (imageFile != null && !imageFile.isEmpty()) {
-                    try {
-                        userService.saveUserWithProfileImage(newUserDTO, imageFile);
-                    } catch (IOException e) {
-                        model.addAttribute("error", "Error uploading profile image");
-                        model.addAttribute("user", currentUserDTO);
-                        return "user/profile";
-                    }
-                } else {
-                    // If no new image, keep the existing one
-                    userService.saveUser(newUserDTO);
-                }
-
-                session.setAttribute("user", newUserDTO);
-                return "redirect:/profile?reload=" + System.currentTimeMillis();
-            } catch (RuntimeException e) {
-                model.addAttribute("error", e.getMessage());
+            
+            // Verificar la contraseña actual
+            if (userService.authenticateUser(currentUserDTO.username(), profileUpdateDTO.currentPassword()).isEmpty()) {
+                model.addAttribute("error", "La contraseña actual es incorrecta");
                 model.addAttribute("user", currentUserDTO);
                 return "user/profile";
             }
         }
-        return "redirect:/login";
+
+        // Determinar la contraseña final
+        String finalPassword = profileUpdateDTO.isPasswordChangeRequested() 
+                ? profileUpdateDTO.newPassword() 
+                : currentUserDTO.password();
+
+        // Crear un nuevo UserDTO preservando los datos que no se actualizan
+        UserDTO newUserDTO = new UserDTO(
+                currentUserDTO.id(),
+                profileUpdateDTO.username(),
+                finalPassword,
+                profileUpdateDTO.email(),
+                currentUserDTO.isAdmin(),
+                currentUserDTO.imageUrl(),
+                currentUserDTO.imageData(),
+                currentUserDTO.followers(),
+                currentUserDTO.following(),
+                currentUserDTO.favoriteAlbumIds()
+        );
+
+        try {
+            // Manejar la carga de imagen de perfil si se proporciona
+            if (imageFile != null && !imageFile.isEmpty()) {
+                try {
+                    // Actualizar con la nueva imagen
+                    UserDTO savedUserDTO = userService.saveUserWithProfileImage(newUserDTO, imageFile);
+                    // Actualizar la sesión con el usuario guardado que incluye la nueva imagen
+                    session.setAttribute("user", savedUserDTO);
+                } catch (IOException e) {
+                    model.addAttribute("error", "Error al subir la imagen de perfil");
+                    model.addAttribute("user", currentUserDTO);
+                    return "user/profile";
+                }
+            } else {
+                // Si no hay nueva imagen, guardar los cambios y actualizar la sesión
+                UserDTO savedUserDTO = userService.saveUser(newUserDTO);
+                session.setAttribute("user", savedUserDTO);
+            }
+
+            return "redirect:/profile?reload=" + System.currentTimeMillis();
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("user", currentUserDTO);
+            return "user/profile";
+        }
     }
 
     @PostMapping("/profile/delete")
@@ -233,4 +239,22 @@ public class ProfileController{
         return "user/profile-view";
     }
 
+    @PostMapping("/profile/upload-image")
+    public String uploadProfileImage(@RequestParam("imageFile") MultipartFile imageFile, HttpSession session, Model model) {
+        UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
+        if (currentUserDTO == null) {
+            return "redirect:/login";
+        }
+        try {
+            userService.saveUserWithProfileImage(currentUserDTO, imageFile);
+            // Actualizar la sesión con la nueva imagen
+            UserDTO updatedUser = userService.getUserByUsername(currentUserDTO.username()).orElse(currentUserDTO);
+            session.setAttribute("user", updatedUser);
+        } catch (IOException e) {
+            model.addAttribute("error", "Error al subir la imagen de perfil");
+            model.addAttribute("user", currentUserDTO);
+            return "user/profile";
+        }
+        return "redirect:/profile?reload=" + System.currentTimeMillis();
+    }
 }

@@ -288,18 +288,18 @@
             <h2 class="text-center mb-4">Profile Settings</h2>
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{/profile/update}" method="post" th:object="${user}" enctype="multipart/form-data" onsubmit="window.location.reload(); return true;">
+                    <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" th:field="*{username}" required>
+                            <input type="text" class="form-control" id="username" name="username" th:value="${user.username}" required>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                            <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required>
                         </div>
                         <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                            <label for="currentPassword" class="form-label">Current Password (required only for password change)</label>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword">
                         </div>
                         <div class="mb-3">
                             <label for="newPassword" class="form-label">New Password (leave blank if unchanged)</label>
@@ -312,8 +312,11 @@
 
                         <div class="mb-3">
                             <label for="imageFile" class="form-label">Profile Photo</label>
+                            <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.imageUrl != null}">
+                                <img th:src="${user.imageUrl}" alt="Current profile photo" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
+                                <span class="text-muted">Foto actual</span>
+                            </div>
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
-                            <input type="hidden" th:field="*{imageUrl}">
                         </div>
 
                         <div class="text-center">
@@ -323,7 +326,6 @@
 
 
                     </form>
-                    <hr class="my-4">
                     <div class="text-center">
                         <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
                             <button type="submit" class="btn btn-danger">
