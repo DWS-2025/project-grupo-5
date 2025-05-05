@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,35 +49,31 @@ public class AlbumService {
     }
 
     public List<AlbumDTO> searchAlbums(String title, String artist, Integer year) {
-        if ((title == null || title.trim().isEmpty()) &&
-            (artist == null || artist.trim().isEmpty()) &&
-            year == null) {
-            return getAllAlbums();
-        }
-
-        List<Album> result = albumRepository.findAll();
-
+        Album probe = new Album();
         if (title != null && !title.trim().isEmpty()) {
-            result = result.stream()
-                .filter(album -> album.getTitle().toLowerCase().contains(title.trim().toLowerCase()))
-                .toList();
+            probe.setTitle(title.trim());
+        }
+        if (year != null) {
+            probe.setYear(year);
         }
 
+        ExampleMatcher matcher = ExampleMatcher.matching()
+            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+            .withIgnoreCase()
+            .withIgnoreNullValues();
+
+        Example<Album> example = Example.of(probe, matcher);
+        List<Album> results = albumRepository.findAll(example);
+
+        // Filtrar por artista si se especificó
         if (artist != null && !artist.trim().isEmpty()) {
-            result = result.stream()
+            results = results.stream()
                 .filter(album -> album.getArtists().stream()
                     .anyMatch(a -> a.getName().toLowerCase().contains(artist.trim().toLowerCase())))
                 .toList();
         }
 
-        if (year != null) {
-            String yearStr = String.valueOf(year);
-            result = result.stream()
-                .filter(album -> String.valueOf(album.getYear()).startsWith(yearStr))
-                .toList();
-        }
-
-        return albumMapper.toDTOList(result);
+        return albumMapper.toDTOList(results);
     }
 
     public Optional<AlbumDTO> getAlbumById(Long id) {
