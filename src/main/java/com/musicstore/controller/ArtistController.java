@@ -90,7 +90,7 @@ public class ArtistController {
     @GetMapping("/new")
     public String showCreateForm(Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
-        if (userDTO == null || !userDTO.username().equals("admin")) {
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -103,7 +103,7 @@ public class ArtistController {
                                @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
-        if (userDTO == null || !userDTO.username().equals("admin")) {
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -129,7 +129,7 @@ public class ArtistController {
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
-        if (userDTO == null || !userDTO.username().equals("admin")) {
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -156,7 +156,7 @@ public class ArtistController {
                                @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
-        if (userDTO == null || !userDTO.username().equals("admin")) {
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }
@@ -183,7 +183,7 @@ public class ArtistController {
     @PostMapping("/{id}/delete")
     public String deleteArtist(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
-        if (userDTO == null || !userDTO.username().equals("admin")) {
+        if (userDTO == null || !userDTO.isAdmin()) {
             model.addAttribute("error", "No tienes acceso a este recurso");
             return "error";
         }

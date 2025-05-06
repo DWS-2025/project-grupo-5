@@ -52,7 +52,7 @@
                                 <button type="button" class="edit-review" th:data-review-id="${review.id()}" th:if="${currentUser.username == review.username()}" th:onclick="'editReview(' + ${review.id()} + ')'">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button type="button" class="delete-review" th:data-review-id="${review.id()}" th:if="${currentUser.username == review.username()}" th:onclick="'deleteReview(' + ${review.id()} + ')'">
+                                <button type="button" class="delete-review" th:data-review-id="${review.id()}" th:if="${currentUser.username == review.username() || currentUser.isAdmin()}" th:onclick="'deleteReview(' + ${review.id()} + ')'">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
