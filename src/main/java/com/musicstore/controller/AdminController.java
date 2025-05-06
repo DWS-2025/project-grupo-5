@@ -3,11 +3,15 @@ package com.musicstore.controller;
 import com.musicstore.dto.AlbumDTO;
 import com.musicstore.dto.ArtistDTO;
 import com.musicstore.dto.UserDTO;
+import com.musicstore.dto.ReviewDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
 import com.musicstore.model.User;
+import com.musicstore.model.Review;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.ArtistService;
+import com.musicstore.service.UserService;
+import com.musicstore.service.ReviewService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -28,6 +34,12 @@ public class AdminController {
 
     @Autowired
     private ArtistService artistService;
+    
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping
     public String listAlbums(Model model, HttpSession session) {
@@ -392,5 +404,156 @@ public class AdminController {
             model.addAttribute("artists", artistService.getAllArtists());
             return "artist/admin";
         }
+    }
+    
+    @GetMapping("/users")
+    public String listUsers(Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else {
+            model.addAttribute("users", userService.getAllUsers());
+            return "user/admin";
+        }
+    }
+    
+    @GetMapping("/users/{id}/edit")
+    public String showEditUserForm(@PathVariable Long id, Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        }
+        
+        Optional<UserDTO> userOpt = userService.getUserById(id);
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "Error: No se encontró el usuario con ID: " + id);
+            return "error";
+        }
+        
+        model.addAttribute("userEdit", userOpt.get());
+        return "user/form";
+    }
+    
+    @PostMapping("/users/{id}")
+    public String updateUser(@PathVariable Long id, @Valid UserDTO userDTO, BindingResult result, Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        }
+        
+        if (result.hasErrors()) {
+            model.addAttribute("error", "Error en la validación de datos");
+            return "user/form";
+        }
+        
+        //userService.updateUser(id, userDTO);
+        return "redirect:/admin/users";
+    }
+    
+    @PostMapping("/users/{id}/delete")
+    public String deleteUser(@PathVariable Long id, Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        }
+
+        //userService.deleteUser(currentUserDTO.username());
+        return "redirect:/admin/users";
+    }
+    
+    @GetMapping("/reviews")
+    public String listReviews(Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        } else {
+            List<ReviewDTO> reviews = reviewService.getAllReviews();
+            model.addAttribute("reviews", reviews);
+            return "review/admin";
+        }
+    }
+    
+    @GetMapping("/reviews/{id}/edit")
+    public String showEditReviewForm(@PathVariable Long id, Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        }
+        
+        Optional<ReviewDTO> reviewOpt = reviewService.getReviewById(id);
+        if (reviewOpt.isEmpty()) {
+            model.addAttribute("error", "Error: No se encontró la reseña con ID: " + id);
+            return "error";
+        }
+        
+        model.addAttribute("review", reviewOpt.get());
+        return "review/form";
+    }
+    
+    @PostMapping("/reviews/{id}")
+    public String updateReview(@PathVariable Long id, @Valid ReviewDTO reviewDTO, BindingResult result, Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        }
+        
+        if (result.hasErrors()) {
+            model.addAttribute("error", "Error en la validación de datos");
+            return "review/form";
+        }
+        
+        reviewService.updateReview(reviewDTO);
+        
+        // Actualizar el rating promedio del álbum
+        Optional<AlbumDTO> albumOpt = albumService.getAlbumById(reviewDTO.albumId());
+        if (albumOpt.isPresent()) {
+            AlbumDTO albumDTO = albumOpt.get();
+            albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(reviewDTO.albumId()));
+            albumService.saveAlbum(albumDTO);
+        }
+        
+        return "redirect:/admin/reviews";
+    }
+    
+    @PostMapping("/reviews/{id}/delete")
+    public String deleteReview(@PathVariable Long id, Model model, HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !user.username().equals("admin")) {
+            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+            return "error";
+        }
+        
+        Optional<ReviewDTO> reviewOpt = reviewService.getReviewById(id);
+        if (reviewOpt.isPresent()) {
+            ReviewDTO review = reviewOpt.get();
+            Long albumId = review.albumId();
+            
+            reviewService.deleteReview(id);
+            
+            // Actualizar el rating promedio del álbum
+            Optional<AlbumDTO> albumOpt = albumService.getAlbumById(albumId);
+            if (albumOpt.isPresent()) {
+                AlbumDTO albumDTO = albumOpt.get();
+                albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
+                albumService.saveAlbum(albumDTO);
+            }
+        }
+        
+        return "redirect:/admin/reviews";
     }
 }

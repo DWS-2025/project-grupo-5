@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.musicstore.dto.ReviewDTO;
 import com.musicstore.mapper.ReviewMapper;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ReviewService {
@@ -49,6 +50,17 @@ public class ReviewService {
         return reviewOpt
                 .filter(review -> review.getAlbum().getId().equals(albumId))
                 .map(reviewMapper::toDTO);
+    }
+    
+    public Optional<ReviewDTO> getReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .map(reviewMapper::toDTO);
+    }
+    
+    public List<ReviewDTO> getAllReviews() {
+        return reviewRepository.findAll().stream()
+                .map(reviewMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     public Review addReview(Long albumId, ReviewDTO reviewDTO) {
@@ -90,6 +102,20 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(updated);
         return reviewMapper.toDTO(savedReview);
     }
+    
+    @Transactional
+    public ReviewDTO updateReview(ReviewDTO reviewDTO) {
+        if (reviewDTO.id() == null) {
+            throw new RuntimeException("Review ID cannot be null");
+        }
+        
+        Review existing = reviewRepository.findById(reviewDTO.id())
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+        
+        Review updated = reviewMapper.toEntity(reviewDTO);
+        Review savedReview = reviewRepository.save(updated);
+        return reviewMapper.toDTO(savedReview);
+    }
 
     public void deleteReview(Long albumId, Long reviewId) {
         Review existing = reviewRepository.findById(reviewId)
@@ -99,6 +125,13 @@ public class ReviewService {
             throw new RuntimeException("Review does not belong to this album");
         }
 
+        reviewRepository.deleteById(reviewId);
+    }
+    
+    public void deleteReview(Long reviewId) {
+        if (!reviewRepository.existsById(reviewId)) {
+            throw new RuntimeException("Review not found");
+        }
         reviewRepository.deleteById(reviewId);
     }
 
