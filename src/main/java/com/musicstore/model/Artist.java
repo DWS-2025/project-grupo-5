@@ -30,7 +30,7 @@ public class Artist {
     private String imageUrl = "/images/default.jpg";
 
     @Lob
-    @Column(name = "image_data")
+    @Column(name = "image_data", columnDefinition = "LONGBLOB")
     @JsonIgnore
     private byte[] imageData;
 

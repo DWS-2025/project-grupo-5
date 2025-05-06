@@ -99,15 +99,15 @@ public class Album {
     private String imageUrl;
 
     @Lob
-    @Column(name = "image_data")
+    @Column(name = "image_data", columnDefinition = "LONGBLOB")
     private byte[] imageData;
 
     @Lob
-    @Column(name = "audio_preview")
+    @Column(name = "audio_preview", columnDefinition = "LONGBLOB")
     private byte[] audioPreview;
 
     @Lob
-    @Column(name = "audio_data")
+    @Column(name = "audio_data", columnDefinition = "LONGBLOB")
     private byte[] audioData;
 
     public byte[] getImageData() {

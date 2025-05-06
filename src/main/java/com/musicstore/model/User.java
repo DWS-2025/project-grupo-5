@@ -64,7 +64,7 @@ public class User {
     private String imageUrl = "/images/default.jpg";
 
     @Lob
-    @Column(name = "image_data")
+    @Column(name = "image_data", columnDefinition = "LONGBLOB")
     @JsonIgnoreProperties
     private byte[] imageData;
 
