@@ -6,8 +6,6 @@ import com.musicstore.dto.UserDTO;
 import com.musicstore.dto.ReviewDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.Artist;
-import com.musicstore.model.User;
-import com.musicstore.model.Review;
 import com.musicstore.service.AlbumService;
 import com.musicstore.service.ArtistService;
 import com.musicstore.service.UserService;
@@ -451,8 +449,10 @@ public class AdminController {
             model.addAttribute("error", "Error en la validación de datos");
             return "user/form";
         }
-        
-        //userService.updateUser(id, userDTO);
+
+        Optional<UserDTO> userToDelete = userService.getUserById(id);
+        userService.deleteUser(userToDelete.get().username());
+
         return "redirect:/admin/users";
     }
     
@@ -465,7 +465,9 @@ public class AdminController {
             return "error";
         }
 
-        //userService.deleteUser(currentUserDTO.username());
+        Optional<UserDTO> userToDelete = userService.getUserById(id);
+        userService.deleteUser(userToDelete.get().username());
+
         return "redirect:/admin/users";
     }
     

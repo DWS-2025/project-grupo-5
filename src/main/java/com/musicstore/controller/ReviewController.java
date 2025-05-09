@@ -41,14 +41,18 @@ public class ReviewController {
             @PathVariable Long albumId,
             @RequestParam String content,
             @RequestParam int rating,
-            HttpSession session) {
+            HttpSession session,
+            Model model) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 System.err.println("Datos inválidos. Reseña no guardada.");
                 return "redirect:/" + albumId;
             }
-
+            if (content.length() > 280) {
+                model.addAttribute("error", "Se ha superado el límite de caracteres");
+                return "error";
+            }
             ReviewDTO reviewDTO = new ReviewDTO(
                     null,
                     albumId,

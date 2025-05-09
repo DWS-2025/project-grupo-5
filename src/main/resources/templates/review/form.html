@@ -62,8 +62,15 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="content" class="form-label">Contenido de la Reseña</label>
-                            <textarea class="form-control" id="content" name="content" rows="5" required th:text="${review.content()}"></textarea>
+                            <label for="content" class="form-label">Contenido de la Reseña <span id="charCount" class="text-muted">(0/280)</span></label>
+                            <textarea class="form-control" id="content" name="content" rows="5" required maxlength="280" th:text="${review.content()}"></textarea>
+                            <script>
+                                document.getElementById('content').addEventListener('input', function() {
+                                    const maxLength = 280;
+                                    const currentLength = this.value.length;
+                                    document.getElementById('charCount').textContent = `(${currentLength}/${maxLength})`;
+                                });
+                            </script>
                         </div>
                         
                         <div class="d-flex justify-content-between">

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -35,6 +36,7 @@ public class Review {
     private String albumImageUrl;
 
     @NotBlank(message = "El contenido de la reseña es obligatorio")
+    @Size(max = 280, message = "La reseña no puede exceder los 280 caracteres")
     private String content;
 
     @Min(value = 1, message = "La calificación debe ser al menos 1")
