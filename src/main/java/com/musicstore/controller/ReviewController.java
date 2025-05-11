@@ -49,7 +49,7 @@ public class ReviewController {
                 System.err.println("Datos inválidos. Reseña no guardada.");
                 return "redirect:/" + albumId;
             }
-            if (content.length() > 280) {
+            if (content.length() > 255) {
                 model.addAttribute("error", "Se ha superado el límite de caracteres");
                 return "error";
             }

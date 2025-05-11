@@ -107,7 +107,7 @@
                         </label>
                     </div>
                     <p th:unless="${album.audioData()}">
-                        No audio associated.
+                        <!--No audio associated.-->
                     </p>
 
                     <div class="review-card2">
@@ -266,9 +266,9 @@
                             <div class="col-md-12">
                                 <form th:action="@{'/reviews/' + ${album.id()}}" method="post">
                                     <div class="mb-3">
-                                        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'Login is needed to post a review' : ''}" maxlength="280" required></textarea>
+                                        <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" th:disabled="${session.user == null}" th:placeholder="${session.user == null ? 'Login is needed to post a review' : ''}" maxlength="255" required></textarea>
                                         <div class="text-muted" style="text-align: right;">
-                                            <span id="charCount">0</span>/280 caracteres
+                                            <span id="charCount">0</span>/255 characters
                                         </div>
                                     </div>
                                     <script>
@@ -367,9 +367,9 @@
                         <form id="editReviewForm" th:action="@{'/reviews/' + ${album.id()} + '/edit/0'}" method="post">
                             <div class="mb-3">
                                 <label for="editReviewContent" class="form-label">Your review:</label>
-                                <textarea id="editReviewContent" name="content" class="form-control" maxlength="280" required></textarea>
+                                <textarea id="editReviewContent" name="content" class="form-control" maxlength="255" required></textarea>
                                 <div class="text-muted" style="text-align: right;">
-                                    <span id="editCharCount">0</span>/280 caracteres
+                                    <span id="editCharCount">0</span>/255 characters
                                 </div>
                                 <script>
                                     document.getElementById('editReviewContent').addEventListener('input', function() {
