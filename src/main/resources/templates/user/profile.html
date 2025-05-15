@@ -297,18 +297,6 @@
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Current Password (required only for password change)</label>
-                            <input type="password" class="form-control" id="currentPassword" name="currentPassword">
-                        </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">New Password (leave blank if unchanged)</label>
-                            <input type="password" class="form-control" id="newPassword" name="newPassword">
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
-                        </div>
 
                         <div class="mb-3">
                             <label for="imageFile" class="form-label">Profile Photo</label>
@@ -319,13 +307,17 @@
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
                         </div>
 
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <div class="text-center mb-3">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                         </div>
-
-
-
                     </form>
+
+                    <div class="text-center mb-3">
+                        <a href="/profile/change-password" class="btn btn-info">
+                            <i class="bi bi-key"></i> Cambiar Contraseña
+                        </a>
+                    </div>
+
                     <div class="text-center">
                         <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
                             <button type="submit" class="btn btn-danger">
@@ -353,6 +345,124 @@
                         notification.remove();
                     }, 400);
                 }, 5000);
+            }
+
+            // Agregar estilos CSS para los indicadores
+            const style = document.createElement('style');
+            style.textContent = `
+                .password-requirements li {
+                    list-style-type: none;
+                    position: relative;
+                    padding-left: 25px;
+                    margin-bottom: 5px;
+                    transition: color 0.3s ease;
+                }
+                .password-requirements li::before {
+                    content: '✕';
+                    position: absolute;
+                    left: 0;
+                    color: #ff4444;
+                    transition: all 0.3s ease;
+                }
+                .password-requirements li.valid {
+                    color: #1db954;
+                }
+                .password-requirements li.valid::before {
+                    content: '✓';
+                    color: #1db954;
+                }
+                .password-requirements li.invalid {
+                    color: #ff4444;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Password validation para el cambio de contraseña
+            const passwordInput = document.querySelector('#newPassword');
+            const confirmPasswordInput = document.querySelector('#confirmPassword');
+            const requirementsList = document.querySelector(".password-requirements ul");
+            const submitButton = document.querySelector('button[type="submit"]');
+
+            if (passwordInput && requirementsList) {
+                const requirements = [
+                    { 
+                        regex: /^.{8,25}$/, 
+                        element: '.requirement.length',
+                        description: 'Entre 8 y 25 caracteres'
+                    },
+                    { 
+                        regex: /.*[0-9].*/, 
+                        element: '.requirement.number',
+                        description: 'Al menos un número'
+                    },
+                    { 
+                        regex: /.*[A-Z].*/, 
+                        element: '.requirement.uppercase',
+                        description: 'Al menos una letra mayúscula'
+                    },
+                    { 
+                        regex: /.*[!@#$%^&*(),.?":{}|<>].*/, 
+                        element: '.requirement.special',
+                        description: 'Al menos un carácter especial'
+                    }
+                ];
+
+                const validatePassword = () => {
+                    const password = passwordInput.value;
+                    
+                    // Si el campo está vacío, no aplicamos validación
+                    if (!password) {
+                        requirements.forEach(requirement => {
+                            const element = requirementsList.querySelector(requirement.element);
+                            element.classList.remove('valid', 'invalid');
+                        });
+                        passwordInput.setCustomValidity('');
+                        return true;
+                    }
+
+                    let validCount = 0;
+                    requirements.forEach(requirement => {
+                        const element = requirementsList.querySelector(requirement.element);
+                        const isValid = requirement.regex.test(password);
+                        
+                        if (isValid) {
+                            element.classList.add('valid');
+                            element.classList.remove('invalid');
+                            validCount++;
+                        } else {
+                            element.classList.remove('valid');
+                            element.classList.add('invalid');
+                        }
+                    });
+
+                    // Validar que las contraseñas coincidan
+                    if (confirmPasswordInput.value && password !== confirmPasswordInput.value) {
+                        confirmPasswordInput.setCustomValidity('Las contraseñas no coinciden');
+                    } else {
+                        confirmPasswordInput.setCustomValidity('');
+                    }
+
+                    // Actualizar la validación del formulario
+                    passwordInput.setCustomValidity(
+                        validCount === requirements.length ? '' : 'Por favor, cumple todos los requisitos de la contraseña'
+                    );
+
+                    return validCount === requirements.length;
+                };
+
+                // Validar también la confirmación de contraseña
+                const validateConfirmPassword = () => {
+                    if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+                        confirmPasswordInput.setCustomValidity('Las contraseñas no coinciden');
+                    } else {
+                        confirmPasswordInput.setCustomValidity('');
+                    }
+                };
+
+                passwordInput.addEventListener('input', validatePassword);
+                passwordInput.addEventListener('focus', validatePassword);
+                confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+                validatePassword();
             }
         });
     </script>

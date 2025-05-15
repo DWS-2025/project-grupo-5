@@ -61,6 +61,13 @@ public class AuthController {
                 return "error";
             }
 
+            // Validate password
+            String password = user.getPassword();
+            if (!password.matches("^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=\\S+$).{8,25}$")) {
+                model.addAttribute("error", "La contraseña debe tener entre 8 y 25 caracteres y contener al menos un número, una mayúscula y un carácter especial");
+                return "error";
+            }
+
             // Convert User to UserDTO
             UserDTO userDTO = new UserDTO(
                     null,

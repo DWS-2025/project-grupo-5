@@ -233,6 +233,13 @@ public class DataLoader implements CommandLineRunner {
                 5
             );
             reviewService.addReview(savedAlbum3.id(), review2DTO);
+
+            // Agregar álbum a favoritos de raul.santamaria
+            List<Long> updatedFavorites = new ArrayList<>(savedUser.favoriteAlbumIds());
+            updatedFavorites.add(savedAlbum.id());
+            UserDTO updatedUserDTO = savedUser.withFavoriteAlbumIds(updatedFavorites);
+            savedUser = userService.saveUser(updatedUserDTO);
+
             // No se puede hacer de momento porque las sesiones no pueden ser nulas
             /*
             // Establecer relación de seguimiento mutuo entre usuarios

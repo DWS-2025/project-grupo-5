@@ -41,10 +41,9 @@ public class AdminController {
 
     @GetMapping
     public String listAlbums(Model model, HttpSession session) {
-
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user.username() == null || !user.username().equals("admin")) {
+        if (user == null || user.username() == null || !user.username().equals("admin")) {
             model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
             return "error";
         } else {
