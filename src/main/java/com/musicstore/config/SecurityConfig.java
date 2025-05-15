@@ -13,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +29,11 @@ public class SecurityConfig {
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<HttpSessionEventPublisher>(new HttpSessionEventPublisher());
     }
 
     @Bean
@@ -66,6 +73,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionFixation().migrateSession()
                         .invalidSessionUrl("/login?invalid-session=true")
+                        .maximumSessions(1)
+                        .expiredUrl("/login?session-expired=true")
                 );
 
         return http.build();

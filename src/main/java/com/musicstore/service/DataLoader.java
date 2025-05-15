@@ -69,7 +69,7 @@ public class DataLoader implements CommandLineRunner {
                     new ArrayList<>(),
                     new ArrayList<>()
             );
-            UserDTO savedAdmin = userService.saveUser(adminDTO);
+            UserDTO savedAdmin = userService.createOrUpdateAdmin(adminDTO);
 
             UserDTO userDTO = new UserDTO(
                     null,

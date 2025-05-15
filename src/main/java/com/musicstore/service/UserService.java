@@ -365,4 +365,70 @@ public class UserService implements UserDetailsService {
                 .map(user -> user.following().contains(targetUserId))
                 .orElse(false);
     }
+
+    @Transactional
+    public UserDTO createOrUpdateAdmin(UserDTO adminDTO) {
+        if (adminDTO == null) {
+            throw new IllegalArgumentException("Admin DTO cannot be null");
+        }
+        if (adminDTO.username() == null || adminDTO.username().trim().isEmpty()) {
+            throw new IllegalArgumentException("Admin username cannot be empty");
+        }
+        if (adminDTO.password() == null || adminDTO.password().trim().isEmpty()) {
+            throw new IllegalArgumentException("Admin password cannot be empty");
+        }
+
+        Optional<User> existingUserOptional = userRepository.findByUsername(adminDTO.username());
+        User userEntity;
+
+        if (existingUserOptional.isPresent()) {
+            // Update existing admin
+            userEntity = existingUserOptional.get();
+
+            // Update fields from DTO
+            userEntity.setEmail(adminDTO.email()); // Assuming email can be updated
+            // Update other fields as necessary from adminDTO, e.g., profile picture if applicable
+
+            // Password handling: only update if a new, non-blank password is provided
+            // and it's not already the same hashed password.
+            if (adminDTO.password() != null && !adminDTO.password().isBlank()) {
+                if (!passwordEncoder.matches(adminDTO.password(), userEntity.getPassword()) &&
+                    !(adminDTO.password().startsWith("$2a$") || adminDTO.password().startsWith("$2b$") || adminDTO.password().startsWith("$2y$"))) {
+                    userEntity.setPassword(passwordEncoder.encode(adminDTO.password()));
+                } else if (adminDTO.password().startsWith("$2a$") || adminDTO.password().startsWith("$2b$") || adminDTO.password().startsWith("$2y$")) {
+                    // If it's already a hash, set it (e.g. if DTO provides it hashed)
+                    userEntity.setPassword(adminDTO.password());
+                }
+                // If password in DTO is plain text but matches the existing one (after hashing), no change needed to password.
+                // If password in DTO is blank, existing password is kept (implicitly handled by not setting).
+            }
+             // Ensure email uniqueness if it's being changed
+            if (adminDTO.email() != null && !userEntity.getEmail().equals(adminDTO.email()) && userRepository.existsByEmail(adminDTO.email())) {
+                throw new RuntimeException("Email '" + adminDTO.email() + "' already exists for another user");
+            }
+
+        } else {
+            // Create new admin
+            userEntity = userMapper.toEntity(adminDTO); // Initial mapping
+            userEntity.setId(null); // Ensure it's treated as a new entity by JPA
+
+            // Encode password for new user
+            userEntity.setPassword(passwordEncoder.encode(adminDTO.password()));
+
+            // Check for username and email conflicts for new user
+            if (userRepository.existsByUsername(adminDTO.username())) {
+                throw new RuntimeException("Username '" + adminDTO.username() + "' already exists");
+            }
+            if (adminDTO.email() != null && userRepository.existsByEmail(adminDTO.email())) {
+                throw new RuntimeException("Email '" + adminDTO.email() + "' already exists");
+            }
+        }
+
+        // Crucially, set isAdmin from the DTO
+        userEntity.setAdmin(adminDTO.isAdmin());
+
+        // Save and convert back to DTO
+        User savedUser = userRepository.save(userEntity);
+        return UserDTO.fromUser(savedUser); // Using static method as per previous preference
+    }
 }
