@@ -49,17 +49,17 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+        User userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (user.isAdmin()) {
+        if (userEntity.isAdmin()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         } else {
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(userEntity.getUsername(), userEntity.getPassword(), authorities);
     }
 
     @Transactional
@@ -114,8 +114,14 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<UserDTO> getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .map(userMapper::toDTO);
+        Optional<User> userEntityOptional = userRepository.findByUsername(username);
+        if (userEntityOptional.isPresent()) {
+            User userEntity = userEntityOptional.get();
+            UserDTO dto = UserDTO.fromUser(userEntity); // Usando el método estático
+            return Optional.of(dto);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Optional<UserDTO> getUserById(Long id) {
@@ -128,30 +134,26 @@ public class UserService implements UserDetailsService {
         User user = userMapper.toEntity(userDTO);
         
         if (userDTO.password() != null && !userDTO.password().isBlank()) {
-            // Only encode if password is provided and not already looking like a BCrypt hash
             if (!userDTO.password().startsWith("$2a$") && !userDTO.password().startsWith("$2b$") && !userDTO.password().startsWith("$2y$")) {
                  user.setPassword(passwordEncoder.encode(userDTO.password()));
             } else {
-                // Password seems already encoded, or user wants to keep existing one (passed as already encoded)
                 user.setPassword(userDTO.password());
             }
         } else if (user.getId() != null) {
-            // Existing user and password in DTO is null/blank, retain old password from DB
             User existingUserFromDb = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found for password retention"));
             user.setPassword(existingUserFromDb.getPassword());
         } else {
-            // New user and password is blank - this should ideally be caught by validation earlier
             throw new IllegalArgumentException("Password cannot be blank for a new user.");
         }
 
-        if (userDTO.id() == null) { // New user
+        if (userDTO.id() == null) { 
             if (userRepository.existsByUsername(userDTO.username())) {
                 throw new RuntimeException("Username '" + userDTO.username() + "' already exists");
             }
             if (userDTO.email() != null && userRepository.existsByEmail(userDTO.email())) {
                 throw new RuntimeException("Email '" + userDTO.email() + "' already exists");
             }
-        } else { // Existing user
+        } else { 
             User existingUser = userRepository.findById(userDTO.id()).orElseThrow(() -> new RuntimeException("User not found with ID: " + userDTO.id()));
             if (!existingUser.getUsername().equals(userDTO.username()) && userRepository.existsByUsername(userDTO.username())) {
                 throw new RuntimeException("Username '" + userDTO.username() + "' already exists for another user");
@@ -159,13 +161,12 @@ public class UserService implements UserDetailsService {
             if (userDTO.email() != null && !existingUser.getEmail().equals(userDTO.email()) && userRepository.existsByEmail(userDTO.email())) {
                  throw new RuntimeException("Email '" + userDTO.email() + "' already exists for another user");
             }
-            // Preserve isAdmin status from DB for existing user unless specifically managed elsewhere
-            user.setAdmin(existingUser.isAdmin());
+            user.setAdmin(existingUser.isAdmin()); // Asegura que isAdmin se preserve del estado de la BD para actualizaciones
         }
-        // For a new user, DTO's isAdmin will be used (which is false by default from registration)
-        // or true if an admin creates another admin (though this method might not be directly used for that)
-
-        return userMapper.toDTO(userRepository.save(user));
+        
+        User savedUser = userRepository.save(user);
+        UserDTO resultDTO = userMapper.toDTO(savedUser);
+        return resultDTO;
     }
 
     public Optional<UserDTO> authenticateUser(String username, String password) {
@@ -193,8 +194,8 @@ public class UserService implements UserDetailsService {
         if (userDTO.password() == null || userDTO.password().trim().isEmpty()) {
              throw new RuntimeException("Password cannot be empty");
         }
-        // Password complexity should be validated before calling this service method (e.g. in controller or DTO validation)
-        return saveUser(userDTO.withIsAdmin(false)); 
+        UserDTO dtoToSave = userDTO.withIsAdmin(false);
+        return saveUser(dtoToSave); 
     }
 
     @Transactional
@@ -245,35 +246,6 @@ public class UserService implements UserDetailsService {
         }).orElseThrow(() -> new RuntimeException("Album not found"));
     }
 
-    /*
-    @Transactional
-    public void saveUserWithProfileImage(User user, MultipartFile profileImage) throws IOException {
-        if (profileImage == null || profileImage.isEmpty()) {
-            throw new RuntimeException("Profile image cannot be null or empty");
-        }
-
-        String contentType = profileImage.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new RuntimeException("Only image files are allowed");
-        }
-
-        String originalFilename = profileImage.getOriginalFilename();
-        String fileExtension = originalFilename != null ? 
-                originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
-        String filename = "user_" + user.getId() + "_" + System.currentTimeMillis() + fileExtension;
-
-        File uploadDir = new File("src/main/resources/static/images");
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
-
-        File destFile = new File(uploadDir.getAbsolutePath() + File.separator + filename);
-        profileImage.transferTo(destFile);
-
-        user.setImageUrl("/images/" + filename);
-        userRepository.save(user);
-    }*/
-
     public UserDTO saveUserWithProfileImage(UserDTO userDTO, MultipartFile imageFile) throws IOException {
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
@@ -289,7 +261,6 @@ public class UserService implements UserDetailsService {
         return saveUser(userDTO);
     }
 
-
     @Transactional
     public UserDTO updateUser(UserDTO updatedUserDTO) {
         if (updatedUserDTO == null || updatedUserDTO.id() == null) {
@@ -299,8 +270,8 @@ public class UserService implements UserDetailsService {
         User existingUser = userRepository.findById(updatedUserDTO.id())
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + updatedUserDTO.id() + " for update"));
 
-        User userToUpdate = userMapper.toEntity(updatedUserDTO); // Converts DTO to an entity instance
-        userToUpdate.setAdmin(existingUser.isAdmin()); // IMPORTANT: Preserve isAdmin status from DB
+        User userToUpdate = userMapper.toEntity(updatedUserDTO); 
+        userToUpdate.setAdmin(existingUser.isAdmin()); // Forzar la preservación del isAdmin de la BD
 
         // Handle password update: 
         // If password field in DTO is not empty, it means an attempt to change.
@@ -331,7 +302,8 @@ public class UserService implements UserDetailsService {
         }
 
         User savedUser = userRepository.save(userToUpdate);
-        return userMapper.toDTO(savedUser);
+        UserDTO resultDTO = userMapper.toDTO(savedUser);
+        return resultDTO;
     }
 
     @Transactional

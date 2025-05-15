@@ -39,6 +39,7 @@ public class User {
     @JsonIgnore
     private String email;
 
+    @Column(name = "is_admin")
     private boolean isAdmin = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
