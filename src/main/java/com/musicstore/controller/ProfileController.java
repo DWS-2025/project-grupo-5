@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
@@ -256,5 +257,70 @@ public class ProfileController{
             return "user/profile";
         }
         return "redirect:/profile?reload=" + System.currentTimeMillis();
+    }
+
+    @GetMapping("/profile/change-password")
+    public String showChangePasswordForm(Model model, HttpSession session) {
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        return "user/change-password";
+    }
+
+    @PostMapping("/profile/change-password")
+    public String changePassword(@RequestParam String currentPassword,
+                               @RequestParam String newPassword,
+                               @RequestParam String confirmPassword,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        UserDTO currentUser = (UserDTO) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Verificar que la contraseña actual sea correcta
+        if (userService.authenticateUser(currentUser.username(), currentPassword).isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "La contraseña actual es incorrecta");
+            return "redirect:/profile/change-password";
+        }
+
+        // Verificar que las nuevas contraseñas coincidan
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Las contraseñas nuevas no coinciden");
+            return "redirect:/profile/change-password";
+        }
+
+        // Validar el formato de la nueva contraseña
+        if (!newPassword.matches("^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=\\S+$).{8,25}$")) {
+            redirectAttributes.addFlashAttribute("error", 
+                "La nueva contraseña debe tener entre 8 y 25 caracteres y contener al menos un número, " +
+                "una mayúscula y un carácter especial");
+            return "redirect:/profile/change-password";
+        }
+
+        // Actualizar la contraseña
+        UserDTO updatedUser = new UserDTO(
+            currentUser.id(),
+            currentUser.username(),
+            newPassword,
+            currentUser.email(),
+            currentUser.isAdmin(),
+            currentUser.imageUrl(),
+            currentUser.imageData(),
+            currentUser.followers(),
+            currentUser.following(),
+            currentUser.favoriteAlbumIds()
+        );
+
+        try {
+            userService.updateUser(updatedUser);
+            session.setAttribute("user", updatedUser);
+            redirectAttributes.addFlashAttribute("success", "Contraseña actualizada correctamente");
+            return "redirect:/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar la contraseña: " + e.getMessage());
+            return "redirect:/profile/change-password";
+        }
     }
 }
