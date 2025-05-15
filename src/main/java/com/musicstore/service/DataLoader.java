@@ -8,8 +8,11 @@ import com.musicstore.model.User;
 import com.musicstore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +34,28 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private UserRepository userRepository;
 
+    private byte[] loadImage(String imagePath) {
+        try {
+            ClassPathResource imgFile = new ClassPathResource(imagePath);
+            return StreamUtils.copyToByteArray(imgFile.getInputStream());
+        } catch (IOException e) {
+            System.err.println("Error loading image: " + imagePath);
+            return null;
+        }
+    }
+
     @Override
     public void run(String... args) throws Exception {
         // Verificar si la base de datos está vacía
         if (userRepository.count() == 0) {
+            // Cargar imágenes
+            byte[] defaultUserImage = loadImage("static/images/default-user.jpg");
+            byte[] badBunnyImage = loadImage("static/images/bad-bunny.jpg");
+            byte[] morganImage = loadImage("static/images/morgan.jpg");
+            byte[] unVeranoSinTiImage = loadImage("static/images/un-verano-sin-ti.jpg");
+            byte[] debiTirarMasFotosImage = loadImage("static/images/debi-tirar-mas-fotos.jpg");
+            byte[] hotelMorganImage = loadImage("static/images/hotel-morgan.jpg");
+
             // Crear usuarios iniciales
             UserDTO adminDTO = new UserDTO(
                 null,
@@ -42,8 +63,8 @@ public class DataLoader implements CommandLineRunner {
                 "admin123",
                 "admin@echoreview.com",
                 true,
-                "/images/default.jpg",
-                null,
+                "/images/default-user.jpg",
+                defaultUserImage,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>()
@@ -56,8 +77,8 @@ public class DataLoader implements CommandLineRunner {
                 "password123",
                 "raul.santamaria@echoreview.com",
                 false,
-                "/images/default.jpg",
-                null,
+                "/images/default-user.jpg",
+                defaultUserImage,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>()
@@ -69,10 +90,10 @@ public class DataLoader implements CommandLineRunner {
                 null,
                 "Bad Bunny",
                 "Puerto Rico",
-                "/images/default.jpg",
-                null,
-                null,
-                null
+                "/images/bad-bunny.jpg",
+                new ArrayList<>(),
+                new ArrayList<>(),
+                badBunnyImage
             );
             ArtistDTO savedArtist = artistService.saveArtist(artist1);
 
@@ -84,12 +105,12 @@ public class DataLoader implements CommandLineRunner {
 
             AlbumDTO albumDTO = new AlbumDTO(
                 null,
-                "DeBÍ TiRAR MáS FOToS",
+                "DEBÍ TIRAR MÁS FOTOS",
                 "Latino",
-                "/images/default.jpg",
+                "/images/debi-tirar-mas-fotos.jpg",
                 null,
                 "Nuevo álbum de Bad Bunny con un sonido más personal y arraigado a Puerto Rico",
-                "NUEVAYoL + VOY A LLeVARTE PA PR + BAILE INoLVIDABLE + PERFuMITO NUEVO (ft. Rainao) + WELTiTA (ft. Chuwi) + VeLDÁ (ft. Dei V y Omar Courtz) + EL CLúB + KETU TeCRÉ + BOKeTE + KLOuFRENS + TURiSTA + CAFé CON RON (ft. Pleneros de la Cresta) + PIToRRO DE COCO + LO QUE LE PASÍ A HAWAii + EoO + DtMF  + LA MuDANZA",
+                "NUEVAYOL + VOY A LLEVARTE PA PR + BAILE INOLVIDABLE + PERFUMITO NUEVO (ft. Rainao) + WELTITA (ft. Chuwi) + VELDÁ (ft. Dei V y Omar Courtz) + EL CLÚB + KETU TECRÉ + BOKETE + KLOUFRENS + TURISTA + CAFÉ CON RON (ft. Pleneros de la Cresta) + PITORRO DE COCO + LO QUE LE PASÓ A HAWAII + EOO + DTMF  + LA MUDANZA",
                 2025,
                 "https://open.spotify.com/album/5K79FLRUCSysQnVESLcTdb",
                 "https://music.apple.com/album/deb%C3%AD-tirar-m%C3%A1s-fotos/1787022393",
@@ -99,7 +120,7 @@ public class DataLoader implements CommandLineRunner {
                 new ArrayList<>(),
                 artistNames,
                 new ArrayList<>(),
-                null,
+                debiTirarMasFotosImage,
                 null,
                 null
             );
@@ -110,10 +131,10 @@ public class DataLoader implements CommandLineRunner {
                 null,
                 "Morgan",
                 "España",
-                "/images/default.jpg",
-                null,
-                null,
-                null
+                "/images/morgan.jpg",
+                new ArrayList<>(),
+                new ArrayList<>(),
+                morganImage
             );
             ArtistDTO savedArtist2 = artistService.saveArtist(artist2);
 
@@ -124,8 +145,8 @@ public class DataLoader implements CommandLineRunner {
                 "password456",
                 "maria.garcia@echoreview.com",
                 false,
-                "/images/default.jpg",
-                null,
+                "/images/default-user.jpg",
+                defaultUserImage,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>()
@@ -137,10 +158,10 @@ public class DataLoader implements CommandLineRunner {
                 null,
                 "Un Verano Sin Ti",
                 "Latino",
-                "/images/default.jpg",
+                "/images/un-verano-sin-ti.jpg",
                 null,
                 "Este renovado proyecto de Bad Bunny venía siendo rumoreado por los fans, algunos meses después luego de la salida de EL ÚLTIMO TOUR DEL MUNDO.",
-                    "Moscow Mule + Después de la Playa + Me Porto Bonito (feat. Chencho Corleone) + Tití Me Preguntó + Un Ratito + Yo No Soy Celoso + Tarot (feat. JHAYCO) + Neverita + La Corriente (feat. Tony Dize) + Efecto + Party (feat. Rauw Alejandro) + Aguacero + Enséñame a Bailar + Ojitos Lindos (feat. Bomba Estéreo) + Dos Mil 16 + El Apagón + Otro Atardecer (feat. The Marías) + Un Coco + Andrea (feat. Buscabulla) + Me Fui de Vacaciones + Un Verano Sin Ti + Agosto + Callaita (feat. Tainy)",
+                "Moscow Mule + Después de la Playa + Me Porto Bonito (feat. Chencho Corleone) + Tití Me Preguntó + Un Ratito + Yo No Soy Celoso + Tarot (feat. JHAYCO) + Neverita + La Corriente (feat. Tony Dize) + Efecto + Party (feat. Rauw Alejandro) + Aguacero + Enséñame a Bailar + Ojitos Lindos (feat. Bomba Estéreo) + Dos Mil 16 + El Apagón + Otro Atardecer (feat. The Marías) + Un Coco + Andrea (feat. Buscabulla) + Me Fui de Vacaciones + Un Verano Sin Ti + Agosto + Callaita (feat. Tainy)",
                 2022,
                 "https://open.spotify.com/album/3RQQmkQEvNCY4prGKE6oc5",
                 "https://music.apple.com/us/album/un-verano-sin-ti/1622045499",
@@ -150,7 +171,7 @@ public class DataLoader implements CommandLineRunner {
                 new ArrayList<>(),
                 artistNames,
                 new ArrayList<>(),
-                null,
+                unVeranoSinTiImage,
                 null,
                 null
             );
@@ -166,7 +187,7 @@ public class DataLoader implements CommandLineRunner {
                 null,
                 "Hotel Morgan",
                 "Pop",
-                "/images/default.jpg",
+                "/images/hotel-morgan.jpg",
                 null,
                 "Hotel Morgan es el cuarto álbum de estudio de Morgan. Grabado en Ocean Sound, Noruega, y producido por Martin García Duque.",
                 "Intro: Delta + Cruel + Eror 406 + El Jimador + Radio + 1838 + Arena + Pyra + Jon & Julia + Altar + Final",
@@ -179,7 +200,7 @@ public class DataLoader implements CommandLineRunner {
                 new ArrayList<>(),
                 artist2Names,
                 new ArrayList<>(),
-                null,
+                hotelMorganImage,
                 null,
                 null
             );
