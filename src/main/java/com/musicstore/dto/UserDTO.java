@@ -38,6 +38,7 @@ public record UserDTO(
         User user = new User();
         user.setId(this.id());
         user.setUsername(this.username());
+        user.setPassword(this.password());
         user.setEmail(this.email());
         user.setAdmin(this.isAdmin());
         user.setImageUrl(this.imageUrl());
@@ -131,7 +132,7 @@ public record UserDTO(
             this.imageUrl(),
             this.imageData(),
             this.followers(),
-            this.following(),
+            newFollowing,
             this.favoriteAlbumIds
         );
     }

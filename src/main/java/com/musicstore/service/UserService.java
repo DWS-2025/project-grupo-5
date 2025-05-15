@@ -11,6 +11,7 @@ import com.musicstore.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,8 @@ public class UserService {
     private UserMapper userMapper;
     @Autowired
     private AlbumMapper albumMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     public void deleteUser(String username) {
@@ -81,7 +84,9 @@ public class UserService {
     }
 
     public List<UserDTO> getAllUsers() {
-        return userMapper.toDTOList(userRepository.findAll());
+        return userRepository.findAll().stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     public Optional<UserDTO> getUserByUsername(String username) {
@@ -102,11 +107,16 @@ public class UserService {
             }
         }
         User user = userMapper.toEntity(userDTO);
+        // Encode password if it's not already encoded
+        if (!user.getPassword().startsWith("$2a$")) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return userMapper.toDTO(userRepository.save(user));
     }
 
     public Optional<UserDTO> authenticateUser(String username, String password) {
-        return userRepository.findByUsernameAndPassword(username, password)
+        return userRepository.findByUsername(username)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
                 .map(userMapper::toDTO);
     }
 

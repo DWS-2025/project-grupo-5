@@ -3,49 +3,78 @@ package com.musicstore.mapper;
 import com.musicstore.dto.UserDTO;
 import com.musicstore.model.Album;
 import com.musicstore.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-import java.lang.annotation.RetentionPolicy;
-import org.mapstruct.Mapping;
-
+import org.springframework.stereotype.Component;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+@Component
+public class UserMapper {
 
-    @Qualifier
-    @Retention(RetentionPolicy.CLASS)
-    @Target(ElementType.METHOD)
-    static @interface AlbumIdToEntity {}
-
-    @Qualifier
-    @Retention(RetentionPolicy.CLASS)
-    @Target(ElementType.METHOD)
-    static @interface AlbumEntityToId {}
-    @Mapping(target = "favoriteAlbums", source = "favoriteAlbumIds", qualifiedBy = AlbumIdToEntity.class)
-    User toEntity(UserDTO userDTO);
-
-    @Mapping(target = "favoriteAlbumIds", source = "favoriteAlbums", qualifiedBy = AlbumEntityToId.class)
-    @Mapping(target = "followers", source = "followers")
-    @Mapping(target = "following", source = "following")
-    UserDTO toDTO(User user);
-
-    @AlbumIdToEntity
-    default Album mapAlbumIdToEntity(Long albumId) {
-        if (albumId == null) return null;
-        Album album = new Album();
-        album.setId(albumId);
-        return album;
+    public UserDTO toDTO(User user) {
+        if (user == null) {
+            return null;
+        }
+        return new UserDTO(
+            user.getId(),
+            user.getUsername(),
+            user.getPassword(),
+            user.getEmail(),
+            user.isAdmin(),
+            user.getImageUrl(),
+            user.getImageData(),
+            user.getFollowers(),
+            user.getFollowing(),
+            user.getFavoriteAlbums().stream()
+                .map(Album::getId)
+                .collect(Collectors.toList())
+        );
     }
 
-    @AlbumEntityToId
-    default Long mapAlbumEntityToId(Album album) {
-        return album != null ? album.getId() : null;
+    public User toEntity(UserDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        User user = new User();
+        user.setId(dto.id());
+        user.setUsername(dto.username());
+        user.setPassword(dto.password());
+        user.setEmail(dto.email());
+        user.setAdmin(dto.isAdmin());
+        user.setImageUrl(dto.imageUrl());
+        user.setImageData(dto.imageData());
+        user.setFollowers(dto.followers());
+        user.setFollowing(dto.following());
+        
+        if (dto.favoriteAlbumIds() != null) {
+            user.setFavoriteAlbums(
+                dto.favoriteAlbumIds().stream()
+                    .map(albumId -> {
+                        Album album = new Album();
+                        album.setId(albumId);
+                        return album;
+                    })
+                    .collect(Collectors.toList())
+            );
+        }
+        
+        return user;
     }
 
-    List<UserDTO> toDTOList(List<User> users);
-    List<User> toEntityList(List<UserDTO> userDTOs);
+    public List<UserDTO> toDTOList(List<User> users) {
+        if (users == null) {
+            return null;
+        }
+        return users.stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<User> toEntityList(List<UserDTO> userDTOs) {
+        if (userDTOs == null) {
+            return null;
+        }
+        return userDTOs.stream()
+            .map(this::toEntity)
+            .collect(Collectors.toList());
+    }
 }

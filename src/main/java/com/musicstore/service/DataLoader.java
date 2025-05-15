@@ -60,7 +60,7 @@ public class DataLoader implements CommandLineRunner {
             UserDTO adminDTO = new UserDTO(
                 null,
                 "admin",
-                "admin123",
+                "Admin123#$!",
                 "admin@echoreview.com",
                 true,
                 "/images/default-user.jpg",
@@ -74,7 +74,7 @@ public class DataLoader implements CommandLineRunner {
             UserDTO userDTO = new UserDTO(
                 null,
                 "raul.santamaria",
-                "password123",
+                "RaulSanta123#$!",
                 "raul.santamaria@echoreview.com",
                 false,
                 "/images/default-user.jpg",
@@ -142,7 +142,7 @@ public class DataLoader implements CommandLineRunner {
             UserDTO user2DTO = new UserDTO(
                 null,
                 "maria.garcia",
-                "password456",
+                "MariaGarcia123#$!",
                 "maria.garcia@echoreview.com",
                 false,
                 "/images/default-user.jpg",

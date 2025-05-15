@@ -4,6 +4,10 @@ import com.musicstore.model.User;
 import com.musicstore.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +23,8 @@ import com.musicstore.mapper.AlbumMapper;
 import com.musicstore.mapper.ReviewMapper;
 import com.musicstore.mapper.ArtistMapper;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class AuthController {
@@ -27,23 +33,15 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginForm(Model model) {
+        // Si el usuario ya está autenticado, redirigir a la página principal
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && 
+            !auth.getPrincipal().equals("anonymousUser")) {
+            return "redirect:/";
+        }
         model.addAttribute("user", new User());
         return "auth/login";
     }
-
-    @PostMapping("/login")
-    public String login(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
-        return userService.authenticateUser(user.getUsername(), user.getPassword())
-                .map(authenticatedUser -> {
-                    session.setAttribute("user", authenticatedUser); // Already storing UserDTO
-                    return "redirect:/";
-                })
-                .orElseGet(() -> {
-                    redirectAttributes.addFlashAttribute("error", "Invalid username or password");
-                    return "redirect:/login";
-                });
-    }
-
 
     @PostMapping("/auth/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {
@@ -93,6 +91,7 @@ public class AuthController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
+        SecurityContextHolder.clearContext();
         session.invalidate();
         return "redirect:/login";
     }

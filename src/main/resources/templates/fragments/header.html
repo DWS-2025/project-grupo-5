@@ -20,19 +20,19 @@
         <i class="bi bi-star-fill"></i>  Reviews
       </a>
 
-
-
       <div th:if="${session.user != null}" class="user-section">
         <div class="dropdown d-inline-block">
           <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <img th:if="${session.user.imageUrl != null}" th:src="${session.user.imageUrl}" alt="Profile Picture" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 4px;">
             <i th:unless="${session.user.imageUrl != null}" class="bi bi-person-circle" style="color: #1a5f42;"></i>
             <span th:text="${session.user.username}" style="color: white;"></span>
+            <span th:if="${session.user.isAdmin}" class="badge bg-danger ms-1" style="font-size: 0.65em;">ADMIN</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
             <li><a class="dropdown-item" th:href="@{/profile/{username}(username=${session.user.username})}"><i class="bi bi-person"></i> Your Profile</a></li>
             <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile Settings</a></li>
-            <li th:if="${session.user.username() == 'admin'}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Pannel</a></li>
+            <li th:if="${session.user.isAdmin}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
+            <li th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Panel</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
           </ul>

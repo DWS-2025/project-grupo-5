@@ -7,6 +7,8 @@ import com.musicstore.service.ReviewService;
 import com.musicstore.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,6 @@ import java.util.stream.Collectors;
 import com.musicstore.dto.UserDTO;
 import com.musicstore.dto.ArtistDTO;
 import com.musicstore.dto.AlbumDTO;
-import com.musicstore.dto.ReviewDTO;
 import com.musicstore.mapper.UserMapper;
 import com.musicstore.mapper.AlbumMapper;
 import com.musicstore.mapper.ReviewMapper;
@@ -127,7 +128,11 @@ public class ReviewController {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO != null) {
             ReviewDTO review = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (review != null && (review.username().equals(userDTO.username()) || userDTO.isAdmin())) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            boolean isAdmin = auth != null && auth.isAuthenticated() && auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            
+            if (review != null && (review.username().equals(userDTO.username()) || isAdmin)) {
                 reviewService.deleteReview(albumId, reviewId);
 
                 // Update album's average rating
