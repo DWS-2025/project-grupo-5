@@ -147,7 +147,7 @@ public class Album {
     private String description;
 
     @Lob
-    @Column(name = "tracklist")
+    @Column(name = "tracklist", length = 2048)
     private String tracklist;
 
 

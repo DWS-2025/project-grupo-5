@@ -1,86 +1,226 @@
-
 package com.musicstore.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.musicstore.model.Album;
-import com.musicstore.model.Review;
+import com.musicstore.dto.AlbumDTO;
+import com.musicstore.dto.ArtistDTO;
+import com.musicstore.dto.ReviewDTO;
+import com.musicstore.dto.UserDTO;
 import com.musicstore.model.User;
-import com.musicstore.model.Artist;
+import com.musicstore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import com.musicstore.dto.UserDTO;
-import com.musicstore.dto.ArtistDTO;
-import com.musicstore.dto.AlbumDTO;
-import com.musicstore.dto.ReviewDTO;
-import com.musicstore.mapper.UserMapper;
-import com.musicstore.mapper.AlbumMapper;
-import com.musicstore.mapper.ReviewMapper;
-import com.musicstore.mapper.ArtistMapper;
 
 @Component
-public class DataLoader {
+public class DataLoader implements CommandLineRunner {
 
     @Autowired
-    private AlbumService albumService;
+    private UserService userService;
 
     @Autowired
     private ArtistService artistService;
 
     @Autowired
-    private UserService userService;
-
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final String DATA_DIR = System.getProperty("user.dir") + "/data";
-
-    @PostConstruct
-    public void loadData() {
-        loadAdminUser();
-    }
-
-
-    @Autowired
-    private UserMapper userMapper;
-
-    private void loadAdminUser() {
-        if (userService.getAllUsers().isEmpty()) {
-            UserDTO adminUser = new UserDTO(
-                null,
-                "admin",
-                "admin",
-                "admin@echoreview.com",
-                true,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
-            try {
-                userService.registerUser(adminUser);
-                System.out.println("Usuario administrador creado exitosamente");
-            } catch (Exception e) {
-                System.err.println("Error al crear el usuario administrador: " + e.getMessage());
-            }
-        }
-    }
+    private AlbumService albumService;
 
     @Autowired
     private ReviewService reviewService;
 
-    private void loadReviewsFromFile() {
-        // No need to load reviews from file anymore as we're using database
-        // Reviews will be handled by ReviewRepository and ReviewService
-        System.out.println("Reviews will be managed through database operations");
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public void run(String... args) throws Exception {
+        // Verificar si la base de datos está vacía
+        if (userRepository.count() == 0) {
+            // Crear usuarios iniciales
+            UserDTO adminDTO = new UserDTO(
+                null,
+                "admin",
+                "admin123",
+                "admin@echoreview.com",
+                true,
+                "/images/default.jpg",
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+            UserDTO savedAdmin = userService.saveUser(adminDTO);
+
+            UserDTO userDTO = new UserDTO(
+                null,
+                "raul.santamaria",
+                "password123",
+                "raul.santamaria@echoreview.com",
+                false,
+                "/images/default.jpg",
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+            UserDTO savedUser = userService.saveUser(userDTO);
+
+            // Crear artista inicial
+            ArtistDTO artist1 = new ArtistDTO(
+                null,
+                "Bad Bunny",
+                "Puerto Rico",
+                "/images/default.jpg",
+                null,
+                null,
+                null
+            );
+            ArtistDTO savedArtist = artistService.saveArtist(artist1);
+
+            // Crear álbum inicial
+            List<Long> artistIds = new ArrayList<>();
+            artistIds.add(savedArtist.id());
+            List<String> artistNames = new ArrayList<>();
+            artistNames.add(savedArtist.name());
+
+            AlbumDTO albumDTO = new AlbumDTO(
+                null,
+                "DeBÍ TiRAR MáS FOToS",
+                "Latino",
+                "/images/default.jpg",
+                null,
+                "Nuevo álbum de Bad Bunny con un sonido más personal y arraigado a Puerto Rico",
+                "NUEVAYoL + VOY A LLeVARTE PA PR + BAILE INoLVIDABLE + PERFuMITO NUEVO (ft. Rainao) + WELTiTA (ft. Chuwi) + VeLDÁ (ft. Dei V y Omar Courtz) + EL CLúB + KETU TeCRÉ + BOKeTE + KLOuFRENS + TURiSTA + CAFé CON RON (ft. Pleneros de la Cresta) + PIToRRO DE COCO + LO QUE LE PASÍ A HAWAii + EoO + DtMF  + LA MuDANZA",
+                2025,
+                "https://open.spotify.com/album/5K79FLRUCSysQnVESLcTdb",
+                "https://music.apple.com/album/deb%C3%AD-tirar-m%C3%A1s-fotos/1787022393",
+                "https://tidal.com/browse/album/409386860",
+                0.0,
+                artistIds,
+                new ArrayList<>(),
+                artistNames,
+                new ArrayList<>(),
+                null,
+                null,
+                null
+            );
+            AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
+
+            // Crear segundo artista
+            ArtistDTO artist2 = new ArtistDTO(
+                null,
+                "Morgan",
+                "España",
+                "/images/default.jpg",
+                null,
+                null,
+                null
+            );
+            ArtistDTO savedArtist2 = artistService.saveArtist(artist2);
+
+            // Crear segundo usuario
+            UserDTO user2DTO = new UserDTO(
+                null,
+                "maria.garcia",
+                "password456",
+                "maria.garcia@echoreview.com",
+                false,
+                "/images/default.jpg",
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+            UserDTO savedUser2 = userService.saveUser(user2DTO);
+
+            // Crear segundo álbum (de Bad Bunny)
+            AlbumDTO album2DTO = new AlbumDTO(
+                null,
+                "Un Verano Sin Ti",
+                "Latino",
+                "/images/default.jpg",
+                null,
+                "Este renovado proyecto de Bad Bunny venía siendo rumoreado por los fans, algunos meses después luego de la salida de EL ÚLTIMO TOUR DEL MUNDO.",
+                    "Moscow Mule + Después de la Playa + Me Porto Bonito (feat. Chencho Corleone) + Tití Me Preguntó + Un Ratito + Yo No Soy Celoso + Tarot (feat. JHAYCO) + Neverita + La Corriente (feat. Tony Dize) + Efecto + Party (feat. Rauw Alejandro) + Aguacero + Enséñame a Bailar + Ojitos Lindos (feat. Bomba Estéreo) + Dos Mil 16 + El Apagón + Otro Atardecer (feat. The Marías) + Un Coco + Andrea (feat. Buscabulla) + Me Fui de Vacaciones + Un Verano Sin Ti + Agosto + Callaita (feat. Tainy)",
+                2022,
+                "https://open.spotify.com/album/3RQQmkQEvNCY4prGKE6oc5",
+                "https://music.apple.com/us/album/un-verano-sin-ti/1622045499",
+                "https://tidal.com/browse/album/227498982",
+                0.0,
+                artistIds,
+                new ArrayList<>(),
+                artistNames,
+                new ArrayList<>(),
+                null,
+                null,
+                null
+            );
+            AlbumDTO savedAlbum2 = albumService.saveAlbum(album2DTO);
+
+            // Crear tercer álbum (de Morgan)
+            List<Long> artist2Ids = new ArrayList<>();
+            artist2Ids.add(savedArtist2.id());
+            List<String> artist2Names = new ArrayList<>();
+            artist2Names.add(savedArtist2.name());
+
+            AlbumDTO album3DTO = new AlbumDTO(
+                null,
+                "Hotel Morgan",
+                "Pop",
+                "/images/default.jpg",
+                null,
+                "Hotel Morgan es el cuarto álbum de estudio de Morgan. Grabado en Ocean Sound, Noruega, y producido por Martin García Duque.",
+                "Intro: Delta + Cruel + Eror 406 + El Jimador + Radio + 1838 + Arena + Pyra + Jon & Julia + Altar + Final",
+                2025,
+                "https://open.spotify.com/intl-es/album/6RFZkL8rPHJeoKO4NCwUjE",
+                "https://music.apple.com/in/album/hotel-morgan/1779551364",
+                "https://tidal.com/browse/album/399330972",
+                0.0,
+                artist2Ids,
+                new ArrayList<>(),
+                artist2Names,
+                new ArrayList<>(),
+                null,
+                null,
+                null
+            );
+            AlbumDTO savedAlbum3 = albumService.saveAlbum(album3DTO);
+
+            // Crear reseñas
+            ReviewDTO reviewDTO = new ReviewDTO(
+                null,
+                savedAlbum.id(),
+                savedUser.id(),
+                savedUser.username(),
+                savedUser.imageUrl(),
+                savedAlbum.title(),
+                savedAlbum.imageUrl(),
+                "¡Increíble álbum! Bad Bunny demuestra una vez más su versatilidad musical y su conexión con sus raíces puertorriqueñas.",
+                5
+            );
+            reviewService.addReview(savedAlbum.id(), reviewDTO);
+
+            // Crear segunda reseña
+            ReviewDTO review2DTO = new ReviewDTO(
+                null,
+                savedAlbum3.id(),
+                savedUser2.id(),
+                savedUser2.username(),
+                savedUser2.imageUrl(),
+                savedAlbum3.title(),
+                savedAlbum3.imageUrl(),
+                "Hotel Morgan es una obra que destaca por su riqueza sonora y emocional. Cada pista es una habitación distinta en este viaje musical, donde Morgan demuestra su madurez artística y su capacidad para reinventarse sin perder su esencia.",
+                5
+            );
+            reviewService.addReview(savedAlbum3.id(), review2DTO);
+            // No se puede hacer de momento porque las sesiones no pueden ser nulas
+            /*
+            // Establecer relación de seguimiento mutuo entre usuarios
+            userService.followUser(savedUser.id(), savedUser2.id(), null);
+            userService.followUser(savedUser2.id(), savedUser.id(), null);
+
+            // Agregar álbum a favoritos
+            userService.addFavoriteAlbum(savedUser.id(), savedAlbum.id(), null);
+             */
+        }
     }
-
 }
-

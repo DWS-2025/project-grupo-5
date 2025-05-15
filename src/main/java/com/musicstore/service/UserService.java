@@ -267,7 +267,6 @@ public class UserService {
 
             UserDTO updatedFollowerDTO = followerDTO.withFollowing(updatedFollowing);
             UserDTO updatedTargetDTO = targetDTO.withFollowers(updatedTargetFollowers);
-
             UserDTO savedFollowerDTO = saveUser(updatedFollowerDTO);
             saveUser(updatedTargetDTO);
 
@@ -293,7 +292,6 @@ public class UserService {
 
             UserDTO updatedFollowerDTO = followerDTO.withFollowing(updatedFollowing);
             UserDTO updatedTargetDTO = targetDTO.withFollowers(updatedTargetFollowers);
-
             UserDTO savedFollowerDTO = saveUser(updatedFollowerDTO);
             saveUser(updatedTargetDTO);
 
