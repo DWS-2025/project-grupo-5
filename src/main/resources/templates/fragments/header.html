@@ -32,7 +32,7 @@
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
             <li><a class="dropdown-item" th:href="@{/profile/{username}(username=${session.user.username})}"><i class="bi bi-person"></i> Your Profile</a></li>
             <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile Settings</a></li>
-            <li th:if="${session.user.username() == 'admin'}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Pannel</a></li>
+            <li th:if="${session.user.isAdmin()}"><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> Admin Pannel</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
           </ul>

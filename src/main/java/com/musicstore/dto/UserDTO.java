@@ -151,5 +151,19 @@ public record UserDTO(
         );
     }
 
+    public UserDTO withIsAdmin(boolean newIsAdmin) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            newIsAdmin,
+            this.imageUrl(),
+            this.imageData(),
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds
+        );
+    }
 
 }

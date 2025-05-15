@@ -11,27 +11,56 @@ import com.musicstore.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
+    private final UserRepository userRepository;
+    private final ReviewService reviewService;
+    private final AlbumService albumService;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ReviewService reviewService;
-    @Autowired
-    private AlbumService albumService;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private AlbumMapper albumMapper;
+    public UserService(UserRepository userRepository, @Lazy ReviewService reviewService, @Lazy AlbumService albumService, UserMapper userMapper, @Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.reviewService = reviewService;
+        this.albumService = albumService;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (user.isAdmin()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+    }
 
     @Transactional
     public void deleteUser(String username) {
@@ -96,18 +125,58 @@ public class UserService {
 
     @Transactional
     public UserDTO saveUser(UserDTO userDTO) {
-        if (userDTO.id() == null) {
-            if (userRepository.existsByUsername(userDTO.username())) {
-                throw new RuntimeException("Username already exists");
-            }
-        }
         User user = userMapper.toEntity(userDTO);
+        
+        if (userDTO.password() != null && !userDTO.password().isBlank()) {
+            // Only encode if password is provided and not already looking like a BCrypt hash
+            if (!userDTO.password().startsWith("$2a$") && !userDTO.password().startsWith("$2b$") && !userDTO.password().startsWith("$2y$")) {
+                 user.setPassword(passwordEncoder.encode(userDTO.password()));
+            } else {
+                // Password seems already encoded, or user wants to keep existing one (passed as already encoded)
+                user.setPassword(userDTO.password());
+            }
+        } else if (user.getId() != null) {
+            // Existing user and password in DTO is null/blank, retain old password from DB
+            User existingUserFromDb = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found for password retention"));
+            user.setPassword(existingUserFromDb.getPassword());
+        } else {
+            // New user and password is blank - this should ideally be caught by validation earlier
+            throw new IllegalArgumentException("Password cannot be blank for a new user.");
+        }
+
+        if (userDTO.id() == null) { // New user
+            if (userRepository.existsByUsername(userDTO.username())) {
+                throw new RuntimeException("Username '" + userDTO.username() + "' already exists");
+            }
+            if (userDTO.email() != null && userRepository.existsByEmail(userDTO.email())) {
+                throw new RuntimeException("Email '" + userDTO.email() + "' already exists");
+            }
+        } else { // Existing user
+            User existingUser = userRepository.findById(userDTO.id()).orElseThrow(() -> new RuntimeException("User not found with ID: " + userDTO.id()));
+            if (!existingUser.getUsername().equals(userDTO.username()) && userRepository.existsByUsername(userDTO.username())) {
+                throw new RuntimeException("Username '" + userDTO.username() + "' already exists for another user");
+            }
+            if (userDTO.email() != null && !existingUser.getEmail().equals(userDTO.email()) && userRepository.existsByEmail(userDTO.email())) {
+                 throw new RuntimeException("Email '" + userDTO.email() + "' already exists for another user");
+            }
+            // Preserve isAdmin status from DB for existing user unless specifically managed elsewhere
+            user.setAdmin(existingUser.isAdmin());
+        }
+        // For a new user, DTO's isAdmin will be used (which is false by default from registration)
+        // or true if an admin creates another admin (though this method might not be directly used for that)
+
         return userMapper.toDTO(userRepository.save(user));
     }
 
     public Optional<UserDTO> authenticateUser(String username, String password) {
-        return userRepository.findByUsernameAndPassword(username, password)
-                .map(userMapper::toDTO);
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return Optional.of(userMapper.toDTO(user));
+            }
+        }
+        return Optional.empty();
     }
 
     @Transactional
@@ -121,13 +190,11 @@ public class UserService {
         if (userDTO.email() == null || userDTO.email().trim().isEmpty()) {
             throw new RuntimeException("Email cannot be empty");
         }
-        if (userRepository.existsByUsername(userDTO.username())) {
-            throw new RuntimeException("Username already exists");
+        if (userDTO.password() == null || userDTO.password().trim().isEmpty()) {
+             throw new RuntimeException("Password cannot be empty");
         }
-        if (userRepository.existsByEmail(userDTO.email())) {
-            throw new RuntimeException("Email already exists");
-        }
-        return saveUser(userDTO);
+        // Password complexity should be validated before calling this service method (e.g. in controller or DTO validation)
+        return saveUser(userDTO.withIsAdmin(false)); 
     }
 
     @Transactional
@@ -226,25 +293,45 @@ public class UserService {
     @Transactional
     public UserDTO updateUser(UserDTO updatedUserDTO) {
         if (updatedUserDTO == null || updatedUserDTO.id() == null) {
-            throw new RuntimeException("User or user ID cannot be null");
+            throw new RuntimeException("User or user ID cannot be null for update");
         }
 
         User existingUser = userRepository.findById(updatedUserDTO.id())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + updatedUserDTO.id() + " for update"));
 
-        // Check if the new username is already taken by another user
-        Optional<User> userWithUsername = userRepository.findByUsername(updatedUserDTO.username());
-        if (userWithUsername.isPresent() && !userWithUsername.get().getId().equals(updatedUserDTO.id())) {
-            throw new RuntimeException("Username already exists");
+        User userToUpdate = userMapper.toEntity(updatedUserDTO); // Converts DTO to an entity instance
+        userToUpdate.setAdmin(existingUser.isAdmin()); // IMPORTANT: Preserve isAdmin status from DB
+
+        // Handle password update: 
+        // If password field in DTO is not empty, it means an attempt to change.
+        if (updatedUserDTO.password() != null && !updatedUserDTO.password().trim().isEmpty()) {
+            // Only encode if the new password is not the same as the old one (already encoded) 
+            // and it doesn't look like a BCrypt hash already.
+            if (!passwordEncoder.matches(updatedUserDTO.password(), existingUser.getPassword()) && 
+                !(updatedUserDTO.password().startsWith("$2a$") || updatedUserDTO.password().startsWith("$2b$") || updatedUserDTO.password().startsWith("$2y$"))) {
+                userToUpdate.setPassword(passwordEncoder.encode(updatedUserDTO.password()));
+            } else if (updatedUserDTO.password().startsWith("$2a$") || updatedUserDTO.password().startsWith("$2b$") || updatedUserDTO.password().startsWith("$2y$")) {
+                // If it looks like a hash, assume it's intentional to set an already hashed password (e.g. migration)
+                userToUpdate.setPassword(updatedUserDTO.password());
+            } else {
+                 // Password in DTO is plain text but matches the existing one, so no change needed, keep existing hash.
+                userToUpdate.setPassword(existingUser.getPassword());
+            }
+        } else {
+            // Password in DTO is null or empty, so keep the existing password from DB.
+            userToUpdate.setPassword(existingUser.getPassword());
+        }
+        
+        // Check for username and email conflicts before saving
+        if (!existingUser.getUsername().equals(updatedUserDTO.username()) && userRepository.existsByUsername(updatedUserDTO.username())) {
+            throw new RuntimeException("Username '" + updatedUserDTO.username() + "' already exists for another user");
+        }
+        if (updatedUserDTO.email() != null && !existingUser.getEmail().equals(updatedUserDTO.email()) && userRepository.existsByEmail(updatedUserDTO.email())) {
+            throw new RuntimeException("Email '" + updatedUserDTO.email() + "' already exists for another user");
         }
 
-        User updatedUser = userMapper.toEntity(updatedUserDTO);
-        // Preserve the password if not provided in the update
-        if (updatedUser.getPassword() == null || updatedUser.getPassword().trim().isEmpty()) {
-            updatedUser.setPassword(existingUser.getPassword());
-        }
-
-        return userMapper.toDTO(userRepository.save(updatedUser));
+        User savedUser = userRepository.save(userToUpdate);
+        return userMapper.toDTO(savedUser);
     }
 
     @Transactional

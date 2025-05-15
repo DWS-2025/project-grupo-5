@@ -43,8 +43,8 @@ public class AdminController {
     public String listAlbums(Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || user.username() == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         } else {
             model.addAttribute("albums", albumService.getAllAlbums());
@@ -58,8 +58,8 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
         model.addAttribute("artists", artistService.getAllArtists());
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         } else{
             model.addAttribute("album", new Album());
@@ -77,8 +77,8 @@ public class AdminController {
 
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
 
@@ -197,8 +197,8 @@ public class AdminController {
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
         
@@ -239,8 +239,8 @@ public class AdminController {
 
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
 
@@ -380,8 +380,8 @@ public class AdminController {
 
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         } else {
 
@@ -394,8 +394,8 @@ public class AdminController {
     public String listArtists(Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         } else {
             model.addAttribute("artists", artistService.getAllArtists());
@@ -407,8 +407,8 @@ public class AdminController {
     public String listUsers(Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         } else {
             model.addAttribute("users", userService.getAllUsers());
@@ -420,8 +420,8 @@ public class AdminController {
     public String showEditUserForm(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
         
@@ -439,8 +439,8 @@ public class AdminController {
     public String updateUser(@PathVariable Long id, @Valid UserDTO userDTO, BindingResult result, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
         
@@ -459,8 +459,8 @@ public class AdminController {
     public String deleteUser(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
 
@@ -474,8 +474,8 @@ public class AdminController {
     public String listReviews(Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         } else {
             List<ReviewDTO> reviews = reviewService.getAllReviews();
@@ -488,8 +488,8 @@ public class AdminController {
     public String showEditReviewForm(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
         
@@ -507,8 +507,8 @@ public class AdminController {
     public String updateReview(@PathVariable Long id, @Valid ReviewDTO reviewDTO, BindingResult result, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
         
@@ -534,8 +534,8 @@ public class AdminController {
     public String deleteReview(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null || !user.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso (no nos hackies)");
+        if (user == null || !user.isAdmin()) {
+            model.addAttribute("error", "No tienes acceso a este recurso.");
             return "error";
         }
         

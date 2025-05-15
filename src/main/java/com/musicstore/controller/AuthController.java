@@ -19,6 +19,7 @@ import com.musicstore.mapper.AlbumMapper;
 import com.musicstore.mapper.ReviewMapper;
 import com.musicstore.mapper.ArtistMapper;
 import java.util.ArrayList;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class AuthController {
@@ -30,20 +31,6 @@ public class AuthController {
         model.addAttribute("user", new User());
         return "auth/login";
     }
-
-    @PostMapping("/login")
-    public String login(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
-        return userService.authenticateUser(user.getUsername(), user.getPassword())
-                .map(authenticatedUser -> {
-                    session.setAttribute("user", authenticatedUser); // Already storing UserDTO
-                    return "redirect:/";
-                })
-                .orElseGet(() -> {
-                    redirectAttributes.addFlashAttribute("error", "Invalid username or password");
-                    return "redirect:/login";
-                });
-    }
-
 
     @PostMapping("/auth/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {

@@ -31,8 +31,6 @@ public class User {
     private String username;
 
     @NotBlank(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=\\S+$).{8,25}$", 
-            message = "Password must be between 8 and 25 characters long and contain at least one number, one uppercase letter, and one special character")
     @JsonIgnore
     private String password;
 
