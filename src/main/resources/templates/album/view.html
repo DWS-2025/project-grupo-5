@@ -318,11 +318,11 @@
                                         <div class="mb-3 d-flex align-items-center">
                                             <label class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Rate:</label>
                                             <div class="rating edit-rating">
-                                                <input value="5" name="rating" id="star5" type="radio" required><label for="star5">★</label>
-                                                <input value="4" name="rating" id="star4" type="radio"><label for="star4">★</label>
-                                                <input value="3" name="rating" id="star3" type="radio"><label for="star3">★</label>
-                                                <input value="2" name="rating" id="star2" type="radio"><label for="star2">★</label>
-                                                <input value="1" name="rating" id="star1" type="radio"><label for="star1">★</label>
+                                                <input value="5" name="rating" id="star5" type="radio" required><label title="text" for="star5"></label>
+                                                <input value="4" name="rating" id="star4" type="radio"><label title="text" for="star4"></label>
+                                                <input value="3" name="rating" id="star3" type="radio"><label title="text" for="star3"></label>
+                                                <input value="2" name="rating" id="star2" type="radio"><label title="text" for="star2"></label>
+                                                <input value="1" name="rating" id="star1" type="radio"><label title="text" for="star1"></label>
                                             </div>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Save review</button>
@@ -344,7 +344,13 @@
                             <div th:each="review : ${reviews}" class="review-card">
                                 <div class="card-review">
                                     <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
-                                        <button type="button" class="edit-review" th:data-review-id="${review.id()}" th:data-review-content="${review.content()}" th:data-review-rating="${review.rating()}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
+                                        <button type="button" class="edit-review"
+                                                th:data-review-id="${review.id()}"
+                                                th:data-review-content="${review.content()}"
+                                                th:data-review-rating="${review.rating()}"
+                                                th:attr="onclick='editReview(this, \'' + ${review.id} + '\')'">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
                                         <button type="button" class="delete-review" th:data-review-id="${review.id()}" th:onclick="'deleteReview(' + ${review.id} + ')'">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -452,34 +458,207 @@
 </div>
 
 <script>
+    let activeEditMDEs = {}; // To store active EasyMDE instances for editing
+
     const easymde = new EasyMDE({
         element: document.getElementById('my-text-area'),
+        initialValue: '', // Ensure it starts empty or with placeholder
+        spellChecker: false, // Optional: disable spell checker if not needed
+        minHeight: "150px", // Set a minimum height for the editor
+        maxHeight: "150px", // Set a maximum height for the editor, effectively fixing it
+        status: false, // Disables the default status bar, as we have a custom one
+        toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"] // Customize toolbar as needed
     });
 
-    function editReview(reviewId) {
-        const editButton = event.currentTarget;
-        const albumId = document.querySelector('meta[name="albumId"]').content;
-        const reviewContent = editButton.getAttribute('data-review-content');
-        const reviewRating = editButton.getAttribute('data-review-rating');
+    // Character counter for the main review editor
+    const reviewContentTextArea = easymde.codemirror; // Accessing CodeMirror instance from EasyMDE
+    const charCountSpan = document.getElementById('charCount');
+    const maxChars = 255;
 
-        const form = document.getElementById('editReviewForm');
-        form.action = `/reviews/${albumId}/edit/${reviewId}`;
+    // Initialize EasyMDE content correctly
+    easymde.codemirror.setValue(''); // Start empty or with placeholder
+    charCountSpan.textContent = easymde.codemirror.getValue().length; // Initialize count correctly
 
-        const contentTextarea = document.getElementById('editReviewContent');
-        contentTextarea.value = reviewContent;
 
-        // Set the rating
-        const ratingInputs = form.querySelectorAll('input[name="rating"]');
-        ratingInputs.forEach(input => {
-            if (input.value == reviewRating) {
-                input.checked = true;
+    reviewContentTextArea.on('change', function() {
+        const currentValue = reviewContentTextArea.getValue();
+        let currentLength = currentValue.length;
+
+        if (currentLength > maxChars) {
+            // Truncate the text to the maximum allowed characters
+            reviewContentTextArea.setValue(currentValue.substring(0, maxChars));
+            currentLength = maxChars; // Update length after truncation
+            charCountSpan.style.color = 'red';
+        } else {
+            charCountSpan.style.color = ''; // Reset color
+        }
+        charCountSpan.textContent = currentLength;
+    });
+
+
+    function editReview(buttonElement, reviewId) {
+        // If an edit form is already open for this review, do nothing (or focus it)
+        const existingForm = document.getElementById(`edit-review-form-${reviewId}`);
+        if (existingForm) {
+            try {
+                if (activeEditMDEs[reviewId] && activeEditMDEs[reviewId].codemirror) {
+                    activeEditMDEs[reviewId].codemirror.focus();
+                }
+            } catch (e) {
+                console.warn("Could not focus existing editor for reviewId:", reviewId, e);
+            }
+            return;
+        }
+
+        // Clean up any other open edit forms by simulating a cancel click
+        Object.keys(activeEditMDEs).forEach(openReviewId => {
+            if (activeEditMDEs[openReviewId] && openReviewId !== reviewId) {
+                const otherForm = document.getElementById(`edit-review-form-${openReviewId}`);
+                if (otherForm) {
+                    const cancelButton = otherForm.querySelector('.cancel-edit-review');
+                    if (cancelButton) {
+                        cancelButton.click(); // This will trigger the cleanup for that form
+                    }
+                }
             }
         });
 
-        // Show the modal
-        const modalElement = document.getElementById('editReviewModal');
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
+
+        const cardReviewDiv = buttonElement.closest('.card-review');
+        if (!cardReviewDiv) {
+            console.error('Could not find parent .card-review element.');
+            return;
+        }
+
+        const originalContentDisplayEl = cardReviewDiv.querySelector('.review-content');
+        const originalStarsEl = cardReviewDiv.querySelector('.stars');
+        const reviewActionsEl = cardReviewDiv.querySelector('.review-actions'); // The div containing edit/delete buttons
+
+        const rawReviewContent = buttonElement.getAttribute('data-review-content'); // Get raw HTML content
+        const originalRating = buttonElement.getAttribute('data-review-rating');
+        
+        const albumIdMeta = document.querySelector('meta[name="albumId"]');
+        if (!albumIdMeta) {
+            console.error('Album ID meta tag not found!');
+            alert('Error: Album ID not found. Cannot prepare edit form.');
+            return;
+        }
+        const albumId = albumIdMeta.content;
+
+        const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
+        const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
+        const csrfParameterName = "_csrf"; // Default for Spring Security
+
+        // Hide original elements that will be replaced by the form
+        if (originalContentDisplayEl) originalContentDisplayEl.style.display = 'none';
+        if (originalStarsEl) originalStarsEl.style.display = 'none';
+        if (reviewActionsEl) reviewActionsEl.style.display = 'none'; // Hide the original edit/delete buttons
+
+
+        const formHTML = `
+            <form id="edit-review-form-${reviewId}" class="edit-review-form" action="/reviews/${albumId}/edit/${reviewId}" method="post" style="margin-top: 10px; padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #2a2a2a;">
+                <input type="hidden" name="${csrfParameterName}" value="${csrfToken}" />
+                <div class="mb-3">
+                    <textarea id="edit-review-content-${reviewId}" name="content"></textarea>
+                    <div class="text-muted" style="text-align: right; font-size: 0.8em; margin-top: 5px;">
+                        <span id="edit-char-count-${reviewId}">0</span>/255 characters
+                    </div>
+                </div>
+                <div class="mb-3 d-flex align-items-center">
+                    <label class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Rate:</label>
+                    <div class="rating edit-rating">
+                        ${[5, 4, 3, 2, 1].map(star => `
+                            <input value="${star}" name="rating" id="edit-${reviewId}-star${star}" type="radio" ${star == originalRating ? 'checked' : ''} required>
+                            <label title="${star} star" for="edit-${reviewId}-star${star}"></label>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="edit-form-actions mt-3">
+                    <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                    <button type="button" class="btn btn-secondary btn-sm cancel-edit-review" data-review-id="${reviewId}" style="margin-left: 10px;">Cancel</button>
+                </div>
+            </form>
+        `;
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = formHTML;
+        const editForm = tempDiv.firstElementChild;
+        
+        // Insert the form into the card.
+        // It's better to append it directly to cardReviewDiv or after a specific known element like user info.
+        const userInfoContainer = cardReviewDiv.querySelector('.infos'); // The container for user info and description
+        if (userInfoContainer) {
+             userInfoContainer.appendChild(editForm); // Append after user details and hidden original content
+        } else {
+            cardReviewDiv.appendChild(editForm); // Fallback
+        }
+
+
+        const editTextArea = document.getElementById(`edit-review-content-${reviewId}`);
+        // EasyMDE will handle the initial value. For raw HTML, it's tricky.
+        // We will set initial value via EasyMDE's options.
+
+        if (activeEditMDEs[reviewId]) { // Should not happen due to check at the start, but as a safeguard
+             activeEditMDEs[reviewId].toTextArea();
+        }
+        
+        const editMDE = new EasyMDE({
+            element: editTextArea,
+            initialValue: rawReviewContent, // EasyMDE will convert HTML to Markdown if it can, or display as is.
+            spellChecker: false,
+            minHeight: "100px",
+            maxHeight: "150px",
+            status: false, // ['lines', 'words', 'cursor'], or false to hide
+            toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "|", "preview", "side-by-side", "|", "guide"],
+            parsingConfig: {
+                allowAtxHeaderWithoutSpace: true,
+                strikethrough: false,
+                underscoresBreakWords: true,
+            },
+            renderingConfig: {
+                singleLineBreaks: false,
+                codeSyntaxHighlighting: true,
+            },
+        });
+        activeEditMDEs[reviewId] = editMDE;
+        
+        // Character counter for the edit review editor
+        const editCharCountSpan = document.getElementById(`edit-char-count-${reviewId}`);
+        const editMaxChars = 255;
+
+        const updateCharCount = () => {
+            const currentValue = editMDE.codemirror.getValue();
+            let currentLength = currentValue.length;
+            if (editCharCountSpan) {
+                if (currentLength > editMaxChars) {
+                    // Content truncation is handled by the server/main editor, 
+                    // here we just visually indicate. Or, we can truncate.
+                    // For now, just indicate.
+                    editCharCountSpan.style.color = 'red';
+                } else {
+                    editCharCountSpan.style.color = '';
+                }
+                editCharCountSpan.textContent = currentLength;
+            }
+        };
+
+        editMDE.codemirror.on('change', updateCharCount);
+        updateCharCount(); // Initialize char count
+
+
+        // Add event listener for the cancel button
+        editForm.querySelector('.cancel-edit-review').addEventListener('click', function() {
+            if (activeEditMDEs[reviewId]) {
+                activeEditMDEs[reviewId].toTextArea(); // Clean up EasyMDE
+                activeEditMDEs[reviewId] = null; 
+                delete activeEditMDEs[reviewId];
+            }
+            editForm.remove();
+            // Restore original elements
+            if (originalContentDisplayEl) originalContentDisplayEl.style.display = '';
+            if (originalStarsEl) originalStarsEl.style.display = '';
+            if (reviewActionsEl) reviewActionsEl.style.display = ''; // Show edit/delete buttons again
+        });
     }
 
     function deleteReview(reviewId) {
