@@ -47,9 +47,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/profile/**", "/favorites/**", "/reviews/**").authenticated()
+                        .requestMatchers("/favorites/**", "/reviews/**").authenticated()
                         .requestMatchers("/login", "/auth/register", "/register").permitAll()
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/webjars/**", "/error", "/api/**", "/album/**", "/artist/**", "/top-albums/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/webjars/**", "/error", "/api/**", "/album/**", "/artists/**", "/top-albums/**", "/profile/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

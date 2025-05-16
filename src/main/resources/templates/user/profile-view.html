@@ -169,7 +169,7 @@
                     <i class="bi bi-heart-fill"></i>
                     <span style="color: white;">Recent Favorites</span>
                 </h2>                <div th:each="album : ${favoriteAlbums}" class="album-mini-card-container">
-                <a th:href="@{/{id}(id=${album.id})}" class="album-mini-card">
+                <a th:href="@{/album/{id}(id=${album.id})}" class="album-mini-card">
                     <img th:src="${album.imageUrl}" class="album-mini-image" th:alt="${album.title}">
                     <div>
                         <h5 class="mb-1" th:text="${album.title}"></h5>
@@ -196,7 +196,7 @@
                     <i class="bi bi-star-fill"></i>
                     <span style="color: white;">Recent Reviews</span>
                 </h2>                <div th:each="review : ${userReviews}" class="album-mini-card-container">
-                <a th:href="@{/{id}(id=${review.albumId()})}" class="album-mini-card">
+                <a th:href="@{/album/{id}(id=${review.albumId()})}" class="album-mini-card">
                     <img th:src="${review.albumImageUrl()}" class="album-mini-image" th:alt="${review.albumTitle()}">
                     <div>
                         <h5 class="mb-1" th:text="${review.albumTitle()}"></h5>

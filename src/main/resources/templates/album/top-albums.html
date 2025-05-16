@@ -61,7 +61,7 @@
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-4" id="albumsGrid">
         <div th:each="album, iterStat : ${topAlbums}" class="col">
-            <a th:href="@{/{id}(id=${album.id()})}" style="text-decoration: none;">
+            <a th:href="@{/album/{id}(id=${album.id()})}" style="text-decoration: none;">
                 <div class="card h-100" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                     <div class="position-relative">
                         <img th:if="${album.imageUrl() != null}" th:src="${album.imageUrl()}" class="card-img-top" alt="Album Cover">
