@@ -72,7 +72,7 @@ public class FavoriteController {
                 albumService.saveAlbum(AlbumDTO.fromAlbum(albumDTO.toAlbum())); // Save the album
             }
 
-            return "redirect:/" + albumId; // Redirect to the album page
+            return "redirect:/album/" + albumId; // Redirect to the album page
         } catch (Exception e) {
             model.addAttribute("error", "An error occurred while adding the album to favorites: " + e.getMessage());
             return "error"; // Show error page
@@ -115,7 +115,7 @@ public class FavoriteController {
                 albumService.saveAlbum(AlbumDTO.fromAlbum(album.toAlbum())); // Save the album
             }
 
-            return "redirect:/" + albumId; // Render the favorites page
+            return "redirect:/album/" + albumId; // Render the favorites page
         } catch (Exception e) {
             model.addAttribute("error", "Ocurrió un error al eliminar el álbum de favoritos: " + e.getMessage());
             return "error"; // Render the error page

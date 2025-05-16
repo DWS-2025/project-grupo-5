@@ -28,7 +28,7 @@
     <div class="row">
         <div class="col-12">
             <div class="reviews-container">
-                <div th:each="review : ${userReviews}" class="review-card" style="border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" th:data-album-url="@{/{id}(id=${review.albumId()})}" th:data-album-id="${review.albumId()}">
+                <div th:each="review : ${userReviews}" class="review-card" style="border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" th:data-album-url="@{/album/{id}(id=${review.albumId()})}" th:data-album-id="${review.albumId()}">
                     <div class="review-content" style="display: flex; gap: 20px; cursor: pointer;">
                         <!-- Album Image on the Left -->
                         <div class="album-image" style="flex: 0 0 150px;">
@@ -48,7 +48,7 @@
 
                             <!-- Check if user is logged in before showing edit or delete options -->
                             <div th:if="${currentUser != null}" class="review-actions mt-3">
-                                <a th:href="@{/{id}(id=${review.albumId()})}"></a>
+                                <a th:href="@{/album/{id}(id=${review.albumId()})}"></a>
                                 <button type="button" class="edit-review" th:data-review-id="${review.id()}" th:if="${currentUser.username == review.username()}" th:onclick="'editReview(' + ${review.id()} + ')'">
                                     <i class="bi bi-pencil"></i>
                                 </button>

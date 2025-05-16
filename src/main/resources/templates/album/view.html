@@ -5,12 +5,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="albumId" th:content="${album.id}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="${album.title + ' • EchoReviews'}">Album Details • EchoReviews</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/view.css">
     <link rel="icon" type="image/x-icon" href="/images/logo3.png">
 
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+
+    <style>
+        .EasyMDEContainer .CodeMirror {
+            background-color: #222; /* Darker background for editor */
+            color: #eee; /* Light text */
+            border-color: #555;
+        }
+        .EasyMDEContainer .CodeMirror-cursor {
+            border-left-color: #eee;
+        }
+        .editor-toolbar {
+            background-color: #333;
+            border-color: #555;
+        }
+        .editor-toolbar a {
+            color: #eee !important; /* Light icons/text for toolbar buttons */
+        }
+        .editor-toolbar a.active, .editor-toolbar a:hover {
+            background: #444;
+            border-color: #666;
+        }
+        .editor-toolbar i.separator {
+            border-left-color: #555;
+            border-right-color: #555;
+        }
+        .editor-statusbar {
+            color: #aaa;
+            background-color: #333;
+            border-top-color: #555;
+        }
+        /* Ensure the textarea itself is hidden if EasyMDE is active */
+        .EasyMDEContainer + textarea {
+            display: none;
+        }
+    </style>
 
 </head>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -266,20 +308,13 @@
                             <h4 style="margin-bottom: 1.5rem;">Add a review:</h4>
                             <div class="row mt-3">
                                 <div class="col-md-12">
-                                    <form th:action="@{'/reviews/' + ${album.id()}}" method="post">
+                                    <form th:action="@{'/reviews/' + ${album.id()}}" method="post" id="addReviewForm">
                                         <div class="mb-3">
-                                            <textarea id="reviewContent" name="content" class="form-control mb-4" style="background-color: #444; color: white; border: 1px solid #666; border-radius: 8px; padding: 15px; resize: vertical;" maxlength="255" required></textarea>
+                                            <textarea id="my-text-area" name="content"></textarea>
                                             <div class="text-muted" style="text-align: right;">
                                                 <span id="charCount">0</span>/255 characters
                                             </div>
                                         </div>
-                                        <script>
-                                            document.getElementById('reviewContent').addEventListener('input', function() {
-                                                var charCount = this.value.length;
-                                                document.getElementById('charCount').textContent = charCount;
-                                            });
-                                        </script>
-    
                                         <div class="mb-3 d-flex align-items-center">
                                             <label class="form-label me-3 mb-0" style="font-weight: bold; color: white;">Rate:</label>
                                             <div class="rating" style="display: inline-block;">
@@ -309,7 +344,7 @@
                             <div th:each="review : ${reviews}" class="review-card">
                                 <div class="card-review">
                                     <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
-                                        <button type="button" class="edit-review" th:data-review-id="${review.id()}" th:if="${session.user.username == review.username()}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
+                                        <button type="button" class="edit-review" th:data-review-id="${review.id()}" th:data-review-content="${review.content()}" th:data-review-rating="${review.rating()}" th:onclick="'editReview(' + ${review.id} + ')'"><i class="bi bi-pencil"></i></button>
                                         <button type="button" class="delete-review" th:data-review-id="${review.id()}" th:onclick="'deleteReview(' + ${review.id} + ')'">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -363,16 +398,10 @@
                         <form id="editReviewForm" th:action="@{'/reviews/' + ${album.id()} + '/edit/0'}" method="post">
                             <div class="mb-3">
                                 <label for="editReviewContent" class="form-label">Your review:</label>
-                                <textarea id="editReviewContent" name="content" class="form-control" maxlength="255" required></textarea>
+                                <textarea id="editReviewContent" name="content"></textarea>
                                 <div class="text-muted" style="text-align: right;">
                                     <span id="editCharCount">0</span>/255 characters
                                 </div>
-                                <script>
-                                    document.getElementById('editReviewContent').addEventListener('input', function() {
-                                        var charCount = this.value.length;
-                                        document.getElementById('editCharCount').textContent = charCount;
-                                    });
-                                </script>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Rate:</label>
@@ -422,50 +451,102 @@
     </div>
 </div>
 
-        <script>
-            function editReview(reviewId) {
-                const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`).closest('.card-review');
-                const content = reviewCard.querySelector('.review-content').textContent;
-                const rating = reviewCard.querySelectorAll('.star.filled').length;
+<script>
+    const easymde = new EasyMDE({
+        element: document.getElementById('my-text-area'),
+    });
 
-                document.getElementById('editReviewContent').value = content;
-                document.querySelector(`#editReviewForm input[value="${rating}"]`).checked = true;
+    function editReview(reviewId) {
+        const editButton = event.currentTarget;
+        const albumId = document.querySelector('meta[name="albumId"]').content;
+        const reviewContent = editButton.getAttribute('data-review-content');
+        const reviewRating = editButton.getAttribute('data-review-rating');
 
-                const form = document.getElementById('editReviewForm');
-                form.action = form.action.replace('/edit/0', `/edit/${reviewId}`);
+        const form = document.getElementById('editReviewForm');
+        form.action = `/reviews/${albumId}/edit/${reviewId}`;
 
-                new bootstrap.Modal(document.getElementById('editReviewModal')).show();
+        const contentTextarea = document.getElementById('editReviewContent');
+        contentTextarea.value = reviewContent;
+
+        // Set the rating
+        const ratingInputs = form.querySelectorAll('input[name="rating"]');
+        ratingInputs.forEach(input => {
+            if (input.value == reviewRating) {
+                input.checked = true;
             }
+        });
 
-            function deleteReview(reviewId) {
-                const modal = new bootstrap.Modal(document.getElementById('deleteReviewModal'));
-                const form = document.createElement('form');
-                form.method = 'POST';
-                const albumId = document.querySelector('meta[name="albumId"]').content;
-                form.action = `/reviews/${albumId}/delete/${reviewId}`;
+        // Show the modal
+        const modalElement = document.getElementById('editReviewModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
 
-                document.getElementById('confirmDeleteReview').onclick = function() {
-                    document.body.appendChild(form);
-                    form.submit();
-                };
+    function deleteReview(reviewId) {
+        const confirmDeleteButton = document.getElementById('confirmDeleteReview');
+        const modalElement = document.getElementById('deleteReviewModal');
+        const modal = new bootstrap.Modal(modalElement);
 
-                modal.show();
+        confirmDeleteButton.onclick = function() {
+            const albumIdMeta = document.querySelector('meta[name="albumId"]');
+            const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
+            const csrfHeaderNameMeta = document.querySelector('meta[name="_csrf_header"]');
+
+            if (!albumIdMeta) {
+                console.error('Album ID meta tag not found!');
+                alert('Error: Album ID not found. Cannot delete review.');
+                modal.hide();
+                return;
             }
-        </script>
+            const albumId = albumIdMeta.content;
+
+            if (!csrfTokenMeta || !csrfHeaderNameMeta) {
+                console.error('CSRF meta tags not found!');
+                // Not necessarily a fatal error for 404, but good to check
+            }
+            
+            const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : null;
+            const csrfHeaderName = csrfHeaderNameMeta ? csrfHeaderNameMeta.content : null;
+
+            console.log(`Attempting to delete review. Album ID: ${albumId}, Review ID: ${reviewId}`);
+            const fetchUrl = `/reviews/${albumId}/delete/${reviewId}`;
+            console.log(`Constructed fetch URL: ${fetchUrl}`);
+
+            const headers = {};
+            if (csrfHeaderName && csrfToken) {
+                headers[csrfHeaderName] = csrfToken;
+            } else {
+                console.warn('CSRF token or header name not found. Proceeding without CSRF header.');
+            }
+            
+            fetch(fetchUrl, {
+                method: 'POST',
+                headers: headers,
+            })
+            .then(response => {
+                console.log('Delete request response status:', response.status);
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert(`Error deleting review. Status: ${response.status} - ${response.statusText}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error during delete request:', error);
+                alert('Error deleting review. Check console for details.');
+            })
+            .finally(() => {
+                modal.hide();
+            });
+        };
+
+        modal.show();
+    }
+</script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const audio = document.querySelector('audio');
-                const checkbox = document.getElementById('checkboxInput');
+        <!-- The user's previous script for main easyMDE and audio was here. I've integrated them above. -->
+        <!-- Make sure there's no duplicate easyMDE initialization for id="editor" or audio logic -->
 
-                if (audio) {
-                    audio.style.display = 'none';
-                    checkbox.addEventListener('change', function() {
-                        audio.muted = this.checked;
-                    });
-                }
-            });
-        </script>
 </html>
