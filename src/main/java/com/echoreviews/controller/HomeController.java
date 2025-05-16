@@ -74,19 +74,16 @@ public class HomeController {
             return "error";
         }
 
-        AlbumDTO album = albumOptional.get();
+        // Obtener las reviews y actualizar la media antes de mostrar el álbum
+        List<ReviewDTO> reviews = reviewService.getReviewsByAlbumId(id);
+        AlbumDTO album = albumOptional.get().updateAverageRating(reviews);
         model.addAttribute("album", album);
 
         // Get username and map users and albums
         List<String> usernames = userService.getUsernamesByAlbumId(album.id());
         model.addAttribute("favoriteUsernames", usernames);
 
-        // Get reviews and map user IDs to usernames and profile images
-        List<ReviewDTO> reviews = reviewService.getReviewsByAlbumId(id);
-        reviews.forEach(review -> {
-            // User fields are already in the ReviewDTO
-            // We don't need to get or set additional user information
-        });
+        // Get reviews y map user IDs to usernames and profile images
         model.addAttribute("reviews", reviews);
         return "album/view";
     }
