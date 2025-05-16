@@ -314,7 +314,7 @@
                     </form>
 
                     <div class="text-center mb-3">
-                        <a href="/profile/change-password" class="btn btn-info">
+                        <a th:href="${editingUserAsAdmin ? '/profile/change-password?userIdToEdit=' + user.id() : '/profile/change-password'}" class="btn btn-info">
                             <i class="bi bi-key"></i> Cambiar Contraseña
                         </a>
                     </div>

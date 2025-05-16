@@ -313,35 +313,66 @@ public class ProfileController{
     }
 
     @GetMapping("/profile/change-password")
-    public String showChangePasswordForm(Model model, HttpSession session) {
-        UserDTO currentUser = (UserDTO) session.getAttribute("user");
-        if (currentUser == null) {
+    public String showChangePasswordForm(
+            @RequestParam(required = false) Long userIdToEdit,
+            Model model, 
+            HttpSession session) {
+        UserDTO sessionUser = (UserDTO) session.getAttribute("user");
+        if (sessionUser == null) {
             return "redirect:/login";
         }
+
+        if (userIdToEdit != null && sessionUser.isAdmin()) {
+            Optional<UserDTO> targetUserOpt = userService.getUserById(userIdToEdit);
+            if (targetUserOpt.isEmpty()) {
+                model.addAttribute("error", "Usuario no encontrado");
+                return "redirect:/admin/users";
+            }
+            model.addAttribute("user", targetUserOpt.get());
+            model.addAttribute("editingUserAsAdmin", true);
+        } else {
+            model.addAttribute("user", sessionUser);
+        }
+
         return "user/change-password";
     }
 
     @PostMapping("/profile/change-password")
-    public String changePassword(@RequestParam String currentPassword,
-                               @RequestParam String newPassword,
-                               @RequestParam String confirmPassword,
-                               HttpSession session,
-                               RedirectAttributes redirectAttributes) {
-        UserDTO currentUser = (UserDTO) session.getAttribute("user");
-        if (currentUser == null) {
+    public String changePassword(
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            @RequestParam(required = false) Long userIdToEdit,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        UserDTO sessionUser = (UserDTO) session.getAttribute("user");
+        if (sessionUser == null) {
             return "redirect:/login";
         }
 
+        // Determinar qué usuario se está modificando
+        UserDTO userToUpdate;
+        if (userIdToEdit != null && sessionUser.isAdmin()) {
+            Optional<UserDTO> targetUserOpt = userService.getUserById(userIdToEdit);
+            if (targetUserOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Usuario no encontrado");
+                return "redirect:/admin/users";
+            }
+            userToUpdate = targetUserOpt.get();
+        } else {
+            userToUpdate = sessionUser;
+        }
+
         // Verificar que la contraseña actual sea correcta
-        if (userService.authenticateUser(currentUser.username(), currentPassword).isEmpty()) {
+        if (userService.authenticateUser(userToUpdate.username(), currentPassword).isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "La contraseña actual es incorrecta");
-            return "redirect:/profile/change-password";
+            return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
 
         // Verificar que las nuevas contraseñas coincidan
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Las contraseñas nuevas no coinciden");
-            return "redirect:/profile/change-password";
+            return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
 
         // Validar el formato de la nueva contraseña
@@ -349,31 +380,35 @@ public class ProfileController{
             redirectAttributes.addFlashAttribute("error", 
                 "La nueva contraseña debe tener entre 8 y 25 caracteres y contener al menos un número, " +
                 "una mayúscula y un carácter especial");
-            return "redirect:/profile/change-password";
+            return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
 
         // Actualizar la contraseña
         UserDTO updatedUser = new UserDTO(
-            currentUser.id(),
-            currentUser.username(),
+            userToUpdate.id(),
+            userToUpdate.username(),
             newPassword,
-            currentUser.email(),
-            currentUser.isAdmin(),
-            currentUser.imageUrl(),
-            currentUser.imageData(),
-            currentUser.followers(),
-            currentUser.following(),
-            currentUser.favoriteAlbumIds()
+            userToUpdate.email(),
+            userToUpdate.isAdmin(),
+            userToUpdate.imageUrl(),
+            userToUpdate.imageData(),
+            userToUpdate.followers(),
+            userToUpdate.following(),
+            userToUpdate.favoriteAlbumIds()
         );
 
         try {
             userService.updateUser(updatedUser);
-            session.setAttribute("user", updatedUser);
+            if (!sessionUser.isAdmin() || userToUpdate.id().equals(sessionUser.id())) {
+                session.setAttribute("user", updatedUser);
+            }
             redirectAttributes.addFlashAttribute("success", "Contraseña actualizada correctamente");
-            return "redirect:/profile";
+            return sessionUser.isAdmin() && !userToUpdate.id().equals(sessionUser.id()) 
+                   ? "redirect:/admin/users" 
+                   : "redirect:/profile";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar la contraseña: " + e.getMessage());
-            return "redirect:/profile/change-password";
+            return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
     }
 }
