@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/header-footer.css">
     <link rel="stylesheet" href="/css/form.css">
+    <link rel="stylesheet" href="/css/reviews.css">
     <link rel="icon" type="image/x-icon" href="/images/logo3.png">
 </head>
 
@@ -20,7 +21,7 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow">
+            <div class="card shadow" style="background-color: #333;">
                 <div class="card-header bg-dark text-white">
                     <h3 class="mb-0">Editar Reseña</h3>
                 </div>
@@ -35,38 +36,43 @@
                         <input type="hidden" name="albumImageUrl" th:value="${review.albumImageUrl()}">
                         
                         <div class="mb-3">
-                            <label class="form-label">Álbum</label>
+                            <label class="form-label" style="color: white;">Álbum</label>
                             <div class="d-flex align-items-center">
                                 <img th:if="${review.albumImageUrl() != null}" th:src="${review.albumImageUrl()}" alt="Album Cover" class="me-2" style="width: 50px; height: 50px; object-fit: cover;">
-                                <span th:text="${review.albumTitle() != null ? review.albumTitle() : 'N/A'}">Título del Álbum</span>
+                                <span th:text="${review.albumTitle() != null ? review.albumTitle() : 'N/A'}" style="color: white;">Título del Álbum</span>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Usuario</label>
+                            <label class="form-label" style="color: white;">Usuario</label>
                             <div class="d-flex align-items-center">
                                 <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                <span th:text="${review.username()}">Nombre de Usuario</span>
+                                <span th:text="${review.username()}" style="color: white;">Nombre de Usuario</span>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="rating" class="form-label">Calificación</label>
-                            <select class="form-select" id="rating" name="rating" required>
-                                <option value="1" th:selected="${review.rating() == 1}">1 - Muy malo</option>
-                                <option value="2" th:selected="${review.rating() == 2}">2 - Malo</option>
-                                <option value="3" th:selected="${review.rating() == 3}">3 - Regular</option>
-                                <option value="4" th:selected="${review.rating() == 4}">4 - Bueno</option>
-                                <option value="5" th:selected="${review.rating() == 5}">5 - Excelente</option>
-                            </select>
+                            <label class="form-label" style="color: white;">Calificación</label>
+                            <div class="rating edit-rating">
+                                <input type="radio" id="star5" name="rating" value="5" th:checked="${review.rating() == 5}" required>
+                                <label title="text" for="star5"></label>
+                                <input type="radio" id="star4" name="rating" value="4" th:checked="${review.rating() == 4}">
+                                <label title="text" for="star4"></label>
+                                <input type="radio" id="star3" name="rating" value="3" th:checked="${review.rating() == 3}">
+                                <label title="text" for="star3"></label>
+                                <input type="radio" id="star2" name="rating" value="2" th:checked="${review.rating() == 2}">
+                                <label title="text" for="star2"></label>
+                                <input type="radio" id="star1" name="rating" value="1" th:checked="${review.rating() == 1}">
+                                <label title="text" for="star1"></label>
+                            </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="content" class="form-label">Contenido de la Reseña <span id="charCount" class="text-muted">(0/280)</span></label>
-                            <textarea class="form-control" id="content" name="content" rows="5" required maxlength="280" th:text="${review.content()}"></textarea>
+                            <label for="content" class="form-label" style="color: white;">Contenido de la Reseña <span id="charCount" style="color: white;">(0/255)</span></label>
+                            <textarea class="form-control" id="content" name="content" rows="5" required maxlength="255" th:text="${review.content()}" style="color: white;"></textarea>
                             <script>
                                 document.getElementById('content').addEventListener('input', function() {
-                                    const maxLength = 280;
+                                    const maxLength = 255;
                                     const currentLength = this.value.length;
                                     document.getElementById('charCount').textContent = `(${currentLength}/${maxLength})`;
                                 });

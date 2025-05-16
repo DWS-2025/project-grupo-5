@@ -83,14 +83,18 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @RequestParam String content,
             @RequestParam int rating,
-            HttpSession session
+            HttpSession session,
+            Model model
     ) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 return "redirect:/" + albumId;
             }
-
+            if (content.length() > 255) {
+                model.addAttribute("error", "Se ha superado el límite de caracteres");
+                return "error";
+            }
             ReviewDTO existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (existingReview != null && existingReview.username().equals(userDTO.username())) {
                 ReviewDTO reviewDTO = new ReviewDTO(
