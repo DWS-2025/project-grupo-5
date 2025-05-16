@@ -81,11 +81,11 @@ public class ReviewService {
         if (!albumId.equals(reviewDTO.albumId())) {
             throw new RuntimeException("Album ID mismatch between path and review data");
         }
+
+        // Raw Markdown from reviewDTO is now used directly
         Review review = reviewMapper.toEntity(reviewDTO);
         return reviewRepository.save(review);
     }
-
-
 
     public ReviewDTO updateReview(Long albumId, Long reviewId, ReviewDTO reviewDTO) {
         Review existing = reviewRepository.findById(reviewId)
@@ -95,6 +95,7 @@ public class ReviewService {
             throw new RuntimeException("Review does not belong to this album");
         }
 
+        // Raw Markdown from reviewDTO is now used directly
         Review updated = reviewMapper.toEntity(reviewDTO);
         updated.setId(reviewId);
         updated.setAlbum(existing.getAlbum()); // Ensure the album doesn't change
@@ -106,6 +107,7 @@ public class ReviewService {
         Review existing = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
         
+        // Raw Markdown from reviewDTO is now used directly
         Review updated = reviewMapper.toEntity(reviewDTO);
         updated.setId(reviewId);
         updated.setAlbum(existing.getAlbum()); // Ensure the album doesn't change
@@ -122,7 +124,13 @@ public class ReviewService {
         Review existing = reviewRepository.findById(reviewDTO.id())
                 .orElseThrow(() -> new RuntimeException("Review not found"));
         
+        // Raw Markdown from reviewDTO is now used directly
         Review updated = reviewMapper.toEntity(reviewDTO);
+        // Ensure ID and Album are preserved if not part of DTO or should not be changed by this map
+        updated.setId(existing.getId());
+        updated.setAlbum(existing.getAlbum());
+        updated.setUser(existing.getUser()); // Also preserve user
+
         Review savedReview = reviewRepository.save(updated);
         return reviewMapper.toDTO(savedReview);
     }

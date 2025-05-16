@@ -44,7 +44,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <p class="card-text" th:text="${review.content()}">Review content goes here...</p>
+                            <p class="card-text" th:utext="${review.content()}">Review content goes here...</p>
 
                             <!-- Check if user is logged in before showing edit or delete options -->
                             <div th:if="${currentUser != null}" class="review-actions mt-3">
@@ -158,7 +158,7 @@
 
     function editReview(reviewId) {
         const reviewCard = document.querySelector(`.review-card [data-review-id="${reviewId}"]`).closest('.review-card');
-        const content = reviewCard.querySelector('.card-text').textContent;
+        const content = reviewCard.querySelector('.card-text').innerHTML;
         const rating = reviewCard.querySelectorAll('.star.filled').length;
         const albumId = reviewCard.getAttribute('data-album-id');
 

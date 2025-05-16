@@ -36,7 +36,7 @@ public class Review {
     private String albumImageUrl;
 
     @NotBlank(message = "El contenido de la reseña es obligatorio")
-    @Size(max = 280, message = "La reseña no puede exceder los 280 caracteres")
+    @Size(max = 2000, message = "La reseña no puede exceder los 2000 caracteres")
     private String content;
 
     @Min(value = 1, message = "La calificación debe ser al menos 1")
