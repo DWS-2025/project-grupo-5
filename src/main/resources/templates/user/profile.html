@@ -289,6 +289,7 @@
             <div class="card">
                 <div class="card-body">
                     <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="userIdBeingEdited" th:if="${editingUserAsAdmin}" th:value="${user.id()}">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username" th:value="${user.username}" required>

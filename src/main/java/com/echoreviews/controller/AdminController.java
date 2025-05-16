@@ -455,10 +455,16 @@ public class AdminController {
             return "user/form";
         }
 
-        Optional<UserDTO> userToDelete = userService.getUserById(id);
-        userService.deleteUser(userToDelete.get().username());
-
-        return "redirect:/admin/users";
+        try {
+            // Asegurarse de que el ID del path coincida con el del DTO
+            UserDTO updatedUserDTO = userDTO.withId(id);
+            userService.updateUser(updatedUserDTO);
+            return "redirect:/admin/users";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", "Error al actualizar el usuario: " + e.getMessage());
+            model.addAttribute("userEdit", userDTO);
+            return "user/form";
+        }
     }
     
     @PostMapping("/users/{id}/delete")
