@@ -134,9 +134,23 @@ public class UserService implements UserDetailsService {
     public UserDTO saveUser(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         
+        if (userDTO.id() != null) {
+            // Si es una actualización, obtener el usuario existente
+            User existingUser = userRepository.findById(userDTO.id())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            // Preservar las listas de seguidores y seguidos si no se proporcionan nuevas
+            if (userDTO.followers() == null || userDTO.followers().isEmpty()) {
+                user.setFollowers(existingUser.getFollowers());
+            }
+            if (userDTO.following() == null || userDTO.following().isEmpty()) {
+                user.setFollowing(existingUser.getFollowing());
+            }
+        }
+        
         if (userDTO.password() != null && !userDTO.password().isBlank()) {
             if (!userDTO.password().startsWith("$2a$") && !userDTO.password().startsWith("$2b$") && !userDTO.password().startsWith("$2y$")) {
-                 user.setPassword(passwordEncoder.encode(userDTO.password()));
+                user.setPassword(passwordEncoder.encode(userDTO.password()));
             } else {
                 user.setPassword(userDTO.password());
             }

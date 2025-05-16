@@ -150,8 +150,8 @@ public class ProfileController{
             userToUpdate.isAdmin(), // Admin status not changed here
             userToUpdate.imageUrl(), // Default to old, might be overwritten by imageFile
             userToUpdate.imageData(), // Default to old
-            userToUpdate.followers(),
-            userToUpdate.following(),
+            userToUpdate.followers() != null ? new ArrayList<>(userToUpdate.followers()) : new ArrayList<>(),
+            userToUpdate.following() != null ? new ArrayList<>(userToUpdate.following()) : new ArrayList<>(),
             userToUpdate.favoriteAlbumIds()
         );
 
