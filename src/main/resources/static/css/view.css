@@ -724,7 +724,54 @@ audio {
 }
 
 .infos .author:hover {
-    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* Login Required Modal Styles */
+#loginModal .modal-content {
+    background-color: #2c2c2c; /* Match editReviewModal */
+    color: white;
+    border: 1px solid #444; /* Match editReviewModal */
+}
+
+#loginModal .modal-header {
+    border-bottom: 1px solid #444; /* Match editReviewModal */
+}
+
+#loginModal .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%); /* White close button, match editReviewModal */
+}
+
+#loginModal .modal-body {
+    padding: 20px; /* Match editReviewModal */
+    text-align: center; /* Center the text "To add to favorites..." */
+}
+
+#loginModal .modal-footer {
+    border-top: 1px solid #444; /* Match editReviewModal */
+    justify-content: center; /* Center buttons */
+}
+
+#loginModal .btn-primary {
+    background-color: #1a5f42; /* Site's primary green */
+    border-color: #1a5f42;
+    color: white;
+}
+
+#loginModal .btn-primary:hover {
+    background-color: #236b4e; /* Lighter green for hover */
+    border-color: #236b4e;
+}
+
+#loginModal .btn-secondary {
+    background-color: #5a5a5a; /* Darker gray for secondary/close */
+    border-color: #5a5a5a;
+    color: white;
+}
+
+#loginModal .btn-secondary:hover {
+    background-color: #6c6c6c; /* Lighter gray for hover */
+    border-color: #6c6c6c;
 }
 
 

@@ -73,7 +73,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("success", "Registration successful. Please login.");
             return "redirect:/login";
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("error_message", e.getMessage());
             return "redirect:/auth/register";
         }
     }

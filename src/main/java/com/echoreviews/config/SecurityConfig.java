@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/profile/**", "/favorites/**", "/reviews/**").authenticated()
                         .requestMatchers("/login", "/auth/register", "/register").permitAll()
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/webjars/**", "/error", "/api/**", "/album/**", "/artist/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/webjars/**", "/error", "/api/**", "/album/**", "/artist/**", "/top-albums/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

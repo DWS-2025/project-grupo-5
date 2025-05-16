@@ -64,7 +64,7 @@
     <h2 id="sectionTitle" class="mb-4">Popular Albums</h2>
     <div id="albumsGrid" class="row row-cols-1 row-cols-md-3 g-4">
         <div th:each="album, iterStat : ${albums}" th:if="${iterStat.index < 15}" class="col album-item" th:data-id="${album.id()}" th:data-artist="${album.artistNames()}">
-            <a th:href="@{/{id}(id=${album.id()})}" class="text-decoration-none">
+            <a th:href="@{|/album/${album.id()}|}" class="text-decoration-none">
                 <div class="card h-100 shadow-sm hover-effect">
                     <img th:src="${album.imageUrl()}" class="card-img-top" alt="Album Cover">
                     <div class="card-body">
@@ -78,7 +78,7 @@
         </div>
         <template id="albumTemplate">
             <div class="col album-item" style="display: none;" th:each="album, iterStat : ${albums}" th:if="${iterStat.index >= 15}" th:data-id="${album.id()}" th:data-artist="${album.artistNames()}">
-                <a th:href="@{/{id}(id=${album.id()})}" class="text-decoration-none">
+                <a th:href="@{|/album/${album.id()}|}" class="text-decoration-none">
                     <div class="card h-100 shadow-sm hover-effect">
                         <img th:src="${album.imageUrl()}" class="card-img-top" alt="Album Cover">
                         <div class="card-body">
@@ -193,7 +193,7 @@
                     albums.forEach(album => {
                         const albumElement = `
                             <div class="col album-item" data-id="${album.id}" data-artist="${album.artistNames}">
-                                <a href="/${album.id}" class="text-decoration-none">
+                                <a href="/album/${album.id}" class="text-decoration-none">
                                     <div class="card h-100 shadow-sm hover-effect">
                                         <img src="${album.imageUrl}" class="card-img-top" alt="Album Cover">
                                         <div class="card-body">

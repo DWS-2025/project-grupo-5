@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.musicstore</groupId>
-	<artifactId>music-store</artifactId>
+	<artifactId>echoreviews</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>music-store</name>
 	<description>Music Store Web Application</description>

@@ -54,86 +54,134 @@ public class ProfileController{
     private UserMapper userMapper;
 
     @GetMapping("/profile")
-    public String profile(Model model, HttpSession session) {
-        UserDTO user = (UserDTO) session.getAttribute("user");
-        if (user != null) {
-            model.addAttribute("user", user);
-            return "user/profile";
+    public String profile(
+            @RequestParam(name = "userIdToEdit", required = false) Long userIdToEdit,
+            Model model,
+            HttpSession session) {
+
+        UserDTO sessionUser = (UserDTO) session.getAttribute("user");
+        if (sessionUser == null) {
+            return "redirect:/login";
         }
-        return "redirect:/login";
+
+        UserDTO userToDisplay;
+
+        if (userIdToEdit != null && sessionUser.isAdmin()) {
+            Optional<UserDTO> targetUserOpt = userService.getUserById(userIdToEdit);
+            if (targetUserOpt.isEmpty()) {
+                model.addAttribute("error", "User to edit not found.");
+                userToDisplay = sessionUser; 
+            } else {
+                userToDisplay = targetUserOpt.get();
+                model.addAttribute("editingUserAsAdmin", true);
+            }
+        } else {
+            userToDisplay = sessionUser;
+        }
+
+        model.addAttribute("user", userToDisplay);
+        model.addAttribute("profileUser", userToDisplay);
+        return "user/profile";
     }
 
     @PostMapping("/profile/update")
     public String profileUpdate(
             @ModelAttribute ProfileUpdateDTO profileUpdateDTO,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "userIdBeingEdited", required = false) Long userIdBeingEdited,
             HttpSession session,
-            Model model
-    ) {
-        UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
-        if (currentUserDTO == null) {
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        UserDTO sessionUser = (UserDTO) session.getAttribute("user");
+        if (sessionUser == null) {
             return "redirect:/login";
         }
-        
-        // Validar los datos de actualización
-        if (profileUpdateDTO.isPasswordChangeRequested()) {
-            // Validar cambio de contraseña
-            if (!profileUpdateDTO.isPasswordChangeValid()) {
-                model.addAttribute("error", "Datos de cambio de contraseña inválidos");
-                model.addAttribute("user", currentUserDTO);
-                return "user/profile";
+
+        UserDTO userToUpdate;
+        boolean isAdminEditingOther = false;
+
+        if (userIdBeingEdited != null && sessionUser.isAdmin()) {
+            Optional<UserDTO> targetUserOpt = userService.getUserById(userIdBeingEdited);
+            if (targetUserOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "User to update not found.");
+                return "redirect:/admin/users";
             }
-            
-            // Verificar la contraseña actual
-            if (userService.authenticateUser(currentUserDTO.username(), profileUpdateDTO.currentPassword()).isEmpty()) {
-                model.addAttribute("error", "La contraseña actual es incorrecta");
-                model.addAttribute("user", currentUserDTO);
-                return "user/profile";
-            }
+            userToUpdate = targetUserOpt.get();
+            isAdminEditingOther = true;
+        } else if (userIdBeingEdited == null || userIdBeingEdited.equals(sessionUser.id())) {
+            userToUpdate = sessionUser;
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Unauthorized to update this profile.");
+            return "redirect:/profile";
         }
 
-        // Determinar la contraseña final
-        String finalPassword = profileUpdateDTO.isPasswordChangeRequested() 
-                ? profileUpdateDTO.newPassword() 
-                : currentUserDTO.password();
+        String newPlainPassword = null;
+        if (profileUpdateDTO.isPasswordChangeRequested()) {
+            if (!profileUpdateDTO.isPasswordChangeValid()) {
+                model.addAttribute("error", "New password and confirmation do not match or are invalid.");
+                model.addAttribute("user", userToUpdate);
+                model.addAttribute("editingUserAsAdmin", isAdminEditingOther);
+                model.addAttribute("profileUser", userToUpdate);
+                return "user/profile";
+            }
+            if (!isAdminEditingOther) {
+                if (profileUpdateDTO.currentPassword() == null || userService.authenticateUser(userToUpdate.username(), profileUpdateDTO.currentPassword()).isEmpty()) {
+                    model.addAttribute("error", "La contraseña actual es incorrecta");
+                    model.addAttribute("user", userToUpdate);
+                    model.addAttribute("editingUserAsAdmin", isAdminEditingOther);
+                    model.addAttribute("profileUser", userToUpdate);
+                    return "user/profile";
+                }
+            }
+            newPlainPassword = profileUpdateDTO.newPassword();
+        }
 
-        // Crear un nuevo UserDTO preservando los datos que no se actualizan
-        UserDTO newUserDTO = new UserDTO(
-                currentUserDTO.id(),
-                profileUpdateDTO.username(),
-                finalPassword,
-                profileUpdateDTO.email(),
-                currentUserDTO.isAdmin(),
-                currentUserDTO.imageUrl(),
-                currentUserDTO.imageData(),
-                currentUserDTO.followers(),
-                currentUserDTO.following(),
-                currentUserDTO.favoriteAlbumIds()
+        String passwordForUpdate = userToUpdate.password(); // Existing hashed password
+        if (newPlainPassword != null) {
+            passwordForUpdate = newPlainPassword; // New plain password for service to hash
+        }
+
+        UserDTO updatedUserDTO = new UserDTO(
+            userToUpdate.id(),
+            (profileUpdateDTO.username() != null && !profileUpdateDTO.username().isBlank()) ? profileUpdateDTO.username() : userToUpdate.username(),
+            passwordForUpdate, // This will be new plain or old hashed. Service must handle.
+            (profileUpdateDTO.email() != null && !profileUpdateDTO.email().isBlank()) ? profileUpdateDTO.email() : userToUpdate.email(),
+            userToUpdate.isAdmin(), // Admin status not changed here
+            userToUpdate.imageUrl(), // Default to old, might be overwritten by imageFile
+            userToUpdate.imageData(), // Default to old
+            userToUpdate.followers(),
+            userToUpdate.following(),
+            userToUpdate.favoriteAlbumIds()
         );
 
         try {
-            // Manejar la carga de imagen de perfil si se proporciona
+            UserDTO savedUser;
             if (imageFile != null && !imageFile.isEmpty()) {
-                try {
-                    // Actualizar con la nueva imagen
-                    UserDTO savedUserDTO = userService.saveUserWithProfileImage(newUserDTO, imageFile);
-                    // Actualizar la sesión con el usuario guardado que incluye la nueva imagen
-                    session.setAttribute("user", savedUserDTO);
-                } catch (IOException e) {
-                    model.addAttribute("error", "Error al subir la imagen de perfil");
-                    model.addAttribute("user", currentUserDTO);
-                    return "user/profile";
-                }
+                 UserDTO userDtoForImageSave = new UserDTO(
+                    updatedUserDTO.id(), updatedUserDTO.username(), updatedUserDTO.password(), updatedUserDTO.email(),
+                    updatedUserDTO.isAdmin(), null, null, // Null out image fields for new image
+                    updatedUserDTO.followers(), updatedUserDTO.following(), updatedUserDTO.favoriteAlbumIds()
+                );
+                savedUser = userService.saveUserWithProfileImage(userDtoForImageSave, imageFile);
             } else {
-                // Si no hay nueva imagen, guardar los cambios y actualizar la sesión
-                UserDTO savedUserDTO = userService.saveUser(newUserDTO);
-                session.setAttribute("user", savedUserDTO);
+                savedUser = userService.saveUser(updatedUserDTO);
             }
 
-            return "redirect:/profile?reload=" + System.currentTimeMillis();
-        } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("user", currentUserDTO);
+            if (!isAdminEditingOther) {
+                session.setAttribute("user", savedUser);
+                redirectAttributes.addFlashAttribute("success", "Perfil actualizado correctamente.");
+                return "redirect:/profile";
+            } else {
+                redirectAttributes.addFlashAttribute("success", "Perfil de '" + savedUser.username() + "' actualizado correctamente.");
+                return "redirect:/admin/users";
+            }
+
+        } catch (RuntimeException | IOException e) {
+            model.addAttribute("error", "Error al actualizar el perfil: " + e.getMessage());
+            model.addAttribute("user", userToUpdate);
+            model.addAttribute("editingUserAsAdmin", isAdminEditingOther);
+            model.addAttribute("profileUser", userToUpdate);
             return "user/profile";
         }
     }

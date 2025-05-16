@@ -59,7 +59,7 @@ public class HomeController {
         return "album/welcome";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/album/{id}")
     public String viewAlbum(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO == null) {
