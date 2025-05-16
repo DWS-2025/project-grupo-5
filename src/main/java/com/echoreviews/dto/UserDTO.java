@@ -131,7 +131,7 @@ public record UserDTO(
             this.imageUrl(),
             this.imageData(),
             this.followers(),
-            this.following(),
+            newFollowing,
             this.favoriteAlbumIds
         );
     }

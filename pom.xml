@@ -8,7 +8,7 @@
 		<version>3.2.2</version>
 		<relativePath/>
 	</parent>
-	<groupId>com.musicstore</groupId>
+	<groupId>com.echoreviews</groupId>
 	<artifactId>echoreviews</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>music-store</name>

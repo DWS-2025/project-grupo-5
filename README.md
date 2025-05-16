@@ -164,7 +164,7 @@ project-grupo-5/
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── com/musicstore/
+│   │   │   └── com/echoreviews/
 │   │   │       ├── controller/
 │   │   │       ├── model/
 │   │   │       └── service/

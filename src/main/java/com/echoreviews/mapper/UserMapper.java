@@ -26,6 +26,8 @@ public interface UserMapper {
     @Target(ElementType.METHOD)
     static @interface AlbumEntityToId {}
     @Mapping(target = "favoriteAlbums", source = "favoriteAlbumIds", qualifiedBy = AlbumIdToEntity.class)
+    @Mapping(target = "followers", source = "followers")
+    @Mapping(target = "following", source = "following")
     User toEntity(UserDTO userDTO);
 
     @Mapping(target = "favoriteAlbumIds", source = "favoriteAlbums", qualifiedBy = AlbumEntityToId.class)
