@@ -5,20 +5,6 @@
   margin-bottom: 2rem;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-
-.header-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.header-content img {
-  height: 40px;
-  margin: 16px;
-}
-
 .main-header h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
@@ -26,14 +12,12 @@
   color: #fff;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
-
 .main-nav {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 2rem;
 }
-
 .main-nav a {
   color: #fff;
   text-decoration: none;
@@ -42,17 +26,19 @@
   border-radius: 4px;
   transition: all 0.3s ease;
 }
-
 .main-nav a:hover {
   background-color: rgba(255,255,255,0.1);
   transform: translateY(-2px);
 }
-
 .main-nav a i {
   color: #1a5f42;
 }
 
+
+
+
 /* CSS DEL FOOTER */
+
 .main-footer {
   background: #333;
   color: white;
