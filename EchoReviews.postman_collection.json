@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "45f13be7-bfb9-49e3-b718-dd0ad200a1e8",
+		"_postman_id": "cbfe33d0-050b-4939-9c2a-c5be755f2c76",
 		"name": "EchoReviews",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "43755316",
-		"_collection_link": "https://diego-3676389.postman.co/workspace/Diego's-Workspace~9b4779ec-bd0e-405e-800e-7e9f7c70452d/collection/43755316-45f13be7-bfb9-49e3-b718-dd0ad200a1e8?action=share&source=collection_link&creator=43755316"
+		"_exporter_id": "43742986"
 	},
 	"item": [
 		{
@@ -66,30 +65,6 @@
 					"response": []
 				},
 				{
-					"name": "VIEW USER",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/users/15",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"users",
-								"15"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "CHANGE USER",
 					"request": {
 						"auth": {
@@ -143,6 +118,30 @@
 								"15"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "VIEW PROFILE",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
 					},
 					"response": []
 				}

@@ -1,17 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Settings • EchoReviews</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/header-footer.css">
     <link rel="icon" type="image/x-icon" href="/images/logo3.png">
 
     <style>
-
         body {
             background-color: #1e1e1e;
             color: white;
@@ -20,268 +18,80 @@
         .card {
             background-color: #333;
             color: white;
-        }
-
-        header {
-            background: #333;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .main-header {
-            background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .main-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .main-nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .main-nav a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .main-nav a:hover {
-            background-color: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
-
-        .main-nav a i {
-            color: #1a5f42;
-        }
-
-        #viewToggle {
-            background-color: #1a5f42;
-            color: white;
-            border: none;
-        }
-
-        #viewToggle:hover {
-            background-color: #236b4e;
-        }
-
-        .main-footer {
-            background: #333;
-            color: white;
-            padding: 2rem 0;
-            margin-top: 3rem;
-            text-align: center;
-        }
-
-        .main-footer p {
-            margin: 0;
-        }
-        #viewToggle {
-            background-color: #1a5f42;
-            color: white;
-            border: none;
-        }
-        #viewToggle:hover {
-            background-color: #236b4e;
-        }
-        .main-nav a i {
-            color: #1a5f42;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-        }
-        .card {
-            background-color: #333;
-            color: white;
-        }
-        .noselect {
-            width: 150px;
-            height: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            background: #e62222;
-            border: none;
-            border-radius: 5px;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
-            position: relative;
-        }
-        .noselect, .noselect span {
-            transition: 200ms;
-        }
-        .noselect .text {
-            transform: translateX(35px);
-            color: white;
-            font-weight: bold;
-        }
-        .noselect .icon {
-            position: absolute;
-            border-left: 1px solid #c41b1b;
-            transform: translateX(110px);
-            height: 40px;
-            width: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .noselect svg {
-            width: 15px;
-            fill: #eee;
-        }
-        .noselect:hover {
-            background: #ff3636;
-        }
-        .noselect:hover .text {
-            color: transparent;
-        }
-        .noselect:hover .icon {
-            width: 150px;
-            border-left: none;
-            transform: translateX(0);
-        }
-        .noselect:focus {
-            outline: none;
-        }
-        .noselect:active .icon svg {
-            transform: scale(0.8);
-        }
-        .btn-info {
-            background-color: #1db954; /* Verde claro de Spotify */
-            border-color: #1db954;
-            font-weight: bold;
-            color: white !important;
-        }
-
-        header {
-            background: #333;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .main-header {
-            background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .main-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .main-nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-        }
-        .main-nav a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        .main-nav a:hover {
-            background-color: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
-        .main-footer {
-            background: #333;
-            color: white;
-            padding: 2rem 0;
-            margin-top: 3rem;
-            text-align: center;
-        }
-        .main-footer p {
-            margin: 0;
-        }
-
-
-        body {
-            background-color: #1e1e1e;
-            color: white;
-        }
-        #viewToggle {
-            background-color: #1a5f42;
-            color: white;
-            border: none;
-        }
-        #viewToggle:hover {
-            background-color: #236b4e;
-        }
-        .main-nav a i {
-            color: #1a5f42;
-        }
-        header {
-            background: #333;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-        }
-        .card {
-            background-color: #333;
             border: none;
             border-radius: 10px;
         }
+
+        .main-header {
+            background: linear-gradient(to right, #1a1a1a, #333, #1a1a1a);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .main-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .main-nav a i {
+            color: #1a5f42;
+        }
+
         .btn-primary {
             background-color: #1a5f42;
             border-color: #1a5f42;
         }
+
         .btn-primary:hover {
             background-color: #236b4e;
             border-color: #236b4e;
         }
+
         .form-control {
             background-color: #444;
             border: 1px solid #555;
             color: white;
         }
+
         .form-control:focus {
             background-color: #444;
             border-color: #1a5f42;
             color: white;
             box-shadow: 0 0 0 0.25rem rgba(26, 95, 66, 0.25);
         }
+
         .profile-section {
             max-width: 600px;
             margin: 0 auto;
         }
 
+        .btn-info {
+            background-color: #1db954;
+            border-color: #1db954;
+            font-weight: bold;
+            color: white !important;
+        }
     </style>
 </head>
-<div th:replace="~{fragments/header :: header}"></div>
-
 <body>
+    <div th:replace="~{fragments/header :: header}"></div>
 
     <div class="container mt-5">
         <div class="profile-section">
@@ -303,38 +113,37 @@
                             <label for="imageFile" class="form-label">Profile Photo</label>
                             <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.imageUrl != null}">
                                 <img th:src="${user.imageUrl}" alt="Current profile photo" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
-                                <span class="text-muted">Current photo</span>
+                                <span class="text-muted">Foto actual</span>
                             </div>
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
                         </div>
 
                         <div class="text-center mb-3">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                         </div>
                     </form>
 
                     <div class="text-center mb-3">
-                        <a th:href="${editingUserAsAdmin ? '/profile/change-password?userIdToEdit=' + user.id() : '/profile/change-password'}" class="btn btn-info">
-                            <i class="bi bi-key"></i> Change Password
+                        <a th:href="@{${editingUserAsAdmin != null && editingUserAsAdmin ? '/profile/change-password?userIdToEdit=' + user.id() : '/profile/change-password'}}" class="btn btn-info">
+                            <i class="bi bi-key"></i> Cambiar Contraseña
                         </a>
                     </div>
 
                     <div class="text-center">
-                        <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+                        <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')">
                             <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash"></i> Delete Account
+                                <i class="bi bi-trash"></i> Eliminar Cuenta
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const notification = document.getElementById('errorNotification');
@@ -347,126 +156,7 @@
                     }, 400);
                 }, 5000);
             }
-
-            // Add CSS styles for indicators
-            const style = document.createElement('style');
-            style.textContent = `
-                .password-requirements li {
-                    list-style-type: none;
-                    position: relative;
-                    padding-left: 25px;
-                    margin-bottom: 5px;
-                    transition: color 0.3s ease;
-                }
-                .password-requirements li::before {
-                    content: '✕';
-                    position: absolute;
-                    left: 0;
-                    color: #ff4444;
-                    transition: all 0.3s ease;
-                }
-                .password-requirements li.valid {
-                    color: #1db954;
-                }
-                .password-requirements li.valid::before {
-                    content: '✓';
-                    color: #1db954;
-                }
-                .password-requirements li.invalid {
-                    color: #ff4444;
-                }
-            `;
-            document.head.appendChild(style);
-
-            // Password validation for password change
-            const passwordInput = document.querySelector('#newPassword');
-            const confirmPasswordInput = document.querySelector('#confirmPassword');
-            const requirementsList = document.querySelector(".password-requirements ul");
-            const submitButton = document.querySelector('button[type="submit"]');
-
-            if (passwordInput && requirementsList) {
-                const requirements = [
-                    { 
-                        regex: /^.{8,25}$/, 
-                        element: '.requirement.length',
-                        description: 'Between 8 and 25 characters'
-                    },
-                    { 
-                        regex: /.*[0-9].*/, 
-                        element: '.requirement.number',
-                        description: 'At least one number'
-                    },
-                    { 
-                        regex: /.*[A-Z].*/, 
-                        element: '.requirement.uppercase',
-                        description: 'At least one uppercase letter'
-                    },
-                    { 
-                        regex: /.*[!@#$%^&*(),.?":{}|<>].*/, 
-                        element: '.requirement.special',
-                        description: 'At least one special character'
-                    }
-                ];
-
-                const validatePassword = () => {
-                    const password = passwordInput.value;
-                    
-                    // If the field is empty, we don't apply validation
-                    if (!password) {
-                        requirements.forEach(requirement => {
-                            const element = requirementsList.querySelector(requirement.element);
-                            element.classList.remove('valid', 'invalid');
-                        });
-                        passwordInput.setCustomValidity('');
-                        return true;
-                    }
-
-                    let validCount = 0;
-                    requirements.forEach(requirement => {
-                        const element = requirementsList.querySelector(requirement.element);
-                        const isValid = requirement.regex.test(password);
-                        
-                        if (isValid) {
-                            element.classList.add('valid');
-                            element.classList.remove('invalid');
-                            validCount++;
-                        } else {
-                            element.classList.remove('valid');
-                            element.classList.add('invalid');
-                        }
-                    });
-
-                    // Validate that passwords match
-                    if (confirmPasswordInput.value && password !== confirmPasswordInput.value) {
-                        confirmPasswordInput.setCustomValidity('Passwords do not match');
-                    } else {
-                        confirmPasswordInput.setCustomValidity('');
-                    }
-
-                    // Update form validation
-                    passwordInput.setCustomValidity(
-                        validCount === requirements.length ? '' : 'Please meet all password requirements'
-                    );
-
-                    return validCount === requirements.length;
-                };
-
-                // Also validate password confirmation
-                const validateConfirmPassword = () => {
-                    if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
-                        confirmPasswordInput.setCustomValidity('Passwords do not match');
-                    } else {
-                        confirmPasswordInput.setCustomValidity('');
-                    }
-                };
-
-                passwordInput.addEventListener('input', validatePassword);
-                passwordInput.addEventListener('focus', validatePassword);
-                confirmPasswordInput.addEventListener('input', validateConfirmPassword);
-                validatePassword();
-            }
         });
     </script>
-
 </body>
 </html>

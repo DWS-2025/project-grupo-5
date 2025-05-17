@@ -65,6 +65,7 @@ public class ProfileController{
         }
 
         UserDTO userToDisplay;
+        model.addAttribute("editingUserAsAdmin", false);
 
         if (userIdToEdit != null && sessionUser.isAdmin()) {
             Optional<UserDTO> targetUserOpt = userService.getUserById(userIdToEdit);
