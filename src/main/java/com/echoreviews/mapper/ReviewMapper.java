@@ -5,6 +5,7 @@ import com.echoreviews.model.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.IterableMapping;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
@@ -16,7 +17,7 @@ import org.owasp.html.Sanitizers;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface ReviewMapper { // Changed back to interface
+public interface ReviewMapper {
 
     // Flexmark parser and renderer setup
     static final MutableDataSet FLEXMARK_OPTIONS = new MutableDataSet();
@@ -25,6 +26,7 @@ public interface ReviewMapper { // Changed back to interface
     // OWASP HTML Sanitizer policy
     static final PolicyFactory SANITIZER_POLICY = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
 
+    @Named("toHTMLDTO")
     @Mapping(source = "album.id", target = "albumId")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "album.title", target = "albumTitle")
@@ -33,10 +35,23 @@ public interface ReviewMapper { // Changed back to interface
     @Mapping(source = "content", target = "content", qualifiedByName = "markdownToHtml")
     ReviewDTO toDTO(Review review);
 
+    @Named("toMarkdownDTO")
+    @Mapping(source = "album.id", target = "albumId")
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "album.title", target = "albumTitle")
+    @Mapping(source = "album.imageUrl", target = "albumImageUrl")
+    @Mapping(source = "user.imageUrl", target = "userImageUrl")
+    ReviewDTO toDTOWithMarkdown(Review review);
+
     // No changes needed for toEntity as it will take raw markdown from DTO
     Review toEntity(ReviewDTO reviewDTO);
 
-    List<ReviewDTO> toDTOList(List<Review> reviews); // This will also use the toDTO method
+    @IterableMapping(qualifiedByName = "toHTMLDTO")
+    List<ReviewDTO> toDTOList(List<Review> reviews);
+
+    @IterableMapping(qualifiedByName = "toMarkdownDTO")
+    List<ReviewDTO> toDTOListWithMarkdown(List<Review> reviews);
+
     List<Review> toEntityList(List<ReviewDTO> reviewDTOs);
 
     @Named("markdownToHtml")

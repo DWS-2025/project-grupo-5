@@ -13,120 +13,222 @@
     <link rel="stylesheet" href="/css/search.css">
     <link rel="stylesheet" href="/css/list.css">
     <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+    <style>
+        .security-warning {
+            color: #ffc107;
+            font-size: 1.2em;
+        }
+        .security-check {
+            color: #198754;
+            font-size: 1.2em;
+        }
+        .tooltip-inner {
+            max-width: 300px;
+            text-align: left;
+        }
+        #checkAllSecurity {
+            white-space: nowrap;
+        }
+    </style>
 </head>
 
 <body>
+    <div th:replace="~{fragments/header :: header}"></div>
 
-<div th:replace="~{fragments/header :: header}"></div>
-
-<div class="container mt-4">
-    <!-- Paneles de Administración -->
-    <div class="mb-4">
-        <div class="row text-center">
-            <div class="col-3">
-                <a href="/admin" class="btn btn-primary w-100">Album Panel</a>
-            </div>
-            <div class="col-3">
-                <a href="/admin/artists" class="btn btn-primary w-100">Artist Panel</a>
-            </div>
-            <div class="col-3">
-                <a href="/admin/reviews" class="btn btn-primary w-100">Reviews Panel</a>
-            </div>
-            <div class="col-3">
-                <a href="/admin/users" class="btn btn-primary w-100">User Panel</a>
+    <div class="container mt-4">
+        <div class="mb-4">
+            <div class="row text-center">
+                <div class="col-3">
+                    <a href="/admin" class="btn btn-primary w-100">Album Panel</a>
+                </div>
+                <div class="col-3">
+                    <a href="/admin/artists" class="btn btn-primary w-100">Artist Panel</a>
+                </div>
+                <div class="col-3">
+                    <a href="/admin/reviews" class="btn btn-primary w-100">Reviews Panel</a>
+                </div>
+                <div class="col-3">
+                    <a href="/admin/users" class="btn btn-primary w-100">User Panel</a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 id="sectionTitle" class="mb-4">Review Administration Panel</h2>
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 id="sectionTitle" class="mb-4">Review Administration Panel</h2>
+        </div>
+
+        <div class="alert alert-info d-none" id="noResults">
+            No reviews found matching your search.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Album</th>
+                        <th>User</th>
+                        <th>Rating</th>
+                        <th>Content</th>
+                        <th>
+                            <button id="checkAllSecurity" class="btn btn-warning btn-sm">
+                                <i class="bi bi-shield"></i> Check Security
+                            </button>
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="review : ${reviews}">
+                        <td th:text="${review.id()}">1</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img th:if="${review.albumImageUrl() != null}" th:src="${review.albumImageUrl()}" alt="Album Cover" class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                <span th:text="${review.albumTitle() != null ? review.albumTitle() : 'N/A'}">Album Title</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" alt="User Image" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                <span th:text="${review.username()}">Username</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <span th:each="star : ${#numbers.sequence(1, review.rating())}" class="text-warning">★</span>
+                                <span th:if="${review.rating() < 5}" th:each="star : ${#numbers.sequence(1, 5 - review.rating())}" class="text-secondary">★</span>
+                                <span class="ms-1" th:text="${review.rating()}">5</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                                     th:text="${review.content()}"
+                                     th:data-raw-content="${review.content()}">Contenido de la reseña...</div>
+                            </div>
+                        </td>
+                        <td class="security-status" style="width: 100px; text-align: center;">
+                            <i class="bi bi-exclamation-triangle-fill security-warning d-none" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-html="true"
+                               title="Esta reseña contiene contenido potencialmente peligroso"></i>
+                            <i class="bi bi-check-circle-fill security-check d-none"
+                               data-bs-toggle="tooltip"
+                               title="Esta reseña no contiene contenido peligroso"></i>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/admin/reviews/{id}/edit(id=${review.id()})}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil-fill"></i> Edit
+                                </a>
+                                <form th:action="@{/admin/reviews/{id}/delete(id=${review.id()})}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this review?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="alert alert-info d-none" id="noResults">
-        No reviews found matching your search.
-    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Album</th>
-                    <th>User</th>
-                    <th>Rating</th>
-                    <th>Content</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="review : ${reviews}" th:data-content="${review.content().toLowerCase()}" th:data-username="${review.username().toLowerCase()}" th:data-album="${review.albumTitle() != null ? review.albumTitle().toLowerCase() : ''}">
-                    <td th:text="${review.id()}">1</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img th:if="${review.albumImageUrl() != null}" th:src="${review.albumImageUrl()}" alt="Album Cover" class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                            <span th:text="${review.albumTitle() != null ? review.albumTitle() : 'N/A'}">Album Title</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" alt="User Image" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
-                            <span th:text="${review.username()}">Username</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex">
-                            <span th:each="star : ${#numbers.sequence(1, review.rating())}" class="text-warning">★</span>
-                            <span th:if="${review.rating() < 5}" th:each="star : ${#numbers.sequence(1, 5 - review.rating())}" class="text-secondary">★</span>
-                            <span class="ms-1" th:text="${review.rating()}">5</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${review.content()}">Contenido de la reseña...</div>
-                            <small class="text-muted ms-2" th:text="${#strings.length(review.content()) + '/255'}">0/255</small>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a th:href="@{/admin/reviews/{id}/edit(id=${review.id()})}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-pencil-fill"></i> Edit
-                            </a>
-                            <form th:action="@{/admin/reviews/{id}/delete(id=${review.id()})}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this review?')">
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash-fill"></i> Delete
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
-<div th:replace="~{fragments/footer :: footer}"></div>
-<!--
-<script>
-    function filterReviews() {
-        const searchInput = document.getElementById("searchInput").value.toLowerCase();
-        const reviewRows = document.querySelectorAll("tbody tr");
-        let hasResults = false;
+            function checkReviewSecurity(content) {
+                if (!content) return [];
+                
+                const securityIssues = [];
+                const contentLower = content.toLowerCase();
 
-        reviewRows.forEach(row => {
-            const content = row.getAttribute("data-content");
-            const username = row.getAttribute("data-username");
-            const album = row.getAttribute("data-album");
-            
-            if (content.includes(searchInput) || username.includes(searchInput) || album.includes(searchInput)) {
-                row.style.display = "";
-                hasResults = true;
-            } else {
-                row.style.display = "none";
+                // Patrones de detección de contenido peligroso
+                const patterns = [
+                    {
+                        type: 'script',
+                        regex: /(<script|<\/script>)/i,
+                        message: 'Contiene etiquetas script'
+                    },
+                    {
+                        type: 'event',
+                        regex: /on\w+=/i,
+                        message: 'Contiene eventos JavaScript inline'
+                    },
+                    {
+                        type: 'iframe',
+                        regex: /(<iframe|<\/iframe>)/i,
+                        message: 'Contiene etiquetas iframe'
+                    },
+                    {
+                        type: 'javascript',
+                        regex: /javascript:/i,
+                        message: 'Contiene enlaces javascript:'
+                    },
+                    {
+                        type: 'style',
+                        regex: /(<style|<\/style>|<link|<\/link>)/i,
+                        message: 'Contiene etiquetas style o link'
+                    }
+                ];
+
+                // Revisar cada patrón
+                patterns.forEach(pattern => {
+                    if (pattern.regex.test(contentLower)) {
+                        securityIssues.push(pattern.message);
+                    }
+                });
+
+                return securityIssues;
+            }
+
+            const checkSecurityButton = document.getElementById('checkAllSecurity');
+            if (checkSecurityButton) {
+                checkSecurityButton.addEventListener('click', function() {
+                    const rows = document.querySelectorAll('tbody tr');
+
+                    rows.forEach(function(row) {
+                        const contentDiv = row.querySelector('[data-raw-content]');
+                        if (!contentDiv) return;
+
+                        const content = contentDiv.getAttribute('data-raw-content');
+                        const warningIcon = row.querySelector('.security-warning');
+                        const checkIcon = row.querySelector('.security-check');
+                        
+                        if (!warningIcon || !checkIcon) return;
+
+                        const securityIssues = checkReviewSecurity(content);
+
+                        // Remove existing tooltips
+                        const existingTooltip = bootstrap.Tooltip.getInstance(warningIcon);
+                        if (existingTooltip) {
+                            existingTooltip.dispose();
+                        }
+
+                        if (securityIssues.length > 0) {
+                            warningIcon.classList.remove('d-none');
+                            checkIcon.classList.add('d-none');
+                            
+                            const tooltipContent = 'Advertencias de seguridad:<br>' + 
+                                securityIssues.map(issue => '• ' + issue).join('<br>');
+                            
+                            warningIcon.setAttribute('data-bs-original-title', tooltipContent);
+                            new bootstrap.Tooltip(warningIcon, {
+                                html: true
+                            });
+                        } else {
+                            warningIcon.classList.add('d-none');
+                            checkIcon.classList.remove('d-none');
+                        }
+                    });
+                });
             }
         });
-
-        document.getElementById("noResults").classList.toggle("d-none", hasResults);
-    }
-</script>
--->
+    </script>
 </body>
 </html>

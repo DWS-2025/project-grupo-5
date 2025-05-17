@@ -73,6 +73,12 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReviewDTO> getAllReviewsWithMarkdown() {
+        return reviewRepository.findAll().stream()
+                .map(reviewMapper::toDTOWithMarkdown)
+                .collect(Collectors.toList());
+    }
+
     public Review addReview(Long albumId, ReviewDTO reviewDTO) {
         if (reviewDTO == null) {
             throw new IllegalArgumentException("ReviewDTO cannot be null");
@@ -158,5 +164,10 @@ public class ReviewService {
         return reviews.stream()
                 .map(reviewMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<ReviewDTO> getReviewByIdWithMarkdown(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .map(reviewMapper::toDTOWithMarkdown);
     }
 }

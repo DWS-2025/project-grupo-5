@@ -10,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 import com.echoreviews.dto.ReviewDTO;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
 import com.echoreviews.dto.UserDTO;
 import com.echoreviews.dto.ArtistDTO;
 import com.echoreviews.dto.AlbumDTO;
@@ -172,6 +175,34 @@ public class ReviewController {
         model.addAttribute("userReviews", userReviews);
 
         return "reviews/user-review";
+    }
+
+    @GetMapping("/details/{reviewId}")
+    @ResponseBody
+    public ResponseEntity<?> getReviewDetails(@PathVariable Long reviewId, HttpSession session) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
+        }
+
+        Optional<ReviewDTO> reviewOpt = reviewService.getReviewByIdWithMarkdown(reviewId);
+        
+        if (reviewOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ReviewDTO review = reviewOpt.get();
+        
+        // Check if the user is authorized to edit this review
+        if (!review.username().equals(userDTO.username()) && !userDTO.isAdmin()) {
+            return ResponseEntity.status(403).body(Map.of("error", "Not authorized to edit this review"));
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", review.content());
+        response.put("rating", review.rating());
+        
+        return ResponseEntity.ok(response);
     }
 
 }

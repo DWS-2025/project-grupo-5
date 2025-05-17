@@ -490,7 +490,7 @@ public class AdminController {
             model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         } else {
-            List<ReviewDTO> reviews = reviewService.getAllReviews();
+            List<ReviewDTO> reviews = reviewService.getAllReviewsWithMarkdown();
             model.addAttribute("reviews", reviews);
             return "review/admin";
         }
@@ -505,7 +505,7 @@ public class AdminController {
             return "error";
         }
         
-        Optional<ReviewDTO> reviewOpt = reviewService.getReviewById(id);
+        Optional<ReviewDTO> reviewOpt = reviewService.getReviewByIdWithMarkdown(id);
         if (reviewOpt.isEmpty()) {
             model.addAttribute("error", "Error: Review not found with ID: " + id);
             return "error";

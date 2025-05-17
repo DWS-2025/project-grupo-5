@@ -12,6 +12,44 @@
     <link rel="stylesheet" href="/css/form.css">
     <link rel="stylesheet" href="/css/reviews.css">
     <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+    
+    <!-- EasyMDE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+
+    <style>
+        .EasyMDEContainer .CodeMirror {
+            background-color: #222;
+            color: #eee;
+            border-color: #555;
+        }
+        .EasyMDEContainer .CodeMirror-cursor {
+            border-left-color: #eee;
+        }
+        .editor-toolbar {
+            background-color: #333;
+            border-color: #555;
+        }
+        .editor-toolbar a {
+            color: #eee !important;
+        }
+        .editor-toolbar a.active, .editor-toolbar a:hover {
+            background: #444;
+            border-color: #666;
+        }
+        .editor-toolbar i.separator {
+            border-left-color: #555;
+            border-right-color: #555;
+        }
+        .editor-statusbar {
+            color: #aaa;
+            background-color: #333;
+            border-top-color: #555;
+        }
+        .EasyMDEContainer + textarea {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -69,14 +107,7 @@
                         
                         <div class="mb-3">
                             <label for="content" class="form-label" style="color: white;">Contenido de la Reseña <span id="charCount" style="color: white;">(0/255)</span></label>
-                            <textarea class="form-control" id="content" name="content" rows="5" required maxlength="255" th:text="${review.content()}" style="color: white;"></textarea>
-                            <script>
-                                document.getElementById('content').addEventListener('input', function() {
-                                    const maxLength = 255;
-                                    const currentLength = this.value.length;
-                                    document.getElementById('charCount').textContent = `(${currentLength}/${maxLength})`;
-                                });
-                            </script>
+                            <textarea class="form-control" id="content" name="content" required maxlength="255" th:utext="${review.content()}"></textarea>
                         </div>
                         
                         <div class="d-flex justify-content-between">
@@ -91,6 +122,47 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    const easymde = new EasyMDE({
+        element: document.getElementById('content'),
+        spellChecker: false,
+        minHeight: "150px",
+        maxHeight: "150px",
+        status: false,
+        toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"],
+        renderingConfig: {
+            singleLineBreaks: false,
+            codeSyntaxHighlighting: true,
+        },
+        parsingConfig: {
+            allowAtxHeaderWithoutSpace: true,
+            strikethrough: false,
+            underscoresBreakWords: true,
+        }
+    });
+
+    const charCountSpan = document.getElementById('charCount');
+    const maxChars = 255;
+
+    easymde.codemirror.on('change', function() {
+        const currentValue = easymde.codemirror.getValue();
+        let currentLength = currentValue.length;
+
+        if (currentLength > maxChars) {
+            easymde.codemirror.setValue(currentValue.substring(0, maxChars));
+            currentLength = maxChars;
+            charCountSpan.style.color = 'red';
+        } else {
+            charCountSpan.style.color = '';
+        }
+        charCountSpan.textContent = `(${currentLength}/${maxChars})`;
+    });
+
+    // Inicializar el contador al cargar
+    const initialContent = easymde.codemirror.getValue();
+    charCountSpan.textContent = `(${initialContent.length}/${maxChars})`;
+</script>
 
 </body>
 </html>
