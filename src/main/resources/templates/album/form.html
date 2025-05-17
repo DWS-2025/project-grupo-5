@@ -31,20 +31,45 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Artist</label>
-            <div class="d-flex gap-2">
-                <select id="artistId" name="artistId" class="form-select">
-                    <option value="">Select an existing artist</option>
-                    <option th:each="artist : ${artists}" 
-                            th:value="${artist.id}" 
-                            th:text="${artist.name}"
-                            th:selected="${selectedArtistId != null && selectedArtistId == artist.id}">
-                    </option>
-                </select>
-                <button type="button" class="btn btn-secondary" onclick="toggleNewArtistInput()">
-                    <i class="bi bi-plus-circle me-1"></i>New Artist
-                </button>
+            <label class="form-label">Artists</label>
+            <div id="artistsContainer">
+                <!-- Artistas existentes -->
+                <div th:each="currentArtistId : ${currentArtistIds}" class="artist-entry d-flex gap-2 mb-2">
+                    <select name="artistId[]" class="form-select">
+                        <option value="">Select an existing artist</option>
+                        <option th:each="artist : ${artists}" 
+                                th:value="${artist.id}" 
+                                th:text="${artist.name}"
+                                th:selected="${currentArtistId == artist.id}">
+                        </option>
+                    </select>
+                    <button type="button" class="btn btn-secondary" onclick="toggleNewArtistInput(this)">
+                        <i class="bi bi-plus-circle me-1"></i>New Artist
+                    </button>
+                    <button th:if="${!currentArtistIdStat.first}" type="button" class="btn btn-danger" onclick="this.closest('.artist-entry').remove()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                
+                <!-- Si no hay artistas, mostrar un selector vacío -->
+                <div th:if="${currentArtistIds == null || currentArtistIds.isEmpty()}" class="artist-entry d-flex gap-2 mb-2">
+                    <select name="artistId[]" class="form-select">
+                        <option value="">Select an existing artist</option>
+                        <option th:each="artist : ${artists}" 
+                                th:value="${artist.id}" 
+                                th:text="${artist.name}">
+                        </option>
+                    </select>
+                    <button type="button" class="btn btn-secondary" onclick="toggleNewArtistInput(this)">
+                        <i class="bi bi-plus-circle me-1"></i>New Artist
+                    </button>
+                </div>
             </div>
+            
+            <!-- Botón para añadir otro artista -->
+            <button type="button" class="btn btn-outline-primary mt-2" onclick="addAnotherArtist()">
+                <i class="bi bi-plus-circle me-1"></i>Add Another Artist
+            </button>
         </div>
 
         <div id="newArtistInput" class="mb-3" style="display: none;">
@@ -53,9 +78,30 @@
         </div>
 
         <script th:inline="javascript">
-            function toggleNewArtistInput() {
+            function addAnotherArtist() {
+                const container = document.getElementById('artistsContainer');
+                const artistTemplate = container.querySelector('.artist-entry').cloneNode(true);
+                
+                // Limpiar la selección en el nuevo selector
+                const newSelect = artistTemplate.querySelector('select');
+                newSelect.value = '';
+                
+                // Añadir botón de eliminar para artistas adicionales
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-danger';
+                removeBtn.innerHTML = '<i class="bi bi-x"></i>';
+                removeBtn.onclick = function() {
+                    this.closest('.artist-entry').remove();
+                };
+                artistTemplate.appendChild(removeBtn);
+                
+                container.appendChild(artistTemplate);
+            }
+
+            function toggleNewArtistInput(button) {
                 const newArtistInput = document.getElementById('newArtistInput');
-                const artistSelect = document.getElementById('artistId');
+                const artistSelect = button.previousElementSibling;
                 
                 if (newArtistInput.style.display === 'none') {
                     newArtistInput.style.display = 'block';
@@ -68,32 +114,31 @@
             }
 
             function validateArtistSelection() {
-                const artistSelect = document.getElementById('artistId');
+                const artistSelects = document.querySelectorAll('select[name="artistId[]"]');
                 const newArtistInput = document.getElementById('newArtistName');
-                
-                if (artistSelect.disabled && (!newArtistInput.value || newArtistInput.value.trim() === '')) {
-                    alert('Please enter the name of the new artist');
-                    newArtistInput.classList.add('is-invalid');
-                    return false;
-                } else if (!artistSelect.disabled && (!artistSelect.value || artistSelect.value === '')) {
-                    alert('Please select an existing artist');
-                    artistSelect.classList.add('is-invalid');
+                let hasValidSelection = false;
+
+                // Verificar si hay al menos un artista seleccionado
+                for (let select of artistSelects) {
+                    if (!select.disabled && select.value) {
+                        hasValidSelection = true;
+                        break;
+                    }
+                }
+
+                // Verificar si hay un nuevo artista siendo creado
+                if (newArtistInput.style.display !== 'none' && newArtistInput.value.trim()) {
+                    hasValidSelection = true;
+                }
+
+                if (!hasValidSelection) {
+                    alert('Please select at least one artist or create a new one');
                     return false;
                 }
-                
-                // Make sure the correct field is enabled before submitting
-                if (artistSelect.disabled) {
-                    // If we're creating a new artist, make sure the selection field doesn't interfere
-                    artistSelect.value = '';
-                } else {
-                    // If we're selecting an existing artist, clear the new artist field
-                    newArtistInput.value = '';
-                }
-                
+
                 return true;
             }
         </script>
-
 
         <div class="mb-3">
             <label for="genre" class="form-label">Genre</label>

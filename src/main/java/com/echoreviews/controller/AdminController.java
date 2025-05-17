@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -77,7 +78,7 @@ public class AdminController {
     public String createAlbum(@Valid Album album, BindingResult result,
                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                               @RequestParam(value = "audioFile2", required = false) MultipartFile audioPreview,
-                              @RequestParam(value = "artistId", required = false) Long artistId,
+                              @RequestParam(value = "artistId[]", required = false) List<Long> artistIds,
                               @RequestParam(value = "newArtistName", required = false) String newArtistName,
                               Model model, HttpSession session) throws IOException {
 
@@ -103,31 +104,34 @@ public class AdminController {
                 album.getArtists().clear(); // Clear existing artists to avoid duplicates
             }
 
-            // Process artists if they exist
-            if (artistId != null && artistId > 0) {
-                // Use existing artist
-                var artistOpt = artistService.getArtistById(artistId);
-                if (artistOpt.isEmpty()) {
-                    model.addAttribute("error", "Error: The selected artist does not exist in the database");
-                    return "error";
+            // Process existing artists if they exist
+            if (artistIds != null && !artistIds.isEmpty()) {
+                for (Long artistId : artistIds) {
+                    if (artistId != null && artistId > 0) {
+                        var artistOpt = artistService.getArtistById(artistId);
+                        if (artistOpt.isEmpty()) {
+                            model.addAttribute("error", "Error: One of the selected artists does not exist in the database");
+                            return "error";
+                        }
+                        
+                        artistOpt.ifPresent(artistDTO -> {
+                            Artist artist = new Artist();
+                            artist.setId(artistDTO.id());
+                            artist.setName(artistDTO.name());
+                            album.getArtists().add(artist);
+                        });
+                    }
                 }
-                
-                artistOpt.ifPresent(artistDTO -> {
-                    Artist artist = new Artist();
-                    artist.setId(artistDTO.id());
-                    artist.setName(artistDTO.name());
-                    album.getArtists().add(artist);
-                });
-            } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
-                // Create new artist
+            }
+
+            // Process new artist if it exists
+            if (newArtistName != null && !newArtistName.trim().isEmpty()) {
                 try {
-                    // Create artist with validated name
                     String validatedName = newArtistName.trim();
                     Artist newArtist = new Artist(validatedName);
                     
-                    // Explicitly verify that the name is not null before creating the DTO
                     if (newArtist.getName() == null) {
-                        newArtist.setName(validatedName); // Ensure the name is set
+                        newArtist.setName(validatedName);
                     }
                     
                     ArtistDTO artistDTO = ArtistDTO.fromArtist(newArtist);
@@ -138,14 +142,11 @@ public class AdminController {
                     model.addAttribute("error", "Error creating new artist: " + e.getMessage());
                     return "error";
                 }
-            } else {
-                model.addAttribute("error", "Error: You must select an existing artist or create a new one");
-                return "error";
             }
 
             // Verify that at least one artist has been added
             if (album.getArtists().isEmpty()) {
-                model.addAttribute("error", "Error: No artist could be associated with the album");
+                model.addAttribute("error", "Error: You must select at least one artist or create a new one");
                 return "error";
             }
 
@@ -224,10 +225,13 @@ public class AdminController {
             AlbumDTO albumDTO = AlbumDTO.fromAlbum(albumEntity);
             model.addAttribute("album", albumDTO);
             model.addAttribute("artists", artistService.getAllArtists());
-            // Añadir el ID del artista actual para pre-seleccionarlo en el formulario
-            if (!albumEntity.getArtists().isEmpty()) {
-                model.addAttribute("selectedArtistId", albumEntity.getArtists().get(0).getId());
-            }
+            
+            // Añadir la lista de IDs de artistas actuales
+            List<Long> currentArtistIds = albumEntity.getArtists().stream()
+                .map(Artist::getId)
+                .collect(Collectors.toList());
+            model.addAttribute("currentArtistIds", currentArtistIds);
+            
             return "album/form";
         } catch (Exception e) {
             model.addAttribute("error", "Error loading the edit form: " + e.getMessage());
@@ -243,7 +247,7 @@ public class AdminController {
             BindingResult result,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestParam(value = "audioFile2", required = false) MultipartFile audioPreview,
-            @RequestParam(value = "artistId", required = false) Long artistId,
+            @RequestParam(value = "artistId[]", required = false) List<Long> artistIds,
             @RequestParam(value = "newArtistName", required = false) String newArtistName,
             Model model, HttpSession session) throws IOException {
 
@@ -262,7 +266,6 @@ public class AdminController {
         }
 
         try {
-            // Verify if the album exists
             var albumOpt = albumService.getAlbumById(id);
             if (albumOpt.isEmpty()) {
                 model.addAttribute("error", "Error: The album you are trying to update does not exist (ID: " + id + ")");
@@ -270,36 +273,37 @@ public class AdminController {
             }
             
             Album existingAlbum = albumOpt.get().toAlbum();
-
             existingAlbum.setTitle(album.getTitle());
-            // Limpiar la lista de artistas existente
             existingAlbum.getArtists().clear();
             
-            // Handle artist selection or creation
-            if (artistId != null && artistId > 0) {
-                // Use existing artist
-                var artistOpt = artistService.getArtistById(artistId);
-                if (artistOpt.isEmpty()) {
-                    model.addAttribute("error", "Error: The selected artist does not exist in the database");
-                    return "error";
+            // Process existing artists if they exist
+            if (artistIds != null && !artistIds.isEmpty()) {
+                for (Long artistId : artistIds) {
+                    if (artistId != null && artistId > 0) {
+                        var artistOpt = artistService.getArtistById(artistId);
+                        if (artistOpt.isEmpty()) {
+                            model.addAttribute("error", "Error: One of the selected artists does not exist in the database");
+                            return "error";
+                        }
+                        
+                        artistOpt.ifPresent(artistDTO -> {
+                            Artist artist = new Artist();
+                            artist.setId(artistDTO.id());
+                            artist.setName(artistDTO.name());
+                            existingAlbum.getArtists().add(artist);
+                        });
+                    }
                 }
-                
-                artistOpt.ifPresent(artistDTO -> {
-                    Artist artist = new Artist();
-                    artist.setId(artistDTO.id());
-                    artist.setName(artistDTO.name());
-                    existingAlbum.getArtists().add(artist);
-                });
-            } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
-                // Create new artist
+            }
+
+            // Process new artist if it exists
+            if (newArtistName != null && !newArtistName.trim().isEmpty()) {
                 try {
-                    // Create artist with validated name
                     String validatedName = newArtistName.trim();
                     Artist newArtist = new Artist(validatedName);
                     
-                    // Explicitly verify that the name is not null before creating the DTO
                     if (newArtist.getName() == null) {
-                        newArtist.setName(validatedName); // Ensure the name is set
+                        newArtist.setName(validatedName);
                     }
                     
                     ArtistDTO artistDTO = ArtistDTO.fromArtist(newArtist);
@@ -310,18 +314,14 @@ public class AdminController {
                     model.addAttribute("error", "Error creating new artist: " + e.getMessage());
                     return "error";
                 }
-            } else {
-                // If no artist was selected or created, show error
-                model.addAttribute("error", "Error: You must select an existing artist or create a new one");
-                return "error";
             }
             
             // Verify that at least one artist has been added
             if (existingAlbum.getArtists().isEmpty()) {
-                model.addAttribute("error", "Error: No artist could be associated with the album");
+                model.addAttribute("error", "Error: You must select at least one artist or create a new one");
                 return "error";
             }
-            
+
             // Update the remaining album fields
             existingAlbum.setGenre(album.getGenre());
             existingAlbum.setDescription(album.getDescription());
