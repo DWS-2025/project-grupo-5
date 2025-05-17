@@ -29,6 +29,9 @@ public class SecurityConfig {
     
     @Autowired
     private BannedUserFilter bannedUserFilter;
+    
+    @Autowired
+    private UserAgentValidationFilter userAgentValidationFilter;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -80,7 +83,8 @@ public class SecurityConfig {
                         .maximumSessions(1)
                         .expiredUrl("/login?session-expired=true")
                 )
-                .addFilterAfter(bannedUserFilter, BasicAuthenticationFilter.class);
+                .addFilterAfter(bannedUserFilter, BasicAuthenticationFilter.class)
+                .addFilterAfter(userAgentValidationFilter, BannedUserFilter.class);
 
         return http.build();
     }

@@ -416,6 +416,10 @@
                             This account has been banned. Please contact customer support for more information.
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.8rem; padding: 0.75rem 1rem;"></button>
                         </div>
+                        <div th:if="${param.error == 'invalid-agent'}" class="alert alert-danger alert-dismissible fade show" role="alert" style="font-size: 0.9rem; padding: 0.75rem 1.25rem;">
+                            Your session has been invalidated due to a security concern. Please login again.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.8rem; padding: 0.75rem 1rem;"></button>
+                        </div>
                         <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show" role="alert" style="font-size: 0.9rem; padding: 0.75rem 1.25rem;">
                             You have been logged out.
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.8rem; padding: 0.75rem 1rem;"></button>

@@ -48,6 +48,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // Store the UserDTO in the HTTP session
         HttpSession session = request.getSession();
         session.setAttribute("user", userDTO);
+        
+        // Store the user agent and IP address in the session for validation against session hijacking
+        session.setAttribute("USER_AGENT", request.getHeader("User-Agent"));
+        session.setAttribute("IP_ADDRESS", request.getRemoteAddr());
 
         // Redirect the user to the home page after successful login.
         // Spring Security could handle more complex redirections (to the originally requested URL)
