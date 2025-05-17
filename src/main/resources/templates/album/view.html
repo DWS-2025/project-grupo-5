@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -159,7 +159,7 @@
                             </div>
                         </div>
                         <div class="stats-wrapper"
-                             th:attr="title=${'Usuarios a los que les gusta: ' + #strings.arrayJoin(favoriteUsernames, ', ')}">
+                             th:attr="title=${'Users who like this: ' + #strings.arrayJoin(favoriteUsernames, ', ')}">
                             <p class="heading">Likes</p>
 
                             <div class="bottom-wrapper">
@@ -322,8 +322,8 @@
                                         </th:block>
                                     </div>
 
+                                    <!-- User image and username container -->
                                     <div class="infos d-flex flex-column">
-                                        <!-- Contenedor de la imagen y el nombre de usuario -->
                                         <div class="d-flex align-items-center">
                                             <div class="me-2" style="width: 40px; height: 40px;">
                                                 <a th:href="@{/profile/{username}(username=${review.username()})}">
@@ -335,7 +335,7 @@
                                                 <a th:href="@{/profile/{username}(username=${review.username()})}" class="author" th:text="${review.username()}"></a>
                                             </div>
                                         </div>
-                                        <!-- Contenedor del contenido, debajo del nombre de usuario -->
+                                        <!-- Content container, below username -->
                                         <div class="description review-content mt-2" th:utext="${review.content()}"></div>
                                     </div>
 
@@ -469,3 +469,4 @@
             });
         </script>
 </html>
+

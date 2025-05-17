@@ -50,7 +50,7 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         } else {
             model.addAttribute("albums", albumService.getAllAlbums());
@@ -65,7 +65,7 @@ public class AdminController {
         model.addAttribute("artists", artistService.getAllArtists());
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         } else{
             model.addAttribute("album", new Album());
@@ -84,31 +84,31 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
 
         if (result.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder("Errores de validación: ");
+            StringBuilder errorMsg = new StringBuilder("Validation errors: ");
             result.getAllErrors().forEach(error -> errorMsg.append(error.getDefaultMessage()).append(". "));
             model.addAttribute("error", errorMsg.toString());
             return "error";
         }
 
         try {
-            // Asegurarse de que la lista de artistas no sea null
+            // Make sure the artists list is not null
             if (album.getArtists() == null) {
                 album.setArtists(new ArrayList<>());
             } else {
-                album.getArtists().clear(); // Limpiar artistas existentes para evitar duplicados
+                album.getArtists().clear(); // Clear existing artists to avoid duplicates
             }
 
-            // Manejar la selección o creación de artista
+            // Process artists if they exist
             if (artistId != null && artistId > 0) {
-                // Usar artista existente
+                // Use existing artist
                 var artistOpt = artistService.getArtistById(artistId);
                 if (artistOpt.isEmpty()) {
-                    model.addAttribute("error", "Error: El artista seleccionado no existe en la base de datos");
+                    model.addAttribute("error", "Error: The selected artist does not exist in the database");
                     return "error";
                 }
                 
@@ -119,15 +119,15 @@ public class AdminController {
                     album.getArtists().add(artist);
                 });
             } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
-                // Crear nuevo artista
+                // Create new artist
                 try {
-                    // Crear el artista con nombre validado
+                    // Create artist with validated name
                     String validatedName = newArtistName.trim();
                     Artist newArtist = new Artist(validatedName);
                     
-                    // Verificar explícitamente que el nombre no sea null antes de crear el DTO
+                    // Explicitly verify that the name is not null before creating the DTO
                     if (newArtist.getName() == null) {
-                        newArtist.setName(validatedName); // Asegurar que el nombre esté establecido
+                        newArtist.setName(validatedName); // Ensure the name is set
                     }
                     
                     ArtistDTO artistDTO = ArtistDTO.fromArtist(newArtist);
@@ -135,67 +135,66 @@ public class AdminController {
                     newArtist.setId(savedArtistDTO.id());
                     album.getArtists().add(newArtist);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al crear el nuevo artista: " + e.getMessage());
+                    model.addAttribute("error", "Error creating new artist: " + e.getMessage());
                     return "error";
                 }
             } else {
-                // Si no se seleccionó un artista ni se creó uno nuevo, mostrar error
-                model.addAttribute("error", "Error: Debe seleccionar un artista existente o crear uno nuevo");
+                model.addAttribute("error", "Error: You must select an existing artist or create a new one");
                 return "error";
             }
 
-            // Verificar que se haya añadido al menos un artista
+            // Verify that at least one artist has been added
             if (album.getArtists().isEmpty()) {
-                model.addAttribute("error", "Error: No se pudo asociar ningún artista al álbum");
+                model.addAttribute("error", "Error: No artist could be associated with the album");
                 return "error";
             }
 
-            // Procesar tracklist si existe
+            // Process tracklist if it exists
             if (album.getTracklist() != null && !album.getTracklist().isEmpty()) {
                 try {
                     String[] tracklistArray = album.getTracklist().split("\\r?\\n");
                     String concatenatedTracklist = String.join(" + ", tracklistArray);
                     album.setTracklist(concatenatedTracklist);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al procesar la lista de canciones: " + e.getMessage());
+                    model.addAttribute("error", "Error processing the song list: " + e.getMessage());
                     return "error";
                 }
             }
 
-            // Convertir y guardar el álbum
+            // Convert and save the album
             AlbumDTO albumDTO;
             AlbumDTO savedAlbum;
             try {
                 albumDTO = AlbumDTO.fromAlbum(album);
                 savedAlbum = albumService.saveAlbum(albumDTO);
             } catch (Exception e) {
-                model.addAttribute("error", "Error al guardar la información básica del álbum: " + e.getMessage());
+                model.addAttribute("error", "Error saving the basic album information: " + e.getMessage());
                 return "error";
             }
 
-            // Procesar imagen si existe
+            // Process image if it exists
             if (imageFile != null && !imageFile.isEmpty()) {
                 try {
                     savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al guardar la imagen del álbum: " + e.getMessage());
+                    model.addAttribute("error", "Error saving the album image: " + e.getMessage());
                     return "error";
                 }
             }
 
-            // Procesar audio si existe
+            // Process audio if it exists
             if (audioPreview != null && !audioPreview.isEmpty()) {
                 try {
                     savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioPreview);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al guardar el archivo de audio: " + e.getMessage());
+                    model.addAttribute("error", "Error saving the audio file: " + e.getMessage());
                     return "error";
                 }
             }
 
             return "redirect:/admin";
         } catch (Exception e) {
-            model.addAttribute("error", "Error inesperado al guardar el álbum: " + e.getMessage());
+            model.addAttribute("error", "Unexpected error while saving the album: " + e.getMessage());
             return "error";
         }
     }
@@ -204,18 +203,18 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
         
         var albumOpt = albumService.getAlbumById(id);
         if (albumOpt.isEmpty()) {
-            model.addAttribute("error", "Error: No se encontró el álbum con ID: " + id);
+            model.addAttribute("error", "Error: Album not found with ID: " + id);
             return "error";
         }
         
         try {
-            // Si la lista de artistas es nula o está vacía, inicializamos con un nuevo artista
+            // If the artists list is null or empty, initialize with a new artist
             Album albumEntity = albumOpt.get().toAlbum();
             if (albumEntity.getArtists() == null || albumEntity.getArtists().isEmpty()) {
                 albumEntity.setArtists(new ArrayList<>());
@@ -226,7 +225,7 @@ public class AdminController {
             model.addAttribute("artists", artistService.getAllArtists());
             return "album/form";
         } catch (Exception e) {
-            model.addAttribute("error", "Error al cargar el formulario de edición: " + e.getMessage());
+            model.addAttribute("error", "Error loading the edit form: " + e.getMessage());
             return "error";
         }
     }
@@ -246,41 +245,41 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
 
         if (result.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder("Errores de validación: ");
+            StringBuilder errorMsg = new StringBuilder("Validation errors: ");
             result.getAllErrors().forEach(error -> errorMsg.append(error.getDefaultMessage()).append(". "));
             model.addAttribute("error", errorMsg.toString());
             return "error";
         }
 
         try {
-            // Verificar si el álbum existe
+            // Verify if the album exists
             var albumOpt = albumService.getAlbumById(id);
             if (albumOpt.isEmpty()) {
-                model.addAttribute("error", "Error: El álbum que intentas actualizar no existe (ID: " + id + ")");
+                model.addAttribute("error", "Error: The album you are trying to update does not exist (ID: " + id + ")");
                 return "error";
             }
             
             Album existingAlbum = albumOpt.get().toAlbum();
 
             existingAlbum.setTitle(album.getTitle());
-            // Asegurarse de que la lista de artistas no sea null
-            if (existingAlbum.getArtists() == null) {
+            // If the artists list is null or empty, initialize with a new artist
+            if (existingAlbum.getArtists() == null || existingAlbum.getArtists().isEmpty()) {
                 existingAlbum.setArtists(new ArrayList<>());
-            } else {
-                existingAlbum.getArtists().clear(); // Limpiar artistas existentes
+                Artist emptyArtist = new Artist();
+                existingAlbum.getArtists().add(emptyArtist);
             }
             
-            // Manejar la selección o creación de artista
+            // Handle artist selection or creation
             if (artistId != null && artistId > 0) {
-                // Usar artista existente
+                // Use existing artist
                 var artistOpt = artistService.getArtistById(artistId);
                 if (artistOpt.isEmpty()) {
-                    model.addAttribute("error", "Error: El artista seleccionado no existe en la base de datos");
+                    model.addAttribute("error", "Error: The selected artist does not exist in the database");
                     return "error";
                 }
                 
@@ -291,15 +290,15 @@ public class AdminController {
                     existingAlbum.getArtists().add(artist);
                 });
             } else if (newArtistName != null && !newArtistName.trim().isEmpty()) {
-                // Crear nuevo artista
+                // Create new artist
                 try {
-                    // Crear el artista con nombre validado
+                    // Create artist with validated name
                     String validatedName = newArtistName.trim();
                     Artist newArtist = new Artist(validatedName);
                     
-                    // Verificar explícitamente que el nombre no sea null antes de crear el DTO
+                    // Explicitly verify that the name is not null before creating the DTO
                     if (newArtist.getName() == null) {
-                        newArtist.setName(validatedName); // Asegurar que el nombre esté establecido
+                        newArtist.setName(validatedName); // Ensure the name is set
                     }
                     
                     ArtistDTO artistDTO = ArtistDTO.fromArtist(newArtist);
@@ -307,22 +306,22 @@ public class AdminController {
                     newArtist.setId(savedArtistDTO.id());
                     existingAlbum.getArtists().add(newArtist);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al crear el nuevo artista: " + e.getMessage());
+                    model.addAttribute("error", "Error creating new artist: " + e.getMessage());
                     return "error";
                 }
             } else {
-                // Si no se seleccionó un artista ni se creó uno nuevo, mostrar error
-                model.addAttribute("error", "Error: Debe seleccionar un artista existente o crear uno nuevo");
+                // If no artist was selected or created, show error
+                model.addAttribute("error", "Error: You must select an existing artist or create a new one");
                 return "error";
             }
             
-            // Verificar que se haya añadido al menos un artista
+            // Verify that at least one artist has been added
             if (existingAlbum.getArtists().isEmpty()) {
-                model.addAttribute("error", "Error: No se pudo asociar ningún artista al álbum");
+                model.addAttribute("error", "Error: No artist could be associated with the album");
                 return "error";
             }
             
-            // Actualizar los demás campos del álbum
+            // Update the remaining album fields
             existingAlbum.setGenre(album.getGenre());
             existingAlbum.setDescription(album.getDescription());
             existingAlbum.setTracklist(album.getTracklist());
@@ -331,52 +330,52 @@ public class AdminController {
             existingAlbum.setApplemusic_url(album.getApplemusic_url());
             existingAlbum.setTidal_url(album.getTidal_url());
 
-            // Procesar tracklist si existe
+            // Process tracklist if it exists
             if (existingAlbum.getTracklist() != null && !existingAlbum.getTracklist().isEmpty()) {
                 try {
                     String[] tracklistArray = existingAlbum.getTracklist().split("\\r?\\n");
                     String concatenatedTracklist = String.join(" + ", tracklistArray);
                     existingAlbum.setTracklist(concatenatedTracklist);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al procesar la lista de canciones: " + e.getMessage());
+                    model.addAttribute("error", "Error processing the song list: " + e.getMessage());
                     return "error";
                 }
             }
 
-            // Convertir y guardar el álbum
+            // Convert and save the album
             AlbumDTO albumDTO;
             AlbumDTO savedAlbum;
             try {
                 albumDTO = AlbumDTO.fromAlbum(existingAlbum);
                 savedAlbum = albumService.saveAlbum(albumDTO);
             } catch (Exception e) {
-                model.addAttribute("error", "Error al guardar la información básica del álbum: " + e.getMessage());
+                model.addAttribute("error", "Error saving the basic album information: " + e.getMessage());
                 return "error";
             }
 
-            // Procesar imagen si existe
+            // Process image if it exists
             if (imageFile != null && !imageFile.isEmpty()) {
                 try {
                     savedAlbum = albumService.saveAlbumWithImage(savedAlbum, imageFile);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al guardar la imagen del álbum: " + e.getMessage());
+                    model.addAttribute("error", "Error saving the album image: " + e.getMessage());
                     return "error";
                 }
             }
 
-            // Procesar audio si existe
+            // Process audio if it exists
             if (audioPreview != null && !audioPreview.isEmpty()) {
                 try {
                     savedAlbum = albumService.saveAlbumWithAudio(savedAlbum, audioPreview);
                 } catch (Exception e) {
-                    model.addAttribute("error", "Error al guardar el archivo de audio: " + e.getMessage());
+                    model.addAttribute("error", "Error saving the audio file: " + e.getMessage());
                     return "error";
                 }
             }
 
             return "redirect:/admin";
         } catch (Exception e) {
-            model.addAttribute("error", "Error inesperado al actualizar el álbum: " + e.getMessage());
+            model.addAttribute("error", "Unexpected error while updating the album: " + e.getMessage());
             return "error";
         }
     }
@@ -387,7 +386,7 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         } else {
 
@@ -401,7 +400,7 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         } else {
             model.addAttribute("artists", artistService.getAllArtists());
@@ -414,7 +413,7 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         } else {
             model.addAttribute("users", userService.getAllUsers());
@@ -427,13 +426,13 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
         
         Optional<UserDTO> userOpt = userService.getUserById(id);
         if (userOpt.isEmpty()) {
-            model.addAttribute("error", "Error: No se encontró el usuario con ID: " + id);
+            model.addAttribute("error", "Error: User not found with ID: " + id);
             return "error";
         }
         
@@ -446,22 +445,22 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
         
         if (result.hasErrors()) {
-            model.addAttribute("error", "Error en la validación de datos");
+            model.addAttribute("error", "Data validation error");
             return "user/form";
         }
 
         try {
-            // Asegurarse de que el ID del path coincida con el del DTO
+            // Make sure that the path ID matches the DTO ID
             UserDTO updatedUserDTO = userDTO.withId(id);
             userService.updateUser(updatedUserDTO);
             return "redirect:/admin/users";
         } catch (RuntimeException e) {
-            model.addAttribute("error", "Error al actualizar el usuario: " + e.getMessage());
+            model.addAttribute("error", "Error updating user: " + e.getMessage());
             model.addAttribute("userEdit", userDTO);
             return "user/form";
         }
@@ -472,7 +471,7 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
 
@@ -487,7 +486,7 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         } else {
             List<ReviewDTO> reviews = reviewService.getAllReviews();
@@ -501,13 +500,13 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
         
         Optional<ReviewDTO> reviewOpt = reviewService.getReviewById(id);
         if (reviewOpt.isEmpty()) {
-            model.addAttribute("error", "Error: No se encontró la reseña con ID: " + id);
+            model.addAttribute("error", "Error: Review not found with ID: " + id);
             return "error";
         }
         
@@ -520,18 +519,18 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
         
         if (result.hasErrors()) {
-            model.addAttribute("error", "Error en la validación de datos");
+            model.addAttribute("error", "Data validation error");
             return "review/form";
         }
         
         reviewService.updateReview(reviewDTO);
         
-        // Actualizar el rating promedio del álbum
+        // Update album's average rating
         Optional<AlbumDTO> albumOpt = albumService.getAlbumById(reviewDTO.albumId());
         if (albumOpt.isPresent()) {
             AlbumDTO albumDTO = albumOpt.get();
@@ -547,7 +546,7 @@ public class AdminController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         if (user == null || !user.isAdmin()) {
-            model.addAttribute("error", "No tienes acceso a este recurso.");
+            model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
         
@@ -558,7 +557,7 @@ public class AdminController {
             
             reviewService.deleteReview(id);
             
-            // Actualizar el rating promedio del álbum
+            // Update album's average rating
             Optional<AlbumDTO> albumOpt = albumService.getAlbumById(albumId);
             if (albumOpt.isPresent()) {
                 AlbumDTO albumDTO = albumOpt.get();

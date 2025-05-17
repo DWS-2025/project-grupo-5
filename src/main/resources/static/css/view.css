@@ -158,7 +158,7 @@ audio {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1a5f42; /* Nuevo color de fondo */
+    background-color: #1a5f42; /* New background color */
     border-radius: 50%;
     cursor: pointer;
     transition-duration: .3s;
@@ -220,7 +220,7 @@ audio {
 .album-details-container {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap; /* Esto asegura que el contenedor se ajusta adecuadamente */
+    flex-wrap: wrap; /* This ensures that the container adjusts properly */
 }
 
 .album-image {
@@ -228,17 +228,17 @@ audio {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Evita que el contenido sobresalga */
+    overflow: hidden; /* Prevents content from overflowing */
     position: relative;
     max-height: 600px; /* Limits the maximum height */
-    border-radius: 8px; /* Bordes redondeados */
+    border-radius: 8px; /* Rounded corners */
 }
 
 .album-image img {
-    width: 100%; /* Ajusta el ancho a 100% */
-    height: auto; /* Maintains the image proportion */
-    object-fit: contain; /* Asegura que la imagen no se deforme */
-    border-radius: 8px; /* Mantiene los bordes redondeados */
+    width: 100%; /* Adjusts width to 100% */
+    height: auto; /* Maintains image proportion */
+    object-fit: contain; /* Ensures image is not distorted */
+    border-radius: 8px; /* Maintains rounded corners */
     margin-bottom: 10px;
 }
 

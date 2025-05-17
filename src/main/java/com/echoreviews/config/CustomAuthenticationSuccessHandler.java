@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * Manejador personalizado para acciones tras una autenticación exitosa.
- * Su función principal es obtener el UserDTO completo del usuario autenticado
- * y guardarlo en la HttpSession para que esté disponible en toda la aplicación,
- * manteniendo la compatibilidad con partes del código que dependen de este atributo de sesión.
+ * Custom handler for actions after successful authentication.
+ * Its main function is to obtain the complete UserDTO of the authenticated user
+ * and store it in the HttpSession to be available throughout the application,
+ * maintaining compatibility with parts of the code that depend on this session attribute.
  */
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -34,25 +34,25 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         String username;
-        // Obtiene el nombre de usuario del objeto Principal de Spring Security
+        // Get the username from Spring Security's Principal object
         if (authentication.getPrincipal() instanceof UserDetails) {
             username = ((UserDetails) authentication.getPrincipal()).getUsername();
         } else {
             username = authentication.getPrincipal().toString();
         }
 
-        // Carga el UserDTO completo usando el servicio de usuario
+        // Load the complete UserDTO using the user service
         UserDTO userDTO = userService.getUserByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado durante la configuración de sesión tras el login: " + username));
+                .orElseThrow(() -> new RuntimeException("User not found during session setup after login: " + username));
 
-        // Guarda el UserDTO en la sesión HTTP
+        // Store the UserDTO in the HTTP session
         HttpSession session = request.getSession();
         session.setAttribute("user", userDTO);
 
-        // Redirige al usuario a la página de inicio tras un login exitoso.
-        // Spring Security podría manejar redirecciones más complejas (a la URL original solicitada)
-        // si se usara SavedRequestAwareAuthenticationSuccessHandler, pero para este caso,
-        // una redirección a la raíz es suficiente y consistente con la configuración de defaultSuccessUrl previa.
+        // Redirect the user to the home page after successful login.
+        // Spring Security could handle more complex redirections (to the originally requested URL)
+        // if SavedRequestAwareAuthenticationSuccessHandler were used, but for this case,
+        // a redirect to root is sufficient and consistent with the previous defaultSuccessUrl configuration.
         response.sendRedirect(request.getContextPath() + "/");
     }
 } 

@@ -74,7 +74,7 @@ public class HomeController {
             return "error";
         }
 
-        // Obtener las reviews y actualizar la media antes de mostrar el álbum
+        // Get reviews and update average before showing the album
         List<ReviewDTO> reviews = reviewService.getReviewsByAlbumId(id);
         AlbumDTO album = albumOptional.get().updateAverageRating(reviews);
         model.addAttribute("album", album);

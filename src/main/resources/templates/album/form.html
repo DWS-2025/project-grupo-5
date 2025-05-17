@@ -68,21 +68,21 @@
                 const newArtistInput = document.getElementById('newArtistName');
                 
                 if (artistSelect.disabled && (!newArtistInput.value || newArtistInput.value.trim() === '')) {
-                    alert('Por favor, ingresa el nombre del nuevo artista');
+                    alert('Please enter the name of the new artist');
                     newArtistInput.classList.add('is-invalid');
                     return false;
                 } else if (!artistSelect.disabled && (!artistSelect.value || artistSelect.value === '')) {
-                    alert('Por favor, selecciona un artista existente');
+                    alert('Please select an existing artist');
                     artistSelect.classList.add('is-invalid');
                     return false;
                 }
                 
-                // Asegurarse de que el campo correcto esté habilitado antes de enviar
+                // Make sure the correct field is enabled before submitting
                 if (artistSelect.disabled) {
-                    // Si estamos creando un nuevo artista, asegurarse de que el campo de selección no interfiera
+                    // If we're creating a new artist, make sure the selection field doesn't interfere
                     artistSelect.value = '';
                 } else {
-                    // Si estamos seleccionando un artista existente, limpiar el campo de nuevo artista
+                    // If we're selecting an existing artist, clear the new artist field
                     newArtistInput.value = '';
                 }
                 
@@ -109,7 +109,7 @@
             <input type="hidden" th:field="*{imageUrl}">
         </div>
 
-        <p>Imagen subida actualmente: <span th:text="${album.imageUrl}">No hay imagen subida</span></p>
+        <p>Currently uploaded image: <span th:text="${album.imageUrl}">No image uploaded</span></p>
 
 
         <div class="mb-3">
@@ -118,7 +118,7 @@
         </div>
 
 
-        <p>Audio subido actualmente: <span th:text="${album.audioFile}">No hay audio subido</span></p>
+        <p>Currently uploaded audio: <span th:text="${album.audioFile}">No audio uploaded</span></p>
 
 
         <div class="mb-3">

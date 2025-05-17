@@ -117,8 +117,8 @@ public class AlbumRestController {
                     .map(album -> {
                         try {
                             // Here we are working with the Album entity
-                            album.withImageData(image.getBytes()); // Modificamos la entidad directamente
-                            // Guardamos la entidad en la base de datos
+                            album.withImageData(image.getBytes()); // Modify the entity directly
+                            // Save the entity in the database
                             Album updatedAlbum = albumService.saveAlbum(album).toAlbum();
                             // Convert the entity back to a DTO to return it
                             return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum)); // Respondemos con el DTO

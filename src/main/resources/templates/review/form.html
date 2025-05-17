@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Reseña • EchoReviews</title>
+    <title>Edit Review • EchoReviews</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -22,7 +22,7 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-dark text-white">
-                    <h3 class="mb-0">Editar Reseña</h3>
+                    <h3 class="mb-0">Edit Review</h3>
                 </div>
                 <div class="card-body">
                     <form th:action="@{/admin/reviews/{id}(id=${review.id()})}" method="post">
@@ -35,34 +35,34 @@
                         <input type="hidden" name="albumImageUrl" th:value="${review.albumImageUrl()}">
                         
                         <div class="mb-3">
-                            <label class="form-label">Álbum</label>
+                            <label class="form-label">Album</label>
                             <div class="d-flex align-items-center">
                                 <img th:if="${review.albumImageUrl() != null}" th:src="${review.albumImageUrl()}" alt="Album Cover" class="me-2" style="width: 50px; height: 50px; object-fit: cover;">
-                                <span th:text="${review.albumTitle() != null ? review.albumTitle() : 'N/A'}">Título del Álbum</span>
+                                <span th:text="${review.albumTitle() != null ? review.albumTitle() : 'N/A'}">Album Title</span>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Usuario</label>
+                            <label class="form-label">User</label>
                             <div class="d-flex align-items-center">
                                 <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                <span th:text="${review.username()}">Nombre de Usuario</span>
+                                <span th:text="${review.username()}">Username</span>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="rating" class="form-label">Calificación</label>
+                            <label for="rating" class="form-label">Rating</label>
                             <select class="form-select" id="rating" name="rating" required>
-                                <option value="1" th:selected="${review.rating() == 1}">1 - Muy malo</option>
-                                <option value="2" th:selected="${review.rating() == 2}">2 - Malo</option>
+                                <option value="1" th:selected="${review.rating() == 1}">1 - Very Bad</option>
+                                <option value="2" th:selected="${review.rating() == 2}">2 - Bad</option>
                                 <option value="3" th:selected="${review.rating() == 3}">3 - Regular</option>
-                                <option value="4" th:selected="${review.rating() == 4}">4 - Bueno</option>
-                                <option value="5" th:selected="${review.rating() == 5}">5 - Excelente</option>
+                                <option value="4" th:selected="${review.rating() == 4}">4 - Good</option>
+                                <option value="5" th:selected="${review.rating() == 5}">5 - Excellent</option>
                             </select>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="content" class="form-label">Contenido de la Reseña <span id="charCount" class="text-muted">(0/280)</span></label>
+                            <label for="content" class="form-label">Review Content <span id="charCount" class="text-muted">(0/280)</span></label>
                             <textarea class="form-control" id="content" name="content" rows="5" required maxlength="280" th:text="${review.content()}"></textarea>
                             <script>
                                 document.getElementById('content').addEventListener('input', function() {
@@ -74,8 +74,8 @@
                         </div>
                         
                         <div class="d-flex justify-content-between">
-                            <a href="/admin/reviews" class="btn btn-secondary">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <a href="/admin/reviews" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
                 </div>

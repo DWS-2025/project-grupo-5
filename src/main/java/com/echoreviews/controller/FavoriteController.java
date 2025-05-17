@@ -117,7 +117,7 @@ public class FavoriteController {
 
             return "redirect:/" + albumId; // Render the favorites page
         } catch (Exception e) {
-            model.addAttribute("error", "Ocurrió un error al eliminar el álbum de favoritos: " + e.getMessage());
+            model.addAttribute("error", "An error occurred while removing the album from favorites: " + e.getMessage());
             return "error"; // Render the error page
         }
     }
@@ -128,7 +128,7 @@ public class FavoriteController {
 
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
-            model.addAttribute("error", "Usuario no encontrado.");
+            model.addAttribute("error", "User not found.");
             return "error";
         }
 

@@ -127,7 +127,7 @@ public class ProfileController{
             }
             if (!isAdminEditingOther) {
                 if (profileUpdateDTO.currentPassword() == null || userService.authenticateUser(userToUpdate.username(), profileUpdateDTO.currentPassword()).isEmpty()) {
-                    model.addAttribute("error", "La contraseña actual es incorrecta");
+                    model.addAttribute("error", "Current password is incorrect");
                     model.addAttribute("user", userToUpdate);
                     model.addAttribute("editingUserAsAdmin", isAdminEditingOther);
                     model.addAttribute("profileUser", userToUpdate);
@@ -170,15 +170,15 @@ public class ProfileController{
 
             if (!isAdminEditingOther) {
                 session.setAttribute("user", savedUser);
-                redirectAttributes.addFlashAttribute("success", "Perfil actualizado correctamente.");
+                redirectAttributes.addFlashAttribute("success", "Profile updated successfully.");
                 return "redirect:/profile";
             } else {
-                redirectAttributes.addFlashAttribute("success", "Perfil de '" + savedUser.username() + "' actualizado correctamente.");
+                redirectAttributes.addFlashAttribute("success", "Profile of '" + savedUser.username() + "' updated successfully.");
                 return "redirect:/admin/users";
             }
 
         } catch (RuntimeException | IOException e) {
-            model.addAttribute("error", "Error al actualizar el perfil: " + e.getMessage());
+            model.addAttribute("error", "Error updating profile: " + e.getMessage());
             model.addAttribute("user", userToUpdate);
             model.addAttribute("editingUserAsAdmin", isAdminEditingOther);
             model.addAttribute("profileUser", userToUpdate);
@@ -221,11 +221,11 @@ public class ProfileController{
 
     @GetMapping("/profile/{username}")
     public String viewProfile(@PathVariable String username, Model model, HttpSession session) {
-        // Usuario logueado
+        // Logged in user
         UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
         model.addAttribute("currentUser", currentUserDTO);
 
-        // Usuario del perfil
+        // Profile user
         Optional<UserDTO> userOpt = userService.getUserByUsername(username);
         if (userOpt.isEmpty()) {
             model.addAttribute("error", "User not found");
@@ -235,11 +235,11 @@ public class ProfileController{
         UserDTO profileUserDTO = userOpt.get();
         model.addAttribute("profileUser", profileUserDTO);
 
-        // Seguidores
+        // Followers
         Map<String, String> followersUsers = profileUserDTO.followers().stream()
-                .map(userService::getUserById) // Optional<UserDTO>
+                .map(userService::getUserById)
                 .filter(Optional::isPresent)
-                .map(Optional::get) // UserDTO directamente
+                .map(Optional::get)
                 .collect(Collectors.toMap(
                         UserDTO::username,
                         UserDTO::imageUrl,
@@ -248,7 +248,7 @@ public class ProfileController{
                 ));
 
 
-        // Siguiendo
+        // Following
         Map<String, String> followingUsers = profileUserDTO.following().stream()
                 .map(userService::getUserById)
                 .filter(Optional::isPresent)
@@ -301,11 +301,11 @@ public class ProfileController{
         }
         try {
             userService.saveUserWithProfileImage(currentUserDTO, imageFile);
-            // Actualizar la sesión con la nueva imagen
+            // Update session with new image
             UserDTO updatedUser = userService.getUserByUsername(currentUserDTO.username()).orElse(currentUserDTO);
             session.setAttribute("user", updatedUser);
         } catch (IOException e) {
-            model.addAttribute("error", "Error al subir la imagen de perfil");
+            model.addAttribute("error", "Error uploading profile image");
             model.addAttribute("user", currentUserDTO);
             return "user/profile";
         }
@@ -325,7 +325,7 @@ public class ProfileController{
         if (userIdToEdit != null && sessionUser.isAdmin()) {
             Optional<UserDTO> targetUserOpt = userService.getUserById(userIdToEdit);
             if (targetUserOpt.isEmpty()) {
-                model.addAttribute("error", "Usuario no encontrado");
+                model.addAttribute("error", "User not found");
                 return "redirect:/admin/users";
             }
             model.addAttribute("user", targetUserOpt.get());
@@ -350,12 +350,12 @@ public class ProfileController{
             return "redirect:/login";
         }
 
-        // Determinar qué usuario se está modificando
+        // Determine which user is being modified
         UserDTO userToUpdate;
         if (userIdToEdit != null && sessionUser.isAdmin()) {
             Optional<UserDTO> targetUserOpt = userService.getUserById(userIdToEdit);
             if (targetUserOpt.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Usuario no encontrado");
+                redirectAttributes.addFlashAttribute("error", "User not found");
                 return "redirect:/admin/users";
             }
             userToUpdate = targetUserOpt.get();
@@ -363,27 +363,27 @@ public class ProfileController{
             userToUpdate = sessionUser;
         }
 
-        // Verificar que la contraseña actual sea correcta
+        // Verify that the current password is correct
         if (userService.authenticateUser(userToUpdate.username(), currentPassword).isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "La contraseña actual es incorrecta");
+            redirectAttributes.addFlashAttribute("error", "Current password is incorrect");
             return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
 
-        // Verificar que las nuevas contraseñas coincidan
+        // Verify that the new passwords match
         if (!newPassword.equals(confirmPassword)) {
-            redirectAttributes.addFlashAttribute("error", "Las contraseñas nuevas no coinciden");
+            redirectAttributes.addFlashAttribute("error", "New passwords do not match");
             return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
 
-        // Validar el formato de la nueva contraseña
+        // Validate the format of the new password
         if (!newPassword.matches("^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=\\S+$).{8,25}$")) {
             redirectAttributes.addFlashAttribute("error", 
-                "La nueva contraseña debe tener entre 8 y 25 caracteres y contener al menos un número, " +
-                "una mayúscula y un carácter especial");
+                "The new password must be between 8 and 25 characters and contain at least one number, " +
+                "one uppercase letter, and one special character");
             return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
 
-        // Actualizar la contraseña
+        // Update the password
         UserDTO updatedUser = new UserDTO(
             userToUpdate.id(),
             userToUpdate.username(),
@@ -402,12 +402,12 @@ public class ProfileController{
             if (!sessionUser.isAdmin() || userToUpdate.id().equals(sessionUser.id())) {
                 session.setAttribute("user", updatedUser);
             }
-            redirectAttributes.addFlashAttribute("success", "Contraseña actualizada correctamente");
+            redirectAttributes.addFlashAttribute("success", "Password updated successfully");
             return sessionUser.isAdmin() && !userToUpdate.id().equals(sessionUser.id()) 
                    ? "redirect:/admin/users" 
                    : "redirect:/profile";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al actualizar la contraseña: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error updating password: " + e.getMessage());
             return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
         }
     }

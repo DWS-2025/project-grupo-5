@@ -3,8 +3,8 @@ package com.echoreviews.dto;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * DTO específico para la actualización de perfil de usuario.
- * Contiene solo los campos que pueden ser modificados por el usuario.
+ * Specific DTO for user profile updates.
+ * Contains only the fields that can be modified by the user.
  */
 public record ProfileUpdateDTO(
     String username,
@@ -14,26 +14,26 @@ public record ProfileUpdateDTO(
     String confirmPassword
 ) {
     /**
-     * Valida que los datos de actualización de perfil sean correctos.
-     * @return true si los datos son válidos, false en caso contrario
+     * Validates that the profile update data is correct.
+     * @return true if the data is valid, false otherwise
      */
     public boolean isPasswordChangeValid() {
         if (newPassword == null || newPassword.trim().isEmpty()) {
-            return true; // No se está intentando cambiar la contraseña
+            return true; // Not attempting to change the password
         }
         
-        // Verificar que se proporcionó la contraseña actual
+        // Verify that the current password was provided
         if (currentPassword == null || currentPassword.trim().isEmpty()) {
             return false;
         }
         
-        // Verificar que las nuevas contraseñas coinciden
+        // Verify that the new passwords match
         return newPassword.equals(confirmPassword);
     }
     
     /**
-     * Determina si se está intentando cambiar la contraseña.
-     * @return true si se está intentando cambiar la contraseña, false en caso contrario
+     * Determines if a password change is being attempted.
+     * @return true if the password is being changed, false otherwise
      */
     public boolean isPasswordChangeRequested() {
         return newPassword != null && !newPassword.trim().isEmpty();

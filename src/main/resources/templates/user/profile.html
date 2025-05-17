@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -303,19 +303,19 @@
                             <label for="imageFile" class="form-label">Profile Photo</label>
                             <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.imageUrl != null}">
                                 <img th:src="${user.imageUrl}" alt="Current profile photo" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
-                                <span class="text-muted">Foto actual</span>
+                                <span class="text-muted">Current photo</span>
                             </div>
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
                         </div>
 
                         <div class="text-center mb-3">
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
 
                     <div class="text-center mb-3">
                         <a th:href="${editingUserAsAdmin ? '/profile/change-password?userIdToEdit=' + user.id() : '/profile/change-password'}" class="btn btn-info">
-                            <i class="bi bi-key"></i> Cambiar Contraseña
+                            <i class="bi bi-key"></i> Change Password
                         </a>
                     </div>
 
@@ -348,7 +348,7 @@
                 }, 5000);
             }
 
-            // Agregar estilos CSS para los indicadores
+            // Add CSS styles for indicators
             const style = document.createElement('style');
             style.textContent = `
                 .password-requirements li {
@@ -378,7 +378,7 @@
             `;
             document.head.appendChild(style);
 
-            // Password validation para el cambio de contraseña
+            // Password validation for password change
             const passwordInput = document.querySelector('#newPassword');
             const confirmPasswordInput = document.querySelector('#confirmPassword');
             const requirementsList = document.querySelector(".password-requirements ul");
@@ -389,29 +389,29 @@
                     { 
                         regex: /^.{8,25}$/, 
                         element: '.requirement.length',
-                        description: 'Entre 8 y 25 caracteres'
+                        description: 'Between 8 and 25 characters'
                     },
                     { 
                         regex: /.*[0-9].*/, 
                         element: '.requirement.number',
-                        description: 'Al menos un número'
+                        description: 'At least one number'
                     },
                     { 
                         regex: /.*[A-Z].*/, 
                         element: '.requirement.uppercase',
-                        description: 'Al menos una letra mayúscula'
+                        description: 'At least one uppercase letter'
                     },
                     { 
                         regex: /.*[!@#$%^&*(),.?":{}|<>].*/, 
                         element: '.requirement.special',
-                        description: 'Al menos un carácter especial'
+                        description: 'At least one special character'
                     }
                 ];
 
                 const validatePassword = () => {
                     const password = passwordInput.value;
                     
-                    // Si el campo está vacío, no aplicamos validación
+                    // If the field is empty, we don't apply validation
                     if (!password) {
                         requirements.forEach(requirement => {
                             const element = requirementsList.querySelector(requirement.element);
@@ -436,25 +436,25 @@
                         }
                     });
 
-                    // Validar que las contraseñas coincidan
+                    // Validate that passwords match
                     if (confirmPasswordInput.value && password !== confirmPasswordInput.value) {
-                        confirmPasswordInput.setCustomValidity('Las contraseñas no coinciden');
+                        confirmPasswordInput.setCustomValidity('Passwords do not match');
                     } else {
                         confirmPasswordInput.setCustomValidity('');
                     }
 
-                    // Actualizar la validación del formulario
+                    // Update form validation
                     passwordInput.setCustomValidity(
-                        validCount === requirements.length ? '' : 'Por favor, cumple todos los requisitos de la contraseña'
+                        validCount === requirements.length ? '' : 'Please meet all password requirements'
                     );
 
                     return validCount === requirements.length;
                 };
 
-                // Validar también la confirmación de contraseña
+                // Also validate password confirmation
                 const validateConfirmPassword = () => {
                     if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
-                        confirmPasswordInput.setCustomValidity('Las contraseñas no coinciden');
+                        confirmPasswordInput.setCustomValidity('Passwords do not match');
                     } else {
                         confirmPasswordInput.setCustomValidity('');
                     }

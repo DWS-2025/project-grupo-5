@@ -79,7 +79,7 @@ public class ArtistService {
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
                 artist.setImageData(imageFile.getBytes());
-                // Guardamos sin ID al principio, luego se actualizará al guardar
+                // Save without ID first, then it will be updated when saving
             } catch (IOException e) {
                 throw new RuntimeException("Failed to process image file: " + e.getMessage(), e);
             }

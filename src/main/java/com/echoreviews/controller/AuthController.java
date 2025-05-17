@@ -51,7 +51,7 @@ public class AuthController {
             // Validate password
             String password = user.getPassword();
             if (!password.matches("^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=\\S+$).{8,25}$")) {
-                model.addAttribute("error", "La contraseña debe tener entre 8 y 25 caracteres y contener al menos un número, una mayúscula y un carácter especial");
+                model.addAttribute("error", "Password must be between 8 and 25 characters and contain at least one number, one uppercase letter, and one special character");
                 return "error";
             }
 

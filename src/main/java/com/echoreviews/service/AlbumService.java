@@ -65,7 +65,7 @@ public class AlbumService {
         Example<Album> example = Example.of(probe, matcher);
         List<Album> results = albumRepository.findAll(example);
 
-        // Filtrar por artista si se especificó
+        // Filter by artist if specified
         if (artist != null && !artist.trim().isEmpty()) {
             results = results.stream()
                 .filter(album -> album.getArtists().stream()
@@ -88,7 +88,7 @@ public class AlbumService {
 
         Album album = albumMapper.toEntity(albumDTO);
 
-        // Procesar artistas, si los hay
+        // Process artists if they exist
         if (albumDTO.artistIds() != null && !albumDTO.artistIds().isEmpty()) {
             List<Artist> processedArtists = albumDTO.artistIds().stream()
                 .map(artistId -> artistRepository.findById(artistId).orElse(null))
@@ -107,10 +107,10 @@ public class AlbumService {
             album.setArtists(processedArtists);
         }
 
-        // Guardar el álbum en la base de datos
+        // Save the album in the database
         Album savedAlbum = albumRepository.save(album);
 
-        // Convertir el álbum guardado de nuevo a DTO y devolverlo
+        // Convert the saved album back to DTO and return it
         return albumMapper.toDTO(savedAlbum);
     }
 

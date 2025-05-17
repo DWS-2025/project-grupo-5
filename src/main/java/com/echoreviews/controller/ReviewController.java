@@ -46,11 +46,11 @@ public class ReviewController {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
-                System.err.println("Datos inválidos. Reseña no guardada.");
+                System.err.println("Invalid data. Review not saved.");
                 return "redirect:/" + albumId;
             }
             if (content.length() > 255) {
-                model.addAttribute("error", "Se ha superado el límite de caracteres");
+                model.addAttribute("error", "Character limit exceeded");
                 return "error";
             }
             ReviewDTO reviewDTO = new ReviewDTO(
@@ -65,7 +65,7 @@ public class ReviewController {
                     rating
             );
 
-            System.out.println("Guardando reseña del usuario: " + userDTO.username());
+            System.out.println("Saving user review: " + userDTO.username());
             reviewService.addReview(albumId, reviewDTO);
 
             // Update album's average rating

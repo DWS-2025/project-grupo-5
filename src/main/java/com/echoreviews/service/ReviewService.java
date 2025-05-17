@@ -51,12 +51,12 @@ public class ReviewService {
     public Optional<ReviewDTO> getReviewById(Long albumId, Long reviewId) {
         Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
         
-        // Si albumId es null, no filtramos por álbum (para API REST)
+        // If albumId is null, we don't filter by album (for REST API)
         if (albumId == null) {
             return reviewOpt.map(reviewMapper::toDTO);
         }
         
-        // Si albumId no es null, verificamos que la reseña pertenezca al álbum
+        // If albumId is not null, we verify that the review belongs to the album
         return reviewOpt
                 .filter(review -> review.getAlbum().getId().equals(albumId))
                 .map(reviewMapper::toDTO);

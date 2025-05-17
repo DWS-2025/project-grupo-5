@@ -449,12 +449,12 @@
 
                         </div>
                         <div class="password-requirements" style="color: var(--font-color-sub); font-size: 0.8em; text-align: left; width: 100%; margin-top: -10px;">
-                            La contraseña debe contener:
+                            Password must contain:
                             <ul style="margin-top: 5px;">
-                                <li class="requirement length">Entre 8 y 25 caracteres</li>
-                                <li class="requirement number">Al menos un número</li>
-                                <li class="requirement uppercase">Al menos una letra mayúscula</li>
-                                <li class="requirement special">Al menos un carácter especial</li>
+                                <li class="requirement length">Between 8 and 25 characters</li>
+                                <li class="requirement number">At least one number</li>
+                                <li class="requirement uppercase">At least one uppercase letter</li>
+                                <li class="requirement special">At least one special character</li>
                             </ul>
                         </div>
                         <button class="flip-card__btn register-btn" type="submit">SIGN UP</button>
@@ -491,22 +491,22 @@
                 { 
                     regex: /^.{8,25}$/, 
                     element: '.requirement.length',
-                    description: 'Entre 8 y 25 caracteres'
+                    description: 'Between 8 and 25 characters'
                 },
                 { 
                     regex: /.*[0-9].*/, 
                     element: '.requirement.number',
-                    description: 'Al menos un número'
+                    description: 'At least one number'
                 },
                 { 
                     regex: /.*[A-Z].*/, 
                     element: '.requirement.uppercase',
-                    description: 'Al menos una letra mayúscula'
+                    description: 'At least one uppercase letter'
                 },
                 { 
                     regex: /.*[!@#$%^&*(),.?":{}|<>].*/, 
                     element: '.requirement.special',
-                    description: 'Al menos un carácter especial'
+                    description: 'At least one special character'
                 }
             ];
 
@@ -534,9 +534,9 @@
                     submitButton.style.opacity = validCount === requirements.length ? '1' : '0.5';
                 }
 
-                // Actualizar la validación del formulario
+                // Update form validation
                 passwordInput.setCustomValidity(
-                    validCount === requirements.length ? '' : 'Por favor, cumple todos los requisitos de la contraseña'
+                    validCount === requirements.length ? '' : 'Please, meet all password requirements'
                 );
             };
 

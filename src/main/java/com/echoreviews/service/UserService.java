@@ -135,11 +135,11 @@ public class UserService implements UserDetailsService {
         User user = userMapper.toEntity(userDTO);
         
         if (userDTO.id() != null) {
-            // Si es una actualización, obtener el usuario existente
+            // If it's an update, get the existing user
             User existingUser = userRepository.findById(userDTO.id())
                 .orElseThrow(() -> new RuntimeException("User not found"));
             
-            // Preservar las listas de seguidores y seguidos si no se proporcionan nuevas
+            // Preserve follower and following lists if no new ones are provided
             if (userDTO.followers() == null || userDTO.followers().isEmpty()) {
                 user.setFollowers(existingUser.getFollowers());
             }
@@ -176,7 +176,7 @@ public class UserService implements UserDetailsService {
             if (userDTO.email() != null && !existingUser.getEmail().equals(userDTO.email()) && userRepository.existsByEmail(userDTO.email())) {
                  throw new RuntimeException("Email '" + userDTO.email() + "' already exists for another user");
             }
-            user.setAdmin(existingUser.isAdmin()); // Asegura que isAdmin se preserve del estado de la BD para actualizaciones
+            user.setAdmin(existingUser.isAdmin()); // Ensures that isAdmin is preserved from DB state for updates
         }
         
         User savedUser = userRepository.save(user);
@@ -286,7 +286,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + updatedUserDTO.id() + " for update"));
 
         User userToUpdate = userMapper.toEntity(updatedUserDTO); 
-        userToUpdate.setAdmin(existingUser.isAdmin()); // Forzar la preservación del isAdmin de la BD
+        // El estado de admin se toma del DTO
 
         // Handle password update: 
         // If password field in DTO is not empty, it means an attempt to change.

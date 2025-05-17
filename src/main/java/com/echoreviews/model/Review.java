@@ -35,12 +35,12 @@ public class Review {
     private String albumTitle;
     private String albumImageUrl;
 
-    @NotBlank(message = "El contenido de la reseña es obligatorio")
-    @Size(max = 2000, message = "La reseña no puede exceder los 2000 caracteres")
+    @NotBlank(message = "Review content is required")
+    @Size(max = 2000, message = "Review cannot exceed 2000 characters")
     private String content;
 
-    @Min(value = 1, message = "La calificación debe ser al menos 1")
-    @Max(value = 5, message = "La calificación no puede ser mayor a 5")
+    @Min(value = 1, message = "Rating must be at least 1")
+    @Max(value = 5, message = "Rating cannot be greater than 5")
     private int rating;
 
     // Getters and setters for relationships

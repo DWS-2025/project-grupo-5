@@ -110,7 +110,7 @@ public record AlbumDTO(
         album.setImageData(this.imageData());
         album.setAudioData(this.audioData());
         album.setAudioPreview(this.audioPreview());
-        // Inicializamos la lista de artistas
+        // Initialize the artists list
         List<Artist> artists = new ArrayList<>();
         if (this.artistIds != null) {
             for (Long artistId : this.artistIds) {

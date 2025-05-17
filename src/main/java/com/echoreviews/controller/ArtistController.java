@@ -95,7 +95,7 @@ public class ArtistController {
     public String showCreateForm(Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO == null || !userDTO.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso");
+            model.addAttribute("error", "You don't have access to this resource");
             return "error";
         }
         model.addAttribute("artist", new Artist());
@@ -108,7 +108,7 @@ public class ArtistController {
                                Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO == null || !userDTO.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso");
+            model.addAttribute("error", "You don't have access to this resource");
             return "error";
         }
 
@@ -134,7 +134,7 @@ public class ArtistController {
     public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO == null || !userDTO.username().equals("admin")) {
-            model.addAttribute("error", "No tienes acceso a este recurso");
+            model.addAttribute("error", "You don't have access to this resource");
             return "error";
         }
 

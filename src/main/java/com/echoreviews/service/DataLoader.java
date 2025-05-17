@@ -61,9 +61,9 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Verificar si la base de datos está vacía
+        // Check if database is empty
         if (userRepository.count() == 0) {
-            // Cargar imágenes
+            // Load images
             byte[] defaultUserImage = loadImage("static/images/default-user.jpg");
             byte[] badBunnyImage = loadImage("static/images/bad-bunny.jpg");
             byte[] morganImage = loadImage("static/images/morgan.jpg");
@@ -71,7 +71,7 @@ public class DataLoader implements CommandLineRunner {
             byte[] debiTirarMasFotosImage = loadImage("static/images/debi-tirar-mas-fotos.jpg");
             byte[] hotelMorganImage = loadImage("static/images/hotel-morgan.jpg");
 
-            // Crear usuarios iniciales
+            // Create initial users
             UserDTO adminDTO = new UserDTO(
                     null,
                     "admin",
@@ -100,7 +100,7 @@ public class DataLoader implements CommandLineRunner {
             );
             UserDTO savedUser = userService.saveUser(userDTO);
 
-            // Crear artista inicial
+            // Create initial artist
             ArtistDTO artist1 = new ArtistDTO(
                     null,
                     "Bad Bunny",
@@ -112,7 +112,7 @@ public class DataLoader implements CommandLineRunner {
             );
             ArtistDTO savedArtist = artistService.saveArtist(artist1);
 
-            // Crear álbum inicial
+            // Create second album (by Bad Bunny)
             List<Long> artistIds = new ArrayList<>();
             artistIds.add(savedArtist.id());
             List<String> artistNames = new ArrayList<>();
@@ -141,11 +141,11 @@ public class DataLoader implements CommandLineRunner {
             );
             AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
 
-            // Crear segundo artista
+            // Create second artist
             ArtistDTO artist2 = new ArtistDTO(
                     null,
                     "Morgan",
-                    "España",
+                    "Spain",
                     "/images/morgan.jpg",
                     new ArrayList<>(),
                     new ArrayList<>(),
@@ -153,7 +153,7 @@ public class DataLoader implements CommandLineRunner {
             );
             ArtistDTO savedArtist2 = artistService.saveArtist(artist2);
 
-            // Crear segundo usuario
+            // Create second user
             UserDTO user2DTO = new UserDTO(
                     null,
                     "maria.garcia",
@@ -168,7 +168,7 @@ public class DataLoader implements CommandLineRunner {
             );
             UserDTO savedUser2 = userService.saveUser(user2DTO);
 
-            // Crear segundo álbum (de Bad Bunny)
+            // Create second album (by Bad Bunny)
             AlbumDTO album2DTO = new AlbumDTO(
                     null,
                     "Un Verano Sin Ti",
@@ -192,7 +192,7 @@ public class DataLoader implements CommandLineRunner {
             );
             AlbumDTO savedAlbum2 = albumService.saveAlbum(album2DTO);
 
-            // Crear tercer álbum (de Morgan)
+            // Create third album (by Morgan)
             List<Long> artist2Ids = new ArrayList<>();
             artist2Ids.add(savedArtist2.id());
             List<String> artist2Names = new ArrayList<>();
@@ -221,7 +221,7 @@ public class DataLoader implements CommandLineRunner {
             );
             AlbumDTO savedAlbum3 = albumService.saveAlbum(album3DTO);
 
-            // Crear reseñas
+            // Create reviews
             ReviewDTO reviewDTO = new ReviewDTO(
                     null,
                     savedAlbum.id(),
@@ -235,7 +235,7 @@ public class DataLoader implements CommandLineRunner {
             );
             reviewService.addReview(savedAlbum.id(), reviewDTO);
 
-            // Crear segunda reseña
+            // Create second review
             ReviewDTO review2DTO = new ReviewDTO(
                     null,
                     savedAlbum3.id(),
@@ -249,7 +249,7 @@ public class DataLoader implements CommandLineRunner {
             );
             reviewService.addReview(savedAlbum3.id(), review2DTO);
 
-            // Crear tercera reseña
+            // Create third review
             ReviewDTO review3DTO = new ReviewDTO(
                     null,
                     savedAlbum2.id(),
@@ -263,7 +263,7 @@ public class DataLoader implements CommandLineRunner {
             );
             reviewService.addReview(savedAlbum2.id(), review3DTO);
         } else {
-            System.out.println("La base de datos no está vacía. No se cargarán datos iniciales.");
+            System.out.println("Database is not empty. Initial data will not be loaded.");
         }
     }
 }

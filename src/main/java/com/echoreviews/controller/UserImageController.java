@@ -24,9 +24,9 @@ public class UserImageController {
         if (userOpt.isPresent() && userOpt.get().imageData() != null) {
             byte[] imageBytes = userOpt.get().imageData();
 
-            // Detectamos el tipo de imagen según la URL
+            // Detect image type based on URL
             String imageUrl = userOpt.get().imageUrl();
-            MediaType contentType = MediaType.IMAGE_JPEG; // por defecto
+            MediaType contentType = MediaType.IMAGE_JPEG; // default
 
             if (imageUrl != null) {
                 if (imageUrl.endsWith(".png")) {
