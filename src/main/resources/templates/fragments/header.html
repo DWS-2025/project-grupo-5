@@ -1,6 +1,6 @@
 <header th:fragment="header" class="main-header">
   <div class="header-content">
-    <img src="/images/logo.png" alt="EchoReviews Logo" style="height: 40px; margin: 16px;">
+    <img src="/images/logo.png" alt="EchoReviews Logo">
     <nav class="main-nav">
       <a href="/"><i class="bi bi-house-fill"></i> Home</a>
       <a href="/top-albums"><i class="bi bi-stars"></i> Top Albums</a>
@@ -19,8 +19,6 @@
       <a th:if="${session.user == null}" th:href="@{/login}">
         <i class="bi bi-star-fill"></i>  Reviews
       </a>
-
-
 
       <div th:if="${session.user != null}" class="user-section">
         <div class="dropdown d-inline-block">
