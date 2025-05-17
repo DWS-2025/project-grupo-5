@@ -142,6 +142,9 @@
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
+            const checkSecurityButton = document.getElementById('checkAllSecurity');
+            let securityCheckMode = true; // true = check mode, false = delete mode
+
             function checkReviewSecurity(content) {
                 if (!content) return [];
                 
@@ -187,10 +190,52 @@
                 return securityIssues;
             }
 
-            const checkSecurityButton = document.getElementById('checkAllSecurity');
+            async function deleteUnsafeReviews() {
+                if (!confirm('¿Estás seguro de que quieres eliminar todas las reseñas inseguras? Esta acción no se puede deshacer.')) {
+                    return;
+                }
+
+                const unsafeRows = document.querySelectorAll('tr[data-unsafe="true"]');
+                const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+                for (const row of unsafeRows) {
+                    const reviewId = row.querySelector('td:first-child').textContent;
+                    try {
+                        const response = await fetch(`/admin/reviews/${reviewId}/delete`, {
+                            method: 'POST',
+                            headers: {
+                                [csrfHeader]: csrfToken
+                            }
+                        });
+
+                        if (response.ok) {
+                            row.remove();
+                        } else {
+                            console.error('Error deleting review:', reviewId);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting review:', reviewId, error);
+                    }
+                }
+
+                // Reset button to check mode
+                securityCheckMode = true;
+                checkSecurityButton.classList.remove('btn-danger');
+                checkSecurityButton.classList.add('btn-warning');
+                checkSecurityButton.innerHTML = '<i class="bi bi-shield"></i> Check Security';
+            }
+
             if (checkSecurityButton) {
                 checkSecurityButton.addEventListener('click', function() {
+                    if (!securityCheckMode) {
+                        // Si está en modo eliminar, ejecutar la eliminación
+                        deleteUnsafeReviews();
+                        return;
+                    }
+
                     const rows = document.querySelectorAll('tbody tr');
+                    let hasUnsafeReviews = false;
 
                     rows.forEach(function(row) {
                         const contentDiv = row.querySelector('[data-raw-content]');
@@ -211,6 +256,7 @@
                         }
 
                         if (securityIssues.length > 0) {
+                            hasUnsafeReviews = true;
                             warningIcon.classList.remove('d-none');
                             checkIcon.classList.add('d-none');
                             
@@ -221,11 +267,24 @@
                             new bootstrap.Tooltip(warningIcon, {
                                 html: true
                             });
+
+                            // Mark the row as unsafe
+                            row.setAttribute('data-unsafe', 'true');
                         } else {
                             warningIcon.classList.add('d-none');
                             checkIcon.classList.remove('d-none');
+                            // Remove unsafe mark if exists
+                            row.removeAttribute('data-unsafe');
                         }
                     });
+
+                    // Change button state if unsafe reviews are found
+                    if (hasUnsafeReviews) {
+                        securityCheckMode = false;
+                        checkSecurityButton.classList.remove('btn-warning');
+                        checkSecurityButton.classList.add('btn-danger');
+                        checkSecurityButton.innerHTML = '<i class="bi bi-trash"></i> Delete Unsafe Reviews';
+                    }
                 });
             }
         });
