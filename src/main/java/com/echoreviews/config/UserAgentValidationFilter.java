@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,8 @@ import java.io.IOException;
  */
 @Component
 public class UserAgentValidationFilter extends OncePerRequestFilter {
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserAgentValidationFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -35,6 +39,15 @@ public class UserAgentValidationFilter extends OncePerRequestFilter {
 
             if (!originalUA.equals(currentUA) || !originalIP.equals(currentIP)) {
                 // Possible session hijacking
+                String sessionId = session.getId();
+                logger.warn("POSIBLE INTENTO DE SESSION HIJACKING DETECTADO:");
+                logger.warn("Session ID: {}", sessionId);
+                logger.warn("Usuario Agente Original: {}", originalUA);
+                logger.warn("Usuario Agente Actual: {}", currentUA);
+                logger.warn("IP Original: {}", originalIP);
+                logger.warn("IP Actual: {}", currentIP);
+                logger.warn("Ruta de acceso: {}", request.getRequestURI());
+                
                 session.invalidate();
                 SecurityContextHolder.clearContext();
                 response.sendRedirect(request.getContextPath() + "/login?hijacked=true");
