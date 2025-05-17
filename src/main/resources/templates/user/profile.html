@@ -102,17 +102,17 @@
                         <input type="hidden" name="userIdBeingEdited" th:if="${editingUserAsAdmin}" th:value="${user.id()}">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" th:value="${user.username}" required>
+                            <input type="text" class="form-control" id="username" name="username" th:value="${user.username()}" required>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required>
+                            <input type="email" class="form-control" id="email" name="email" th:value="${user.email()}" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="imageFile" class="form-label">Profile Photo</label>
-                            <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.imageUrl != null}">
-                                <img th:src="${user.imageUrl}" alt="Current profile photo" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
+                            <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.imageUrl() != null}">
+                                <img th:src="${user.imageUrl()}" alt="Current profile photo" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
                                 <span class="text-muted">Foto actual</span>
                             </div>
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">

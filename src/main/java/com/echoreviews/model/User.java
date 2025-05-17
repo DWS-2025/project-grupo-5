@@ -76,6 +76,8 @@ public class User {
     @JsonIgnoreProperties
     private byte[] imageData;
 
+    private String pdfPath;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"user", "album"})
     private List<Review> reviews = new ArrayList<>();

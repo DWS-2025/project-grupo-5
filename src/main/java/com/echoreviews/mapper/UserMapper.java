@@ -27,6 +27,7 @@ public class UserMapper {
         user.setBanned(userDTO.banned());
         user.setImageUrl(userDTO.imageUrl());
         user.setImageData(userDTO.imageData());
+        user.setPdfPath(userDTO.pdfPath());
         
         if (userDTO.favoriteAlbumIds() != null) {
             List<Album> favoriteAlbums = userDTO.favoriteAlbumIds().stream()
@@ -70,7 +71,8 @@ public class UserMapper {
             user.getImageData(),
             user.getFollowers() != null ? new ArrayList<>(user.getFollowers()) : new ArrayList<>(),
             user.getFollowing() != null ? new ArrayList<>(user.getFollowing()) : new ArrayList<>(),
-            favoriteAlbumIds != null ? favoriteAlbumIds : new ArrayList<>()
+            favoriteAlbumIds != null ? favoriteAlbumIds : new ArrayList<>(),
+            user.getPdfPath()
         );
     }
 

@@ -4,6 +4,7 @@ import com.echoreviews.model.Album;
 import com.echoreviews.model.User;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 public record UserDTO(
         Long id,
@@ -17,8 +18,37 @@ public record UserDTO(
         byte[] imageData,
         List<Long> followers,
         List <Long> following,
-        List<Long> favoriteAlbumIds
+        List<Long> favoriteAlbumIds,
+        String pdfPath
 ) {
+    // Constructor alternativo con pdfPath con valor por defecto
+    public UserDTO(
+            Long id,
+            String username,
+            String password,
+            String email,
+            boolean isAdmin,
+            boolean potentiallyDangerous,
+            boolean banned,
+            String imageUrl,
+            byte[] imageData,
+            List<Long> followers,
+            List<Long> following,
+            List<Long> favoriteAlbumIds) {
+        this(id, username, password, email, isAdmin, potentiallyDangerous, banned, 
+             imageUrl, imageData, followers, following, favoriteAlbumIds, null);
+    }
+    
+    // Método seguro para comprobar si el usuario tiene un PDF
+    public boolean hasPdf() {
+        return pdfPath != null && !pdfPath.isEmpty();
+    }
+    
+    // Método seguro para obtener pdfPath o un valor por defecto
+    public String safePdfPath() {
+        return pdfPath != null ? pdfPath : "";
+    }
+    
     public static UserDTO fromUser(User user) {
         return new UserDTO(
             user.getId(),
@@ -34,7 +64,8 @@ public record UserDTO(
             user.getFollowing(),
             user.getFavoriteAlbums().stream()
                 .map(Album::getId)
-                .collect(Collectors.toList())
+                .collect(Collectors.toList()),
+            user.getPdfPath()
         );
     }
 
@@ -50,6 +81,7 @@ public record UserDTO(
         user.setImageData(this.imageData());
         user.setFollowers(this.followers());
         user.setFollowing(this.following());
+        user.setPdfPath(this.pdfPath());
         
         if(this.favoriteAlbumIds != null) {
             user.setFavoriteAlbums(
@@ -80,7 +112,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -97,7 +130,8 @@ public record UserDTO(
             newImageData,
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -114,7 +148,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -131,7 +166,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            newFavoriteAlbumIds
+            newFavoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -148,7 +184,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             newFollowing,
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -165,7 +202,8 @@ public record UserDTO(
             this.imageData(),
             newFollowers,
             this.following(),
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -182,7 +220,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -199,7 +238,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
         );
     }
 
@@ -216,7 +256,26 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds
+            this.favoriteAlbumIds,
+            this.pdfPath
+        );
+    }
+
+    public UserDTO withPdfPath(String newPdfPath) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
+            this.imageUrl(),
+            this.imageData(),
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds,
+            newPdfPath
         );
     }
 }

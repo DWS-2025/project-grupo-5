@@ -23,6 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -450,5 +454,182 @@ public class UserService implements UserDetailsService {
         // Save and convert back to DTO
         User savedUser = userRepository.save(userEntity);
         return UserDTO.fromUser(savedUser); // Using static method as per previous preference
+    }
+
+    @Transactional
+    public UserDTO uploadUserPdf(UserDTO userDTO, MultipartFile pdfFile) throws IOException {
+        if (userDTO == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        if (pdfFile == null || pdfFile.isEmpty()) {
+            throw new IllegalArgumentException("PDF file cannot be null or empty");
+        }
+        
+        // Validar que sea un PDF
+        if (!pdfFile.getContentType().equals("application/pdf")) {
+            throw new IllegalArgumentException("File must be a PDF");
+        }
+        
+        // Primero eliminamos cualquier PDF existente del usuario
+        if (userDTO.pdfPath() != null) {
+            deleteUserPdf(userDTO);
+        }
+        
+        // Limpiar carpetas con estructura incorrecta
+        cleanupIncorrectPdfStructure();
+        
+        try {
+            // Crear directorio base para PDFs (asegurarnos que la carpeta 'pdfs' existe)
+            Path pdfBaseDir = Paths.get("src/main/resources/static/pdfs");
+            if (!Files.exists(pdfBaseDir)) {
+                Files.createDirectories(pdfBaseDir);
+            }
+            
+            // Crear el directorio para este usuario dentro de pdfs/
+            String userFolderName = "user_" + userDTO.id();
+            Path userPdfDir = pdfBaseDir.resolve(userFolderName);
+            if (!Files.exists(userPdfDir)) {
+                Files.createDirectories(userPdfDir);
+            }
+            
+            // Guardar el PDF con su nombre original
+            String originalFilename = pdfFile.getOriginalFilename();
+            String fileName = originalFilename != null ? originalFilename : "document.pdf";
+            Path filePath = userPdfDir.resolve(fileName);
+            
+            // Copiar el archivo
+            Files.copy(pdfFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            
+            // La ruta relativa para acceder desde la web
+            String relativePath = "/pdfs/" + userFolderName + "/" + fileName;
+            UserDTO updatedUser = userDTO.withPdfPath(relativePath);
+            
+            System.out.println("PDF guardado en: " + filePath.toAbsolutePath());
+            System.out.println("Ruta relativa: " + relativePath);
+            
+            return saveUser(updatedUser);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Error al guardar PDF: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public UserDTO deleteUserPdf(UserDTO userDTO) throws IOException {
+        if (userDTO == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        
+        // Si el usuario no tiene PDF, no hacer nada
+        if (userDTO.pdfPath() == null) {
+            return userDTO;
+        }
+        
+        try {
+            // Eliminar el archivo si existe
+            String relativePath = userDTO.pdfPath();
+            Path pdfPath = Paths.get("src/main/resources/static" + relativePath);
+            
+            System.out.println("Intentando eliminar archivo: " + pdfPath.toAbsolutePath());
+            
+            if (Files.exists(pdfPath) && Files.isRegularFile(pdfPath)) {
+                Files.delete(pdfPath);
+                System.out.println("Archivo PDF eliminado: " + pdfPath.toAbsolutePath());
+                
+                // Intentar eliminar la carpeta del usuario si está vacía
+                Path userDir = pdfPath.getParent();
+                if (Files.exists(userDir) && Files.isDirectory(userDir)) {
+                    try (var entries = Files.list(userDir)) {
+                        if (entries.findFirst().isEmpty()) {
+                            Files.delete(userDir);
+                            System.out.println("Carpeta de usuario eliminada: " + userDir.toAbsolutePath());
+                        }
+                    }
+                }
+            } else {
+                System.out.println("El archivo no existe: " + pdfPath.toAbsolutePath());
+            }
+            
+            // Actualizar el usuario sin la ruta del PDF
+            UserDTO updatedUser = userDTO.withPdfPath(null);
+            return saveUser(updatedUser);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Error al eliminar archivo PDF: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Limpia cualquier estructura incorrecta de carpetas PDF
+     */
+    private void cleanupIncorrectPdfStructure() {
+        try {
+            Path staticDir = Paths.get("src/main/resources/static");
+            if (!Files.exists(staticDir)) {
+                return;
+            }
+            
+            // Buscar carpetas con formato incorrecto "pdfs.user_X"
+            try (var paths = Files.list(staticDir)) {
+                paths.filter(path -> {
+                    String fileName = path.getFileName().toString();
+                    return fileName.startsWith("pdfs.user_") && Files.isDirectory(path);
+                }).forEach(incorrectPath -> {
+                    try {
+                        System.out.println("Encontrada estructura incorrecta: " + incorrectPath);
+                        
+                        // Crear carpeta correcta si no existe
+                        Path pdfBaseDir = Paths.get("src/main/resources/static/pdfs");
+                        if (!Files.exists(pdfBaseDir)) {
+                            Files.createDirectories(pdfBaseDir);
+                        }
+                        
+                        // Extraer el ID de usuario del nombre pdfs.user_X
+                        String incorrectFolderName = incorrectPath.getFileName().toString();
+                        String userId = incorrectFolderName.substring("pdfs.user_".length());
+                        String correctFolderName = "user_" + userId;
+                        
+                        Path correctUserDir = pdfBaseDir.resolve(correctFolderName);
+                        if (!Files.exists(correctUserDir)) {
+                            Files.createDirectories(correctUserDir);
+                        }
+                        
+                        // Mover cualquier PDF de la carpeta incorrecta a la correcta
+                        try (var files = Files.list(incorrectPath)) {
+                            files.forEach(pdfFile -> {
+                                try {
+                                    Path targetFile = correctUserDir.resolve(pdfFile.getFileName());
+                                    Files.move(pdfFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+                                    System.out.println("Movido archivo " + pdfFile + " a " + targetFile);
+                                } catch (IOException e) {
+                                    System.err.println("Error al mover archivo: " + e.getMessage());
+                                }
+                            });
+                        }
+                        
+                        // Eliminar carpeta incorrecta
+                        Files.delete(incorrectPath);
+                        System.out.println("Eliminada carpeta incorrecta: " + incorrectPath);
+                        
+                    } catch (IOException e) {
+                        System.err.println("Error al limpiar estructura incorrecta: " + e.getMessage());
+                    }
+                });
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Error al limpiar estructura incorrecta: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public String getUserPdfPath(String username) {
+        Optional<UserDTO> userOpt = getUserByUsername(username);
+        if (userOpt.isEmpty()) {
+            throw new IllegalArgumentException("User not found: " + username);
+        }
+        
+        UserDTO user = userOpt.get();
+        return user.pdfPath();
     }
 }

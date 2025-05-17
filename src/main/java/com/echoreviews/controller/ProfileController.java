@@ -15,6 +15,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
@@ -35,6 +40,9 @@ import com.echoreviews.mapper.UserMapper;
 import com.echoreviews.mapper.AlbumMapper;
 import com.echoreviews.mapper.ReviewMapper;
 import com.echoreviews.mapper.ArtistMapper;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 public class ProfileController{
@@ -82,6 +90,7 @@ public class ProfileController{
 
         model.addAttribute("user", userToDisplay);
         model.addAttribute("profileUser", userToDisplay);
+        model.addAttribute("username", userToDisplay.username());
         return "user/profile";
     }
 
@@ -155,7 +164,8 @@ public class ProfileController{
             userToUpdate.imageData(), // Default to old
             userToUpdate.followers() != null ? new ArrayList<>(userToUpdate.followers()) : new ArrayList<>(),
             userToUpdate.following() != null ? new ArrayList<>(userToUpdate.following()) : new ArrayList<>(),
-            userToUpdate.favoriteAlbumIds()
+            userToUpdate.favoriteAlbumIds(),
+            userToUpdate.pdfPath() // Mantener el PDF path existente
         );
 
         try {
@@ -165,7 +175,8 @@ public class ProfileController{
                     updatedUserDTO.id(), updatedUserDTO.username(), updatedUserDTO.password(), updatedUserDTO.email(),
                     updatedUserDTO.isAdmin(), updatedUserDTO.potentiallyDangerous(), updatedUserDTO.banned(), 
                     null, null, // Null out image fields for new image
-                    updatedUserDTO.followers(), updatedUserDTO.following(), updatedUserDTO.favoriteAlbumIds()
+                    updatedUserDTO.followers(), updatedUserDTO.following(), updatedUserDTO.favoriteAlbumIds(),
+                    updatedUserDTO.pdfPath() // Mantener el PDF path
                 );
                 savedUser = userService.saveUserWithProfileImage(userDtoForImageSave, imageFile);
             } else {
@@ -238,6 +249,7 @@ public class ProfileController{
 
         UserDTO profileUserDTO = userOpt.get();
         model.addAttribute("profileUser", profileUserDTO);
+        model.addAttribute("username", username);
 
         // Followers
         Map<String, String> followersUsers = profileUserDTO.followers().stream()
@@ -250,7 +262,6 @@ public class ProfileController{
                         (a, b) -> a,
                         HashMap::new
                 ));
-
 
         // Following
         Map<String, String> followingUsers = profileUserDTO.following().stream()
@@ -400,7 +411,8 @@ public class ProfileController{
             userToUpdate.imageData(),
             userToUpdate.followers(),
             userToUpdate.following(),
-            userToUpdate.favoriteAlbumIds()
+            userToUpdate.favoriteAlbumIds(),
+            userToUpdate.pdfPath() // Mantener el PDF path existente
         );
 
         try {
@@ -415,6 +427,66 @@ public class ProfileController{
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error updating password: " + e.getMessage());
             return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
+        }
+    }
+
+    @PostMapping("/profile/upload-pdf")
+    public String uploadUserPdf(@RequestParam("pdfFile") MultipartFile pdfFile, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
+        if (currentUserDTO == null) {
+            return "redirect:/login";
+        }
+        
+        try {
+            UserDTO updatedUser = userService.uploadUserPdf(currentUserDTO, pdfFile);
+            session.setAttribute("user", updatedUser);
+            redirectAttributes.addFlashAttribute("success", "PDF uploaded successfully");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "Error uploading PDF: " + e.getMessage());
+        }
+        
+        return "redirect:/profile/" + currentUserDTO.username();
+    }
+
+    @PostMapping("/profile/delete-pdf")
+    public String deleteUserPdf(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        UserDTO currentUserDTO = (UserDTO) session.getAttribute("user");
+        if (currentUserDTO == null) {
+            return "redirect:/login";
+        }
+        
+        try {
+            UserDTO updatedUser = userService.deleteUserPdf(currentUserDTO);
+            session.setAttribute("user", updatedUser);
+            redirectAttributes.addFlashAttribute("success", "PDF deleted successfully");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "Error deleting PDF: " + e.getMessage());
+        }
+        
+        return "redirect:/profile/" + currentUserDTO.username();
+    }
+
+    @GetMapping("/profile/{username}/pdf")
+    public ResponseEntity<Resource> viewUserPdf(@PathVariable String username) {
+        try {
+            String pdfPath = userService.getUserPdfPath(username);
+            if (pdfPath == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Path filePath = Paths.get("src/main/resources/static" + pdfPath);
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + resource.getFilename())
+                    .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
