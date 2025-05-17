@@ -214,15 +214,20 @@ public class AdminController {
         }
         
         try {
-            // If the artists list is null or empty, initialize with a new artist
             Album albumEntity = albumOpt.get().toAlbum();
-            if (albumEntity.getArtists() == null || albumEntity.getArtists().isEmpty()) {
+            // Asegurarnos de que la lista de artistas está inicializada
+            if (albumEntity.getArtists() == null) {
                 albumEntity.setArtists(new ArrayList<>());
-                Artist emptyArtist = new Artist();
-                albumEntity.getArtists().add(emptyArtist);
             }
-            model.addAttribute("album", AlbumDTO.fromAlbum(albumEntity));
+            
+            // Convertir el álbum a DTO manteniendo sus artistas actuales
+            AlbumDTO albumDTO = AlbumDTO.fromAlbum(albumEntity);
+            model.addAttribute("album", albumDTO);
             model.addAttribute("artists", artistService.getAllArtists());
+            // Añadir el ID del artista actual para pre-seleccionarlo en el formulario
+            if (!albumEntity.getArtists().isEmpty()) {
+                model.addAttribute("selectedArtistId", albumEntity.getArtists().get(0).getId());
+            }
             return "album/form";
         } catch (Exception e) {
             model.addAttribute("error", "Error loading the edit form: " + e.getMessage());
@@ -267,12 +272,8 @@ public class AdminController {
             Album existingAlbum = albumOpt.get().toAlbum();
 
             existingAlbum.setTitle(album.getTitle());
-            // If the artists list is null or empty, initialize with a new artist
-            if (existingAlbum.getArtists() == null || existingAlbum.getArtists().isEmpty()) {
-                existingAlbum.setArtists(new ArrayList<>());
-                Artist emptyArtist = new Artist();
-                existingAlbum.getArtists().add(emptyArtist);
-            }
+            // Limpiar la lista de artistas existente
+            existingAlbum.getArtists().clear();
             
             // Handle artist selection or creation
             if (artistId != null && artistId > 0) {

@@ -35,7 +35,11 @@
             <div class="d-flex gap-2">
                 <select id="artistId" name="artistId" class="form-select">
                     <option value="">Select an existing artist</option>
-                    <option th:each="artist : ${artists}" th:value="${artist.id}" th:text="${artist.name}"></option>
+                    <option th:each="artist : ${artists}" 
+                            th:value="${artist.id}" 
+                            th:text="${artist.name}"
+                            th:selected="${selectedArtistId != null && selectedArtistId == artist.id}">
+                    </option>
                 </select>
                 <button type="button" class="btn btn-secondary" onclick="toggleNewArtistInput()">
                     <i class="bi bi-plus-circle me-1"></i>New Artist
