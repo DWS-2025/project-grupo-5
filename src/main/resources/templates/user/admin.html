@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Administration • EchoReviews</title>
+    <!-- CSRF tokens for AJAX requests -->
+    <meta name="_csrf" th:content="${_csrf?.token}" />
+    <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : 'X-CSRF-TOKEN'}" />
+    <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -13,6 +17,79 @@
     <link rel="stylesheet" href="/css/search.css">
     <link rel="stylesheet" href="/css/list.css">
     <link rel="icon" type="image/x-icon" href="/images/logo3.png">
+    <style>
+        /* Custom toggle switch styles */
+        .switch {
+          font-size: 14px;
+          position: relative;
+          display: inline-block;
+          width: 3em;
+          height: 1.7em;
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        /* The slider */
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #fff;
+          border: 1px solid #adb5bd;
+          transition: .4s;
+          border-radius: 30px;
+        }
+
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 1.2em;
+          width: 1.2em;
+          border-radius: 20px;
+          left: 0.2em;
+          bottom: 0.2em;
+          background-color: #adb5bd;
+          transition: .4s;
+        }
+
+        input:checked + .slider {
+          background-color: #28a745;
+          border: 1px solid #28a745;
+        }
+
+        input:focus + .slider {
+          box-shadow: 0 0 1px #28a745;
+        }
+
+        input:checked + .slider:before {
+          transform: translateX(1.2em);
+          background-color: #fff;
+        }
+        
+        /* Custom colors for different toggle types */
+        input.toggle-danger:checked + .slider {
+          background-color: #dc3545;
+          border: 1px solid #dc3545;
+        }
+        
+        input.toggle-warning:checked + .slider {
+          background-color: #ffc107;
+          border: 1px solid #ffc107;
+        }
+        
+        .toggle-label {
+          margin-left: 7px;
+          font-size: 12px;
+        }
+    </style>
 </head>
 
 <body>
@@ -60,6 +137,8 @@
                 <th>Username</th>
                 <th>Email</th>
                 <th>Admin</th>
+                <th>High-risk User</th>
+                <th>Banned</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -72,8 +151,45 @@
                 <td th:text="${user.username()}">username</td>
                 <td th:text="${user.email()}">email@example.com</td>
                 <td>
-                    <span th:if="${user.isAdmin()}" class="badge bg-success">Yes</span>
-                    <span th:unless="${user.isAdmin()}" class="badge bg-secondary">No</span>
+                    <div class="d-flex align-items-center">
+                        <label class="switch">
+                            <input type="checkbox" 
+                                   th:checked="${user.isAdmin()}" 
+                                   th:data-user-id="${user.id()}"
+                                   th:data-flag-type="'admin'"
+                                   onchange="setUserFlag(this)">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label" th:text="${user.isAdmin() ? 'Yes' : 'No'}">No</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <label class="switch">
+                            <input type="checkbox" 
+                                   class="toggle-warning"
+                                   th:checked="${user.potentiallyDangerous()}" 
+                                   th:data-user-id="${user.id()}"
+                                   th:data-flag-type="'dangerous'"
+                                   onchange="setUserFlag(this)">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label" th:text="${user.potentiallyDangerous() ? 'Yes' : 'No'}">No</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <label class="switch">
+                            <input type="checkbox" 
+                                   class="toggle-danger"
+                                   th:checked="${user.banned()}" 
+                                   th:data-user-id="${user.id()}"
+                                   th:data-flag-type="'banned'"
+                                   onchange="setUserFlag(this)">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label" th:text="${user.banned() ? 'Yes' : 'No'}">No</span>
+                    </div>
                 </td>
                 <td>
                     <div class="d-flex gap-2">
@@ -94,8 +210,85 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-<!--
+
 <script>
+    function setUserFlag(checkbox) {
+        const userId = checkbox.getAttribute('data-user-id');
+        const flagType = checkbox.getAttribute('data-flag-type');
+        const value = checkbox.checked;
+        
+        console.log(`Setting flag ${flagType} to ${value} for user ${userId}`);
+        
+        // Update the label text
+        const label = checkbox.parentElement.nextElementSibling;
+        if (label) {
+            label.textContent = value ? 'Yes' : 'No';
+        }
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        
+        console.log("CSRF Token:", csrfToken);
+        console.log("CSRF Header:", csrfHeader);
+        
+        // Prepare headers
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        
+        // Add CSRF token if available
+        if (csrfHeader && csrfToken) {
+            headers[csrfHeader] = csrfToken;
+        }
+        
+        // Send AJAX request to update the user flag
+        fetch(`/admin/users/${userId}/toggle-flag`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                flagType: flagType,
+                value: value
+            })
+        })
+        .then(response => {
+            console.log("Response status:", response.status);
+            if (!response.ok) {
+                // Get error details
+                return response.text().then(text => {
+                    console.error("Error response:", text);
+                    // Revert checkbox state on error
+                    checkbox.checked = !value;
+                    if (label) {
+                        label.textContent = !value ? 'Yes' : 'No';
+                    }
+                    alert(`Failed to update user flag: ${response.status} ${response.statusText}`);
+                    throw new Error(`Failed to update user flag: ${response.status} ${response.statusText}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('User flag updated successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error updating user flag:', error);
+        });
+    }
+    
+    // Check if CSRF token is present
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        
+        if (!csrfToken || !csrfHeader) {
+            console.warn("CSRF token or header not found. AJAX requests may fail.");
+        } else {
+            console.log("CSRF protection found in the page.");
+        }
+    });
+    
+    /* Search functionality (commented out for now)
     function filterUsers() {
         const searchInput = document.getElementById("searchInput").value.toLowerCase();
         const userRows = document.querySelectorAll("tbody tr");
@@ -113,8 +306,8 @@
 
         document.getElementById("noResults").classList.toggle("d-none", hasResults);
     }
+    */
 </script>
--->
 
 </body>
 </html>

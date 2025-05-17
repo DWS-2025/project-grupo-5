@@ -3,51 +3,105 @@ package com.echoreviews.mapper;
 import com.echoreviews.dto.UserDTO;
 import com.echoreviews.model.Album;
 import com.echoreviews.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-import java.lang.annotation.RetentionPolicy;
-import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+@Component
+public class UserMapper {
 
-    @Qualifier
-    @Retention(RetentionPolicy.CLASS)
-    @Target(ElementType.METHOD)
-    static @interface AlbumIdToEntity {}
+    public User toEntity(UserDTO userDTO) {
+        if (userDTO == null) {
+            return null;
+        }
 
-    @Qualifier
-    @Retention(RetentionPolicy.CLASS)
-    @Target(ElementType.METHOD)
-    static @interface AlbumEntityToId {}
-    @Mapping(target = "favoriteAlbums", source = "favoriteAlbumIds", qualifiedBy = AlbumIdToEntity.class)
-    @Mapping(target = "followers", source = "followers")
-    @Mapping(target = "following", source = "following")
-    User toEntity(UserDTO userDTO);
+        User user = new User();
+        user.setId(userDTO.id());
+        user.setUsername(userDTO.username());
+        user.setPassword(userDTO.password());
+        user.setEmail(userDTO.email());
+        user.setAdmin(userDTO.isAdmin());
+        user.setPotentiallyDangerous(userDTO.potentiallyDangerous());
+        user.setBanned(userDTO.banned());
+        user.setImageUrl(userDTO.imageUrl());
+        user.setImageData(userDTO.imageData());
+        
+        if (userDTO.favoriteAlbumIds() != null) {
+            List<Album> favoriteAlbums = userDTO.favoriteAlbumIds().stream()
+                .map(this::mapAlbumIdToEntity)
+                .collect(Collectors.toList());
+            user.setFavoriteAlbums(favoriteAlbums);
+        }
+        
+        if (userDTO.followers() != null) {
+            user.setFollowers(new ArrayList<>(userDTO.followers()));
+        }
+        
+        if (userDTO.following() != null) {
+            user.setFollowing(new ArrayList<>(userDTO.following()));
+        }
+        
+        return user;
+    }
 
-    @Mapping(target = "favoriteAlbumIds", source = "favoriteAlbums", qualifiedBy = AlbumEntityToId.class)
-    @Mapping(target = "followers", source = "followers")
-    @Mapping(target = "following", source = "following")
-    UserDTO toDTO(User user);
+    public UserDTO toDTO(User user) {
+        if (user == null) {
+            return null;
+        }
 
-    @AlbumIdToEntity
-    default Album mapAlbumIdToEntity(Long albumId) {
+        List<Long> favoriteAlbumIds = null;
+        if (user.getFavoriteAlbums() != null) {
+            favoriteAlbumIds = user.getFavoriteAlbums().stream()
+                .map(this::mapAlbumEntityToId)
+                .collect(Collectors.toList());
+        }
+
+        return new UserDTO(
+            user.getId(),
+            user.getUsername(),
+            user.getPassword(),
+            user.getEmail(),
+            user.isAdmin(),
+            user.isPotentiallyDangerous(),
+            user.isBanned(),
+            user.getImageUrl(),
+            user.getImageData(),
+            user.getFollowers() != null ? new ArrayList<>(user.getFollowers()) : new ArrayList<>(),
+            user.getFollowing() != null ? new ArrayList<>(user.getFollowing()) : new ArrayList<>(),
+            favoriteAlbumIds != null ? favoriteAlbumIds : new ArrayList<>()
+        );
+    }
+
+    public Album mapAlbumIdToEntity(Long albumId) {
         if (albumId == null) return null;
         Album album = new Album();
         album.setId(albumId);
         return album;
     }
 
-    @AlbumEntityToId
-    default Long mapAlbumEntityToId(Album album) {
+    public Long mapAlbumEntityToId(Album album) {
         return album != null ? album.getId() : null;
     }
 
-    List<UserDTO> toDTOList(List<User> users);
-    List<User> toEntityList(List<UserDTO> userDTOs);
+    public List<UserDTO> toDTOList(List<User> users) {
+        if (users == null) {
+            return new ArrayList<>();
+        }
+        
+        return users.stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<User> toEntityList(List<UserDTO> userDTOs) {
+        if (userDTOs == null) {
+            return new ArrayList<>();
+        }
+        
+        return userDTOs.stream()
+            .map(this::toEntity)
+            .collect(Collectors.toList());
+    }
 }

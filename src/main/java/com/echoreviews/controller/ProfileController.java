@@ -149,6 +149,8 @@ public class ProfileController{
             passwordForUpdate, // This will be new plain or old hashed. Service must handle.
             (profileUpdateDTO.email() != null && !profileUpdateDTO.email().isBlank()) ? profileUpdateDTO.email() : userToUpdate.email(),
             userToUpdate.isAdmin(), // Admin status not changed here
+            userToUpdate.potentiallyDangerous(), // Preserve existing flag
+            userToUpdate.banned(), // Preserve existing flag
             userToUpdate.imageUrl(), // Default to old, might be overwritten by imageFile
             userToUpdate.imageData(), // Default to old
             userToUpdate.followers() != null ? new ArrayList<>(userToUpdate.followers()) : new ArrayList<>(),
@@ -161,7 +163,8 @@ public class ProfileController{
             if (imageFile != null && !imageFile.isEmpty()) {
                  UserDTO userDtoForImageSave = new UserDTO(
                     updatedUserDTO.id(), updatedUserDTO.username(), updatedUserDTO.password(), updatedUserDTO.email(),
-                    updatedUserDTO.isAdmin(), null, null, // Null out image fields for new image
+                    updatedUserDTO.isAdmin(), updatedUserDTO.potentiallyDangerous(), updatedUserDTO.banned(), 
+                    null, null, // Null out image fields for new image
                     updatedUserDTO.followers(), updatedUserDTO.following(), updatedUserDTO.favoriteAlbumIds()
                 );
                 savedUser = userService.saveUserWithProfileImage(userDtoForImageSave, imageFile);
@@ -391,6 +394,8 @@ public class ProfileController{
             newPassword,
             userToUpdate.email(),
             userToUpdate.isAdmin(),
+            userToUpdate.potentiallyDangerous(),
+            userToUpdate.banned(),
             userToUpdate.imageUrl(),
             userToUpdate.imageData(),
             userToUpdate.followers(),

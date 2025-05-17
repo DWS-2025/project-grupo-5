@@ -56,7 +56,7 @@ public class ArtistController {
             if (userDTO != null) {
                 model.addAttribute("user", userDTO);
             } else {
-                UserDTO anonymousUser = new UserDTO(null, null, null, null, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                UserDTO anonymousUser = new UserDTO(null, null, null, null, false, false, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
                 model.addAttribute("user", anonymousUser);
             }
             return "artist/welcome";

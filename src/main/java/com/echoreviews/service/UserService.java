@@ -53,6 +53,11 @@ public class UserService implements UserDetailsService {
         User userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
+        // Check if the user is banned and prevent authentication if so
+        if (userEntity.isBanned()) {
+            throw new UsernameNotFoundException("This account has been banned. Please contact customer support for more information.");
+        }
+
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (userEntity.isAdmin()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
@@ -286,7 +291,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + updatedUserDTO.id() + " for update"));
 
         User userToUpdate = userMapper.toEntity(updatedUserDTO); 
-        // El estado de admin se toma del DTO
+        // The states of admin, potentiallyDangerous, and banned are taken from the DTO
 
         // Handle password update: 
         // If password field in DTO is not empty, it means an attempt to change.

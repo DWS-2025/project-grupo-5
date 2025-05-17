@@ -15,6 +15,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +26,9 @@ public class SecurityConfig {
 
     @Autowired
     private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    
+    @Autowired
+    private BannedUserFilter bannedUserFilter;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -75,7 +79,8 @@ public class SecurityConfig {
                         .invalidSessionUrl("/login?invalid-session=true")
                         .maximumSessions(1)
                         .expiredUrl("/login?session-expired=true")
-                );
+                )
+                .addFilterAfter(bannedUserFilter, BasicAuthenticationFilter.class);
 
         return http.build();
     }

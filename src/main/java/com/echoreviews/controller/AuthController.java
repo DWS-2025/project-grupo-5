@@ -62,6 +62,8 @@ public class AuthController {
                     user.getPassword(),
                     user.getEmail(),
                     false,
+                    false,
+                    false,
                     null,
                     null,
                     new ArrayList<>(),

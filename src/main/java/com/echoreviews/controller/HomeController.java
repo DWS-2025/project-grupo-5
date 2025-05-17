@@ -53,7 +53,7 @@ public class HomeController {
 
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO == null) {
-            userDTO = new UserDTO(null, null, null, null, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            userDTO = new UserDTO(null, null, null, null, false, false, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         }
         model.addAttribute("user", userDTO);
         return "album/welcome";
@@ -63,7 +63,7 @@ public class HomeController {
     public String viewAlbum(@PathVariable Long id, Model model, HttpSession session) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO == null) {
-            userDTO = new UserDTO(null, null, null, null, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            userDTO = new UserDTO(null, null, null, null, false, false, false, null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         }
         model.addAttribute("user", userDTO);
         model.addAttribute("userService", userService);

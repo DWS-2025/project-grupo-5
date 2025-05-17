@@ -42,6 +42,12 @@ public class User {
     @Column(name = "is_admin")
     private boolean isAdmin = false;
 
+    @Column(name = "potentially_dangerous")
+    private boolean potentiallyDangerous = false;
+
+    @Column(name = "banned")
+    private boolean banned = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_favorite_albums",

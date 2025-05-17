@@ -11,6 +11,8 @@ public record UserDTO(
         String password,
         String email,
         boolean isAdmin,
+        boolean potentiallyDangerous,
+        boolean banned,
         String imageUrl,
         byte[] imageData,
         List<Long> followers,
@@ -24,6 +26,8 @@ public record UserDTO(
             user.getPassword(),
             user.getEmail(),
             user.isAdmin(),
+            user.isPotentiallyDangerous(),
+            user.isBanned(),
             user.getImageUrl(),
             user.getImageData(),
             user.getFollowers(),
@@ -40,6 +44,8 @@ public record UserDTO(
         user.setUsername(this.username());
         user.setEmail(this.email());
         user.setAdmin(this.isAdmin());
+        user.setPotentiallyDangerous(this.potentiallyDangerous());
+        user.setBanned(this.banned());
         user.setImageUrl(this.imageUrl());
         user.setImageData(this.imageData());
         user.setFollowers(this.followers());
@@ -68,6 +74,8 @@ public record UserDTO(
             this.password(),
             this.email(),
             this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
             this.imageUrl(),
             this.imageData(),
             this.followers(),
@@ -83,6 +91,8 @@ public record UserDTO(
             this.password(),
             this.email(),
             this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
             this.imageUrl(),
             newImageData,
             this.followers(),
@@ -98,6 +108,8 @@ public record UserDTO(
             this.password(),
             this.email(),
             this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
             newImageUrl,
             this.imageData(),
             this.followers(),
@@ -113,6 +125,8 @@ public record UserDTO(
             this.password(),
             this.email(),
             this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
             this.imageUrl(),
             this.imageData(),
             this.followers(),
@@ -128,6 +142,8 @@ public record UserDTO(
             this.password(),
             this.email(),
             this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
             this.imageUrl(),
             this.imageData(),
             this.followers(),
@@ -143,6 +159,8 @@ public record UserDTO(
             this.password(),
             this.email(),
             this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
             this.imageUrl(),
             this.imageData(),
             newFollowers,
@@ -158,6 +176,8 @@ public record UserDTO(
             this.password(),
             this.email(),
             newIsAdmin,
+            this.potentiallyDangerous(),
+            this.banned(),
             this.imageUrl(),
             this.imageData(),
             this.followers(),
@@ -166,4 +186,37 @@ public record UserDTO(
         );
     }
 
+    public UserDTO withPotentiallyDangerous(boolean newPotentiallyDangerous) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            newPotentiallyDangerous,
+            this.banned(),
+            this.imageUrl(),
+            this.imageData(),
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds
+        );
+    }
+
+    public UserDTO withBanned(boolean newBanned) {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.potentiallyDangerous(),
+            newBanned,
+            this.imageUrl(),
+            this.imageData(),
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds
+        );
+    }
 }
