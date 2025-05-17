@@ -47,7 +47,7 @@ public class ReviewController {
         if (userDTO != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 System.err.println("Invalid data. Review not saved.");
-                return "redirect:/" + albumId;
+                return "redirect:/album/" + albumId;
             }
             if (content.length() > 255) {
                 model.addAttribute("error", "Character limit exceeded");
@@ -74,7 +74,7 @@ public class ReviewController {
                 albumService.saveAlbumReview(albumDTO);
             });
         }
-        return "redirect:/" + albumId;
+        return "redirect:/album/" + albumId;
     }
 
     @PostMapping("/{albumId}/edit/{reviewId}")
@@ -83,14 +83,18 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @RequestParam String content,
             @RequestParam int rating,
-            HttpSession session
+            HttpSession session,
+            Model model
     ) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO != null) {
             if (rating < 1 || rating > 5 || content.isBlank()) {
-                return "redirect:/" + albumId;
+                return "redirect:/album/" + albumId;
             }
-
+            if (content.length() > 255) {
+                model.addAttribute("error", "Se ha superado el límite de caracteres");
+                return "error";
+            }
             ReviewDTO existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (existingReview != null && existingReview.username().equals(userDTO.username())) {
                 ReviewDTO reviewDTO = new ReviewDTO(
@@ -115,7 +119,7 @@ public class ReviewController {
                 }
             }
         }
-        return "redirect:/" + albumId;
+        return "redirect:/album/" + albumId;
     }
 
     @PostMapping("/{albumId}/delete/{reviewId}")
@@ -139,7 +143,7 @@ public class ReviewController {
                 }
             }
         }
-        return "redirect:/" + albumId;
+        return "redirect:/album/" + albumId;
     }
 
 

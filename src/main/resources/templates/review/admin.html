@@ -75,12 +75,15 @@
                     <td>
                         <div class="d-flex">
                             <span th:each="star : ${#numbers.sequence(1, review.rating())}" class="text-warning">★</span>
-                            <span th:each="star : ${#numbers.sequence(1, 5 - review.rating())}" class="text-secondary">★</span>
+                            <span th:if="${review.rating() < 5}" th:each="star : ${#numbers.sequence(1, 5 - review.rating())}" class="text-secondary">★</span>
                             <span class="ms-1" th:text="${review.rating()}">5</span>
                         </div>
                     </td>
                     <td>
-                        <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${review.content()}">Review content...</div>
+                        <div class="d-flex align-items-center">
+                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${review.content()}">Contenido de la reseña...</div>
+                            <small class="text-muted ms-2" th:text="${#strings.length(review.content()) + '/255'}">0/255</small>
+                        </div>
                     </td>
                     <td>
                         <div class="d-flex gap-2">

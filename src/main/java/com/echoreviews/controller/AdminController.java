@@ -522,6 +522,11 @@ public class AdminController {
             model.addAttribute("error", "You don't have access to this resource.");
             return "error";
         }
+
+        if (reviewDTO.content().length() > 255) {
+            model.addAttribute("error", "Se ha superado el límite de caracteres");
+            return "error";
+        }
         
         if (result.hasErrors()) {
             model.addAttribute("error", "Data validation error");
