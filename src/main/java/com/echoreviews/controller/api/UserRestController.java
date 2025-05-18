@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Map;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
+import java.io.IOException;
+import org.springframework.util.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/users")
@@ -393,6 +398,201 @@ public class UserRestController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint para actualizar un usuario con imagen usando multipart/form-data
+     * @param id ID del usuario a actualizar
+     * @param userJson Los datos del usuario en formato JSON como string
+     * @param image La imagen del usuario (opcional)
+     * @param authHeader El token de autenticación
+     * @return El usuario actualizado
+     */
+    @RequestMapping(
+        value = "/{id}/with-image", 
+        method = {RequestMethod.POST, RequestMethod.PUT},
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<UserDTO> updateUserWithImage(
+            @PathVariable Long id,
+            @RequestPart("user") String userJson,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        try {
+            // Obtener el username del token
+            String username = jwtUtil.extractUsername(token);
+            
+            // Obtener el usuario autenticado
+            UserDTO requestingUser = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+            // Verificar que el usuario solicitante sea el mismo que se actualiza o sea admin
+            if (!requestingUser.id().equals(id) && !requestingUser.isAdmin()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            
+            // Verificar que el usuario a actualizar existe
+            UserDTO userToUpdate = userService.getUserById(id)
+                    .orElseThrow(() -> new RuntimeException("Usuario a actualizar no encontrado"));
+            
+            try {
+                // Convertir el JSON a un mapa para actualizar solo los campos proporcionados
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> updates = objectMapper.readValue(userJson, Map.class);
+                
+                // Crear un nuevo UserDTO con los campos actualizados
+                UserDTO updatedUserDTO = new UserDTO(
+                    id,
+                    getValueIfPresent(updates, "username") != null ? 
+                        (String) getValueIfPresent(updates, "username") : userToUpdate.username(),
+                    null, // No actualizar la contraseña a través de esta API
+                    getValueIfPresent(updates, "email") != null ? 
+                        (String) getValueIfPresent(updates, "email") : userToUpdate.email(),
+                    // Solo permitir cambios a estos campos si es admin
+                    requestingUser.isAdmin() && getValueIfPresent(updates, "isAdmin") != null ? 
+                        (Boolean) getValueIfPresent(updates, "isAdmin") : userToUpdate.isAdmin(),
+                    requestingUser.isAdmin() && getValueIfPresent(updates, "potentiallyDangerous") != null ? 
+                        (Boolean) getValueIfPresent(updates, "potentiallyDangerous") : userToUpdate.potentiallyDangerous(),
+                    requestingUser.isAdmin() && getValueIfPresent(updates, "banned") != null ? 
+                        (Boolean) getValueIfPresent(updates, "banned") : userToUpdate.banned(),
+                    userToUpdate.imageUrl(),
+                    userToUpdate.imageData(),
+                    userToUpdate.followers(),
+                    userToUpdate.following(),
+                    userToUpdate.favoriteAlbumIds(),
+                    userToUpdate.pdfPath()
+                );
+                
+                // Si se proporciona una imagen, validarla y actualizar el usuario con ella
+                if (image != null && !image.isEmpty()) {
+                    // Validación de imagen
+                    validateImageFile(image);
+                    
+                    // Generar URL para la imagen
+                    String imageUrl = "/api/users/" + id + "/image";
+                    
+                    // Actualizar con la nueva imagen y URL
+                    updatedUserDTO = updatedUserDTO.withImageData(image.getBytes())
+                                                 .withImageUrl(imageUrl);
+                }
+                
+                // Guardar el usuario actualizado
+                UserDTO result = userService.saveUser(updatedUserDTO);
+                return ResponseEntity.ok(result);
+                
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Valida una imagen para asegurar que es segura
+     * @param image La imagen a validar
+     * @throws IOException Si hay errores al procesar la imagen
+     * @throws IllegalArgumentException Si la imagen no es válida o segura
+     */
+    private void validateImageFile(MultipartFile image) throws IOException, IllegalArgumentException {
+        // Verificar que no es nulo y tiene contenido
+        if (image == null || image.isEmpty()) {
+            throw new IllegalArgumentException("Image file cannot be empty");
+        }
+        
+        // Verificar el tipo de contenido (MIME type)
+        String contentType = image.getContentType();
+        if (contentType == null || !(contentType.equals("image/jpeg") || 
+                                     contentType.equals("image/png") || 
+                                     contentType.equals("image/gif") ||
+                                     contentType.equals("image/webp"))) {
+            throw new IllegalArgumentException("File must be a valid image (JPEG, PNG, GIF or WEBP)");
+        }
+        
+        // Verificar la extensión del archivo
+        String filename = StringUtils.cleanPath(image.getOriginalFilename());
+        if (filename == null) {
+            throw new IllegalArgumentException("Filename cannot be null");
+        }
+        
+        String extension = "";
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex > 0) {
+            extension = filename.substring(lastDotIndex + 1).toLowerCase();
+        }
+        
+        if (!extension.equals("jpg") && !extension.equals("jpeg") && 
+            !extension.equals("png") && !extension.equals("gif") && 
+            !extension.equals("webp")) {
+            throw new IllegalArgumentException("File must have a valid image extension (jpg, jpeg, png, gif, webp)");
+        }
+        
+        // Verificar el tamaño del archivo (máximo 5 MB)
+        long maxSizeBytes = 5 * 1024 * 1024; // 5MB
+        if (image.getSize() > maxSizeBytes) {
+            throw new IllegalArgumentException("Image file size must be less than 5MB");
+        }
+        
+        // Validar magic numbers para seguridad adicional
+        byte[] bytes = image.getBytes();
+        if (bytes.length < 8) { // Las imágenes válidas deberían tener al menos algunos bytes
+            throw new IllegalArgumentException("File is too small to be a valid image");
+        }
+        
+        // Verificar los magic numbers de las imágenes comunes
+        // JPEG: FF D8 FF
+        // PNG: 89 50 4E 47 0D 0A 1A 0A
+        // GIF: 47 49 46 38
+        // WEBP: 52 49 46 46 ** ** ** ** 57 45 42 50
+        boolean validMagicNumber = false;
+        
+        if (contentType.equals("image/jpeg") && 
+            bytes[0] == (byte) 0xFF && 
+            bytes[1] == (byte) 0xD8 && 
+            bytes[2] == (byte) 0xFF) {
+            validMagicNumber = true;
+        } else if (contentType.equals("image/png") && 
+                  bytes[0] == (byte) 0x89 && 
+                  bytes[1] == (byte) 0x50 && 
+                  bytes[2] == (byte) 0x4E && 
+                  bytes[3] == (byte) 0x47 && 
+                  bytes[4] == (byte) 0x0D && 
+                  bytes[5] == (byte) 0x0A && 
+                  bytes[6] == (byte) 0x1A && 
+                  bytes[7] == (byte) 0x0A) {
+            validMagicNumber = true;
+        } else if (contentType.equals("image/gif") && 
+                  bytes[0] == (byte) 0x47 && 
+                  bytes[1] == (byte) 0x49 && 
+                  bytes[2] == (byte) 0x46 && 
+                  bytes[3] == (byte) 0x38) {
+            validMagicNumber = true;
+        } else if (contentType.equals("image/webp") && 
+                  bytes.length > 12 &&
+                  bytes[0] == (byte) 0x52 && 
+                  bytes[1] == (byte) 0x49 && 
+                  bytes[2] == (byte) 0x46 && 
+                  bytes[3] == (byte) 0x46 && 
+                  bytes[8] == (byte) 0x57 && 
+                  bytes[9] == (byte) 0x45 && 
+                  bytes[10] == (byte) 0x42 && 
+                  bytes[11] == (byte) 0x50) {
+            validMagicNumber = true;
+        }
+        
+        if (!validMagicNumber) {
+            throw new IllegalArgumentException("File content does not match its declared image type");
         }
     }
 }
