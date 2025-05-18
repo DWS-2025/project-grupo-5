@@ -156,7 +156,7 @@
 <h1 th:if="${status == 500}">Error</h1>
 <h1 th:unless="${status == 500}">Error <span id="error-code" th:text="${status}">404</span></h1>
 
-<p th:if="${status == 500}">Lo sentimos, ha ocurrido un problema. Por favor, inténtalo de nuevo más tarde.</p>
+<p th:if="${status == 500}">We're sorry, a problem has occured. Please, try again later.</p>
 <p th:unless="${status == 500}" th:text="${error}">The page doesn't exist or has been moved.</p>
 
 <div class="container">

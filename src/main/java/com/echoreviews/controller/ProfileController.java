@@ -158,7 +158,7 @@ public class ProfileController{
             passwordForUpdate = newPlainPassword; // New plain password for service to hash
         }
 
-        // Asegurarse de que el nombre de usuario y el email no estén vacíos
+        // Ensure that username and email are not empty
         String username = (profileUpdateDTO.username() != null && !profileUpdateDTO.username().isBlank()) 
                         ? profileUpdateDTO.username() 
                         : userToUpdate.username();
@@ -497,13 +497,13 @@ public class ProfileController{
     @GetMapping("/profile/{userId}/pdf")
     public ResponseEntity<Resource> viewUserPdf(@PathVariable Long userId, HttpSession session) {
         try {
-            // Verificar que hay un usuario en sesión
+            // Verify that there is a user in session
             UserDTO currentUser = (UserDTO) session.getAttribute("user");
             if (currentUser == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            // Verificar que el usuario está intentando acceder a su propio PDF
+            // Verify that the user is trying to access their own PDF
             if (!currentUser.id().equals(userId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }

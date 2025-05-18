@@ -40,7 +40,7 @@ public class AuthController {
     @Autowired
     private InputSanitizer inputSanitizer;
     
-    // Patrón para sanitizar entradas y prevenir inyecciones SQL
+    // Pattern to sanitize inputs and prevent SQL injections
     private static final Pattern SAFE_INPUT_PATTERN = Pattern.compile("^[a-zA-Z0-9._@-]{3,50}$");
 
     // Rutas Web
@@ -57,9 +57,9 @@ public class AuthController {
     }
     
     /**
-     * Método para sanitizar entradas de usuario y prevenir inyecciones SQL
-     * @param input El texto a sanitizar
-     * @return true si la entrada es segura, false en caso contrario
+     * Method to sanitize user inputs and prevent SQL injections
+     * @param input The text to sanitize
+     * @return true if the input is safe, false otherwise
      */
     private boolean isSafeInput(String input) {
         return input != null && SAFE_INPUT_PATTERN.matcher(input).matches();
@@ -68,19 +68,19 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {
         try {
-            // Sanitizar entradas para prevenir inyecciones SQL
+            // Sanitize inputs to prevent SQL injections
             String username = user.getUsername();
             String email = user.getEmail();
             
-            // Verificar que el nombre de usuario sea seguro usando la utilidad de sanitización
+            // Verify that the username is safe using the sanitization utility
             if (!inputSanitizer.isValidUsername(username)) {
-                model.addAttribute("error", "El nombre de usuario contiene caracteres no permitidos");
+                model.addAttribute("error", "The username contains invalid characters");
                 return "error";
             }
             
-            // Verificar que el email sea seguro
+            // Verify that the email is safe
             if (!inputSanitizer.isValidEmail(email)) {
-                model.addAttribute("error", "El formato de email no es válido");
+                model.addAttribute("error", "Invalid email format");
                 return "error";
             }
             
@@ -135,7 +135,7 @@ public class AuthController {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
         
-        // Sanitizar entradas para prevenir inyecciones SQL usando la utilidad de sanitización
+        // Sanitize inputs to prevent SQL injections using the sanitization utility
         if (!inputSanitizer.isValidUsername(username)) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid username format");
@@ -168,18 +168,18 @@ public class AuthController {
     @PostMapping("/api/auth/logout")
     @ResponseBody
     public ResponseEntity<?> apiLogout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Token no proporcionado o formato inválido");
+            errorResponse.put("error", "Token not provided or invalid format");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
         
         try {
-            // Invalidar el token
+            // Invalidate the token
             jwtUtil.invalidateToken(token);
             
             Map<String, String> response = new HashMap<>();
@@ -187,17 +187,17 @@ public class AuthController {
             
             return ResponseEntity.ok(response);
         } catch (ExpiredJwtException e) {
-            // Si el token ya expiró, consideramos el logout como exitoso
+            // If the token is already expired, consider the logout successful
             Map<String, String> response = new HashMap<>();
             response.put("message", "Logout successful. Token already expired.");
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            // Error de formato o token inválido
+            // Format error or invalid token
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Token inválido: " + e.getMessage());
+            errorResponse.put("error", "Invalid token: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
-            // Cualquier otro error
+            // Any other error
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Logout failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -207,14 +207,14 @@ public class AuthController {
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<?> apiRegister(@RequestBody UserDTO userDTO) {
-        // Sanitizar entradas para prevenir inyecciones SQL usando la utilidad de sanitización
+        // Sanitize inputs to prevent SQL injections using the sanitization utility
         if (!inputSanitizer.isValidUsername(userDTO.username())) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid username format");
             return ResponseEntity.badRequest().body(errorResponse);
         }
         
-        // Verificar que el email sea seguro
+        // Verify that the email is safe
         if (!inputSanitizer.isValidEmail(userDTO.email())) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid email format");
