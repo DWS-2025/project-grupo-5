@@ -69,16 +69,72 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(
+    public ResponseEntity<?> updateUser(
             @PathVariable Long id,
-            @RequestBody UserDTO userDTO) {
-        return userService.getUserById(id)
-                .map(existingUser -> {
-                    UserDTO updatedUserDTO = userDTO.withId(id);
-                    UserDTO savedUser = userService.saveUser(updatedUserDTO);
-                    return ResponseEntity.ok(savedUser);
-                })
-                .orElse(ResponseEntity.notFound().build());
+            @RequestBody Map<String, Object> updates,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        try {
+            // Obtener el username del token
+            String username = jwtUtil.extractUsername(token);
+            
+            // Obtener el usuario que hace la petición
+            UserDTO requestingUser = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Obtener el usuario a actualizar
+            return userService.getUserById(id)
+                    .map(userToUpdate -> {
+                        // Verificar que el usuario es el mismo que se quiere actualizar o es admin
+                        if (!userToUpdate.username().equals(username) && !jwtUtil.isAdmin(token)) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                        }
+
+                        try {
+                            // Crear un nuevo UserDTO con los campos actualizados
+                            UserDTO updatedUserDTO = new UserDTO(
+                                id,
+                                updates.containsKey("username") ? (String) updates.get("username") : userToUpdate.username(),
+                                updates.containsKey("password") ? (String) updates.get("password") : userToUpdate.password(),
+                                updates.containsKey("email") ? (String) updates.get("email") : userToUpdate.email(),
+                                // Solo permitir cambios en estos campos si es admin
+                                jwtUtil.isAdmin(token) && updates.containsKey("isAdmin") ? 
+                                    (Boolean) updates.get("isAdmin") : userToUpdate.isAdmin(),
+                                jwtUtil.isAdmin(token) && updates.containsKey("potentiallyDangerous") ? 
+                                    (Boolean) updates.get("potentiallyDangerous") : userToUpdate.potentiallyDangerous(),
+                                jwtUtil.isAdmin(token) && updates.containsKey("banned") ? 
+                                    (Boolean) updates.get("banned") : userToUpdate.banned(),
+                                updates.containsKey("imageUrl") ? (String) updates.get("imageUrl") : userToUpdate.imageUrl(),
+                                userToUpdate.imageData(), // No se permite actualizar imageData directamente
+                                userToUpdate.followers(), // No se permite actualizar followers directamente
+                                userToUpdate.following(), // No se permite actualizar following directamente
+                                userToUpdate.favoriteAlbumIds(), // No se permite actualizar favoritos directamente
+                                updates.containsKey("pdfPath") ? (String) updates.get("pdfPath") : userToUpdate.pdfPath()
+                            );
+                            
+                            UserDTO savedUser = userService.saveUser(updatedUserDTO);
+                            return ResponseEntity.ok(savedUser);
+                        } catch (ClassCastException e) {
+                            return ResponseEntity.badRequest()
+                                .body(Map.of("error", "Invalid data type for one or more fields"));
+                        } catch (RuntimeException e) {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                        }
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DeleteMapping("/{id}")
