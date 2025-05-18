@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "cbfe33d0-050b-4939-9c2a-c5be755f2c76",
+		"_postman_id": "828238cb-18f7-4fca-89dd-7bf971c5bc01",
 		"name": "EchoReviews",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "43742986"
+		"_exporter_id": "45066347",
+		"_collection_link": "https://diego-3676389.postman.co/workspace/EchoReviews~7ce2f1ec-6244-4b6e-91f7-37b09716b080/collection/45066365-828238cb-18f7-4fca-89dd-7bf971c5bc01?action=share&source=collection_link&creator=45066347"
 	},
 	"item": [
 		{
@@ -18,12 +19,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/users",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/users",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"users"
@@ -33,16 +34,34 @@
 					"response": []
 				},
 				{
-					"name": "PUT USER",
+					"name": "VIEW USER",
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:8443/api/users/26",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"users",
+								"26"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USER REGISTER",
+					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"username\": \"Juan\",\n        \"password\": \"1234\",\n        \"email\": \"juan@echoreview.com\",\n        \"isAdmin\": false,\n        \"imageUrl\": \"/images/default.jpg\",\n        \"imageData\": null,\n        \"followers\": [],\n        \"following\": [],\n        \"favoriteAlbumIds\": []\n}",
+							"raw": "{\r\n    \"username\":\"nuevoNoeeeeee\",\r\n    \"password\":\"Hola1234.\",\r\n    \"email\":\"user8@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -50,31 +69,29 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/users",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/auth/register",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
-								"users"
+								"auth",
+								"register"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "CHANGE USER",
+					"name": "ADMIN LOGIN",
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "PUT",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"username\": \"Alfredo\",\n        \"password\": \"123456\",\n        \"email\": \"alfredo@echoreview.com\",\n        \"isAdmin\": false,\n        \"imageUrl\": \"/images/default.jpg\",\n        \"imageData\": null,\n        \"followers\": [],\n        \"following\": [],\n        \"favoriteAlbumIds\": []\n}",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"Admin123#$!\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -82,16 +99,280 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/users/14",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/auth/login",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USER LOGIN",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"paul\",\r\n    \"password\":\"Mierda12*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8443/api/auth/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGOUT",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "secret",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTA0Nzk2MTEsInRva2VuSWQiOiJiODk4NmQzNi1mNDU4LTRjYTAtOWYwMS1hZDcxYzc4NTgyNDMiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1OTA0NzksImV4cCI6MTc0NzY3Njg3OSwianRpIjoiNjkzZWFjMTctZWVlYS00YWM4LThhZTgtNGQ5MDE3OWU4OTQ3In0.EhmEcL7q5iKW0t9NhN09QIsQAarHK4lp3Z0_4Rj-keU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8443/api/auth/logout",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE USER",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTY2NTcyNDIsInRva2VuSWQiOiJlMzA1MTdjNi03MjdlLTQxYTMtYWJkZC02M2Q0Y2IwZGZlNmUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1OTY2NTcsImV4cCI6MTc0NzY4MzA1NywianRpIjoiYWVjMWY1MTctZmJkOS00YzJjLTg4ZTAtMjA5NDE3NGNkOWU3In0.cVDRo-a5G97O5SopncW7899D5cD4faVTXqSJsVU0ePg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"nuevoNoeeee\",\n    \"email\": \"nuevooo@email.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8443/api/users/25",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
 							"path": [
 								"api",
 								"users",
-								"14"
+								"25"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE USER PASSWORD",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer a",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"nuevaContraseña123!!!\",\r\n    \"newPassword\": \"nuevaContraseña123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8443/api/users/25/change-password",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"users",
+								"25",
+								"change-password"
 							]
 						}
 					},
@@ -101,47 +382,280 @@
 					"name": "DELETE USER",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTU1MjI2NTUsInRva2VuSWQiOiJlMWY1ZjlhZi00MTU5LTQ1ZjQtODc5Yi00ZDZhNDdjZjk2N2EiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1OTU1MjIsImV4cCI6MTc0NzY4MTkyMiwianRpIjoiYWIxY2RmZWMtYTBkYi00NTEyLTk5MjctY2RjMTVlMWJiOTJiIn0.kUTTuOzy5V9QP_fGsmrYm0HmdH535px_dxd0SWkRGdY",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "http://localhost:8080/api/users/15",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/users/24",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"users",
-								"15"
+								"24"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "VIEW PROFILE",
+					"name": "UPLOAD USER IMAGE",
 					"request": {
-						"method": "GET",
-						"header": []
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc2MDYxMTk1NDIsInRva2VuSWQiOiJhZDBhOTIwOC0wMDlhLTQyZWItOWZiYy00MTRhODJmNGNhOTEiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNBZG1pbiI6ZmFsc2UsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InBhdWwiLCJzdWIiOiJwYXVsIiwiaWF0IjoxNzQ3NjA2MTE5LCJleHAiOjE3NDc2OTI1MTksImp0aSI6ImM4Yjk0ODk3LWQ1NDMtNDA4Ni1iODIzLWNkZjA4MDQ4OTVhZCJ9.ovqaGPxu9ImR_xCdno3140tO18NdUNpE7_pW9zxjyyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/noego/Downloads/quieres.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:8443/api/users/26/image",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"users",
+								"26",
+								"image"
+							]
+						}
 					},
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "UNLIKE ALBUM",
 					"request": {
-						"method": "GET",
-						"header": []
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTU5NDA0NzEsInRva2VuSWQiOiI1YzRiNjY5MC04Nzk3LTRlNDMtODgxNi02N2NhY2Y2NGNlYmQiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNBZG1pbiI6ZmFsc2UsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InBhdWwiLCJzdWIiOiJwYXVsIiwiaWF0IjoxNzQ3NTk1OTQwLCJleHAiOjE3NDc2ODIzNDAsImp0aSI6IjkyOGM4OWQxLTM5NWMtNDg1MS04MzM1LTBhYTIwZTI5ODI1ZiJ9.MuKQHVgvlpPLfbuYTSxtwT8HENeIQYlZCHbOURqXUjc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/api/albums/2/like",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"albums",
+								"2",
+								"like"
+							]
+						}
 					},
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "LIKE ALBUM",
 					"request": {
-						"method": "GET",
-						"header": []
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTU5NDA0NzEsInRva2VuSWQiOiI1YzRiNjY5MC04Nzk3LTRlNDMtODgxNi02N2NhY2Y2NGNlYmQiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNBZG1pbiI6ZmFsc2UsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InBhdWwiLCJzdWIiOiJwYXVsIiwiaWF0IjoxNzQ3NTk1OTQwLCJleHAiOjE3NDc2ODIzNDAsImp0aSI6IjkyOGM4OWQxLTM5NWMtNDg1MS04MzM1LTBhYTIwZTI5ODI1ZiJ9.MuKQHVgvlpPLfbuYTSxtwT8HENeIQYlZCHbOURqXUjc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/api/albums/2/like",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"albums",
+								"2",
+								"like"
+							]
+						}
 					},
 					"response": []
 				}
@@ -151,7 +665,7 @@
 			"name": "ARTIST",
 			"item": [
 				{
-					"name": "GET ARTIST",
+					"name": "GET ARTISTS",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -159,44 +673,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/artists",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/artists",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
-							"path": [
-								"api",
-								"artists"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "PUT ARTIST",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n        \"name\": \"Fito y Fitipaldis\",\n        \"country\": \"España\",\n        \"imageUrl\": null,\n        \"albumTitles\": null,\n        \"imageData\": null\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/api/artists",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"artists"
@@ -214,32 +696,75 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/artists/31",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/artists/1",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"artists",
-								"31"
+								"1"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "CHANGE USER",
+					"name": "CREATE ARTIST",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
 						},
-						"method": "PUT",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTEwNDgwODQsInRva2VuSWQiOiJjMGZjMDc4Mi0yMjdhLTRmMzItYjY3Yy1mMDgzYjY1Yzc1YzAiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNBZG1pbiI6ZmFsc2UsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InBhdWwiLCJzdWIiOiJwYXVsIiwiaWF0IjoxNzQ3NTkxMDQ4LCJleHAiOjE3NDc2Nzc0NDgsImp0aSI6IjFjNmNhYTQ3LTBjZjktNGRmMi1iMTZmLWZmY2FhNWE5OTU5NCJ9.bcMJgQrC7ZEvbqFKd6eCek27mWb6JFgChMugmHehT-M",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"id\": 27,\n    \"name\": \"Pepe\",\n    \"country\": \"Belgica\",\n    \"imageUrl\": null,\n    \"albumIds\": [],\n    \"albumTitles\": null,\n    \"imageData\": null\n}",
+							"raw": "{\n        \"name\": \"Fito y holas\",\n        \"country\": \"España\",\n        \"imageUrl\": null,\n        \"albumTitles\": null,\n        \"imageData\": null\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -247,40 +772,158 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/artists/30",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/artists",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
-								"artists",
-								"30"
+								"artists"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "DELETE USER",
+					"name": "UPDATE ARTIST",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
 						},
-						"method": "DELETE",
-						"header": [],
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1ODc0MzY2MzIsInRva2VuSWQiOiI0MGYwMzU0My1iODU5LTQ1MjYtODk5Mi1kMzkxZmQ3NmI0ODEiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1ODc0MzYsImV4cCI6MTc0NzY3MzgzNiwianRpIjoiYWNmOTFlZWYtNjViNC00MWQwLTk4ZTEtNWVjYTg0ZTJiZGM0In0.ZbSHVzyJxwrMAAvLdLgUesPQhEtBF0rXMPepJH_WGw4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 8,\n    \"name\": \"Pepe\",\n    \"country\": \"Belgica\",\n    \"imageUrl\": null,\n    \"albumIds\": [],\n    \"albumTitles\": null,\n    \"imageData\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "http://localhost:8080/api/artists/32",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/artists/8",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"artists",
-								"32"
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE ARTIST",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1ODc0MzY2MzIsInRva2VuSWQiOiI0MGYwMzU0My1iODU5LTQ1MjYtODk5Mi1kMzkxZmQ3NmI0ODEiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1ODc0MzYsImV4cCI6MTc0NzY3MzgzNiwianRpIjoiYWNmOTFlZWYtNjViNC00MWQwLTk4ZTEtNWVjYTg0ZTJiZGM0In0.ZbSHVzyJxwrMAAvLdLgUesPQhEtBF0rXMPepJH_WGw4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/api/artists/12",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"artists",
+								"12"
 							]
 						}
 					},
@@ -300,12 +943,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/albums",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/albums",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"albums"
@@ -315,39 +958,7 @@
 					"response": []
 				},
 				{
-					"name": "PUT ALBUMS",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"title\": \"Cada Vez Cadaver\",\n    \"genre\": \"Pop\",\n    \"description\": \"Un pedazo album.\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/api/albums",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"albums"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "VIEW ALBUMS",
+					"name": "VIEW ALBUM",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -355,12 +966,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/albums/102",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/albums/102",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"albums",
@@ -371,16 +982,59 @@
 					"response": []
 				},
 				{
-					"name": "CHANGE ALBUMS",
+					"name": "CREATE ALBUM",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
 						},
-						"method": "PUT",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1ODc0MzY2MzIsInRva2VuSWQiOiI0MGYwMzU0My1iODU5LTQ1MjYtODk5Mi1kMzkxZmQ3NmI0ODEiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1ODc0MzYsImV4cCI6MTc0NzY3MzgzNiwianRpIjoiYWNmOTFlZWYtNjViNC00MWQwLTk4ZTEtNWVjYTg0ZTJiZGM0In0.ZbSHVzyJxwrMAAvLdLgUesPQhEtBF0rXMPepJH_WGw4",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Cada Vez Cadaver\",\n    \"genre\": \"Pop\",\n    \"imageUrl\": \"\",\n    \"description\": \"Un pedazo album El mejor del mundo.\"\n}",
+							"raw": "{\n    \"title\": \"Cada Vez Cadaver\",\n    \"genre\": \"Pop\",\n    \"description\": \"Un pedazo album.\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -388,40 +1042,202 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/albums/105",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/albums",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
-								"albums",
-								"105"
+								"albums"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "DELETE ALBUMS",
+					"name": "UPDATE ALBUM",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
 						},
-						"method": "DELETE",
-						"header": [],
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1ODc0MzY2MzIsInRva2VuSWQiOiI0MGYwMzU0My1iODU5LTQ1MjYtODk5Mi1kMzkxZmQ3NmI0ODEiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1ODc0MzYsImV4cCI6MTc0NzY3MzgzNiwianRpIjoiYWNmOTFlZWYtNjViNC00MWQwLTk4ZTEtNWVjYTg0ZTJiZGM0In0.ZbSHVzyJxwrMAAvLdLgUesPQhEtBF0rXMPepJH_WGw4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Nadie sabe\",\n    \"genre\": \"Pop\",\n    \"imageUrl\": \"\",\n    \"description\": \"Un pedazo album El mejor del mundo.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "http://localhost:8080/api/albums/104",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/albums/11",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"albums",
-								"104"
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE ALBUM",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1ODc0MzY2MzIsInRva2VuSWQiOiI0MGYwMzU0My1iODU5LTQ1MjYtODk5Mi1kMzkxZmQ3NmI0ODEiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1ODc0MzYsImV4cCI6MTc0NzY3MzgzNiwianRpIjoiYWNmOTFlZWYtNjViNC00MWQwLTk4ZTEtNWVjYTg0ZTJiZGM0In0.ZbSHVzyJxwrMAAvLdLgUesPQhEtBF0rXMPepJH_WGw4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/api/albums/11",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"albums",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET TOP LIKED ALBUMS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:8443/api/albums/top/liked",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"albums",
+								"top",
+								"liked"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET TOP RATED ALBUMS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:8443/api/albums/top/rated",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"albums",
+								"top",
+								"rated"
 							]
 						}
 					},
@@ -441,44 +1257,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/reviews",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/reviews",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
-							"path": [
-								"api",
-								"reviews"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "PUT REVIEWS",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"albumId\": 14,\n    \"userId\": 3,\n    \"content\": \"Mierdón, todo es IA\",\n    \"rating\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/api/reviews",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"reviews"
@@ -496,15 +1280,94 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/reviews",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/reviews/user/3",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
-								"reviews"
+								"reviews",
+								"user",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT REVIEWS",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTA1NDY2MTQsInRva2VuSWQiOiJlNDVlZjBlMS05NzRmLTQ1MzMtODRmMC05OTc1MjIxMjI4M2EiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNBZG1pbiI6ZmFsc2UsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InBhdWwiLCJzdWIiOiJwYXVsIiwiaWF0IjoxNzQ3NTkwNTQ2LCJleHAiOjE3NDc2NzY5NDYsImp0aSI6ImZmOThhMjJlLWFkZDAtNDUzZS05OThkLTc2NmFlNzk4ODQ0MiJ9.Pk8rKBgOfMDW7yxyvn933hPDGII9UjPF1uGUelU6yRk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"duuuro\",\n    \"rating\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8443/api/reviews/album/1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"reviews",
+								"album",
+								"1"
 							]
 						}
 					},
@@ -514,13 +1377,56 @@
 					"name": "CHANGE REVIEWS",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTI0MjUxMzMsInRva2VuSWQiOiIxMTI3MjJiYy1lY2VlLTRhZTMtODJlOS0yYWNkMzE5ZjE3YWMiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzQWRtaW4iOnRydWUsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3NDc1OTI0MjUsImV4cCI6MTc0NzY3ODgyNSwianRpIjoiMjhlOTU2NDMtZTE3ZC00NjMwLTgwOTUtNzBjYjQxMzAwNzJlIn0.qTn8vz0gehrFs-QBVNTVdEyeXvWcg0kRfXGPovLFxoM",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"content\": \"dawdawdObra muy personal de Kanye.\"\n}",
+							"raw": "{\n    \"content\": \"que guapo hermano\",\n    \"rating\": 5\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -528,16 +1434,16 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/review/3",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/reviews/14",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
-								"review",
-								"3"
+								"reviews",
+								"14"
 							]
 						}
 					},
@@ -547,21 +1453,171 @@
 					"name": "DELETE REVIEWS",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkQXQiOjE3NDc1OTA1NDY2MTQsInRva2VuSWQiOiJlNDVlZjBlMS05NzRmLTQ1MzMtODRmMC05OTc1MjIxMjI4M2EiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNBZG1pbiI6ZmFsc2UsInR5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InBhdWwiLCJzdWIiOiJwYXVsIiwiaWF0IjoxNzQ3NTkwNTQ2LCJleHAiOjE3NDc2NzY5NDYsImp0aSI6ImZmOThhMjJlLWFkZDAtNDUzZS05OThkLTc2NmFlNzk4ODQ0MiJ9.Pk8rKBgOfMDW7yxyvn933hPDGII9UjPF1uGUelU6yRk",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "http://localhost:8080/api/reviews/60",
-							"protocol": "http",
+							"raw": "https://localhost:8443/api/reviews/21",
+							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8443",
 							"path": [
 								"api",
 								"reviews",
-								"60"
+								"21"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FAVORITES",
+			"item": [
+				{
+					"name": "GET FAVORITES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:8443/api/albums/favorites/paul",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"albums",
+								"favorites",
+								"paul"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FOLLOWERS",
+			"item": [
+				{
+					"name": "GET FOLLOWERS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:8443/api/users/raul.santamaria/followers",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"users",
+								"raul.santamaria",
+								"followers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET FOLLOWING",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:8443/api/users/paul/following",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"users",
+								"paul",
+								"following"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UN/FOLLOW",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/api/users/follow/2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"api",
+								"users",
+								"follow",
+								"2"
 							]
 						}
 					},
