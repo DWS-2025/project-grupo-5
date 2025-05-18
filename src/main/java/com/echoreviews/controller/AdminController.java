@@ -491,7 +491,7 @@ public class AdminController {
                                   @RequestBody UserFlagToggleRequest toggleRequest,
                                   HttpSession session) {
         try {
-            // Get current user
+            // Get current user from session
             UserDTO currentUser = (UserDTO) session.getAttribute("user");
             if (currentUser == null || !currentUser.isAdmin()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -508,61 +508,69 @@ public class AdminController {
             UserDTO userToUpdate = userOptional.get();
             
             // Update the appropriate flag
-            if ("dangerous".equals(toggleRequest.getFlagType())) {
-                userToUpdate = new UserDTO(
-                    userToUpdate.id(),
-                    userToUpdate.username(),
-                    userToUpdate.password(),
-                    userToUpdate.email(),
-                    userToUpdate.isAdmin(),
-                    toggleRequest.isValue(), // new potentially dangerous value
-                    userToUpdate.banned(),
-                    userToUpdate.imageUrl(),
-                    userToUpdate.imageData(),
-                    userToUpdate.followers(),
-                    userToUpdate.following(),
-                    userToUpdate.favoriteAlbumIds()
-                );
-            } else if ("banned".equals(toggleRequest.getFlagType())) {
-                userToUpdate = new UserDTO(
-                    userToUpdate.id(),
-                    userToUpdate.username(),
-                    userToUpdate.password(),
-                    userToUpdate.email(),
-                    userToUpdate.isAdmin(),
-                    userToUpdate.potentiallyDangerous(),
-                    toggleRequest.isValue(), // new banned value
-                    userToUpdate.imageUrl(),
-                    userToUpdate.imageData(),
-                    userToUpdate.followers(),
-                    userToUpdate.following(),
-                    userToUpdate.favoriteAlbumIds()
-                );
-            } else if ("admin".equals(toggleRequest.getFlagType())) {
-                userToUpdate = new UserDTO(
-                    userToUpdate.id(),
-                    userToUpdate.username(),
-                    userToUpdate.password(),
-                    userToUpdate.email(),
-                    toggleRequest.isValue(), // new admin value
-                    userToUpdate.potentiallyDangerous(),
-                    userToUpdate.banned(),
-                    userToUpdate.imageUrl(),
-                    userToUpdate.imageData(),
-                    userToUpdate.followers(),
-                    userToUpdate.following(),
-                    userToUpdate.favoriteAlbumIds()
-                );
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            UserDTO updatedUserDTO;
+            switch (toggleRequest.getFlagType()) {
+                case "dangerous":
+                    updatedUserDTO = new UserDTO(
+                        userToUpdate.id(),
+                        userToUpdate.username(),
+                        userToUpdate.password(),
+                        userToUpdate.email(),
+                        userToUpdate.isAdmin(),
+                        toggleRequest.isValue(),
+                        userToUpdate.banned(),
+                        userToUpdate.imageUrl(),
+                        userToUpdate.imageData(),
+                        userToUpdate.followers(),
+                        userToUpdate.following(),
+                        userToUpdate.favoriteAlbumIds(),
+                        userToUpdate.pdfPath()
+                    );
+                    break;
+                case "banned":
+                    updatedUserDTO = new UserDTO(
+                        userToUpdate.id(),
+                        userToUpdate.username(),
+                        userToUpdate.password(),
+                        userToUpdate.email(),
+                        userToUpdate.isAdmin(),
+                        userToUpdate.potentiallyDangerous(),
+                        toggleRequest.isValue(),
+                        userToUpdate.imageUrl(),
+                        userToUpdate.imageData(),
+                        userToUpdate.followers(),
+                        userToUpdate.following(),
+                        userToUpdate.favoriteAlbumIds(),
+                        userToUpdate.pdfPath()
+                    );
+                    break;
+                case "admin":
+                    updatedUserDTO = new UserDTO(
+                        userToUpdate.id(),
+                        userToUpdate.username(),
+                        userToUpdate.password(),
+                        userToUpdate.email(),
+                        toggleRequest.isValue(),
+                        userToUpdate.potentiallyDangerous(),
+                        userToUpdate.banned(),
+                        userToUpdate.imageUrl(),
+                        userToUpdate.imageData(),
+                        userToUpdate.followers(),
+                        userToUpdate.following(),
+                        userToUpdate.favoriteAlbumIds(),
+                        userToUpdate.pdfPath()
+                    );
+                    break;
+                default:
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                     .body("Invalid flag type: " + toggleRequest.getFlagType());
             }
             
             // Save updated user
-            UserDTO updatedUser = userService.updateUser(userToUpdate);
+            UserDTO savedUser = userService.updateUser(updatedUserDTO);
             
             // Return success response
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(savedUser);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
