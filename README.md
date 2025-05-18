@@ -1,4 +1,4 @@
-# EchoReview - Music Album Review Platform
+# EchoReviews - Music Album Review Platform
 > [!NOTE]
 > You can visit our web in: [echoreviews.site](https://echoreviews.site)
 ## Overview
@@ -142,21 +142,21 @@ EchoReview is a web-based platform that allows users to explore, review, and man
 
 ## @paaul19
 
-- [961e7b1](https://github.com/DWS-2025/project-grupo-5/commit/961e7b1e8cb4002028dfd9ab5c0e067c82cdc7f2)
-  - PDFs can be uploaded via the AP
+### [961e7b1](https://github.com/DWS-2025/project-grupo-5/commit/961e7b1e8cb4002028dfd9ab5c0e067c82cdc7f2)
+  - PDFs can be uploaded via the API
     
-- [15a0ad9](https://github.com/DWS-2025/project-grupo-5/commit/15a0ad9e302e1add569229d47ae31c6cb73ef863)
+### [15a0ad9](https://github.com/DWS-2025/project-grupo-5/commit/15a0ad9e302e1add569229d47ae31c6cb73ef863)
   - Followers and followings are back. 
   - Users can upload PDFs.
     
-- [96bfb86](https://github.com/DWS-2025/project-grupo-5/commit/96bfb86c59e0a30db7d624e731c2968c666de1c4)
+### [96bfb86](https://github.com/DWS-2025/project-grupo-5/commit/96bfb86c59e0a30db7d624e731c2968c666de1c4)
   - Review functionality via the API completed
     
-- [570e7f0](https://github.com/DWS-2025/project-grupo-5/commit/570e7f09ead1fe227a24f015373ce5818e16dbf2)
+### [570e7f0](https://github.com/DWS-2025/project-grupo-5/commit/570e7f09ead1fe227a24f015373ce5818e16dbf2)
   - Added functionality to view followers and following via the API. 
   - Added functionality to like and unlike albums.
 
-- [727103f](https://github.com/DWS-2025/project-grupo-5/commit/727103f937e717c8b4930fb5f523b2f7d5c852be)
+### [727103f](https://github.com/DWS-2025/project-grupo-5/commit/727103f937e717c8b4930fb5f523b2f7d5c852be)
   - Added functionality to view top ratings and top likes on albums via the API. 
   - Fixed album ratings.
 
