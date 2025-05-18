@@ -21,6 +21,11 @@ import com.echoreviews.mapper.UserMapper;
 import com.echoreviews.mapper.AlbumMapper;
 import com.echoreviews.mapper.ReviewMapper;
 import com.echoreviews.mapper.ArtistMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Map;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/users")
@@ -136,6 +141,69 @@ public class UserRestController {
             return ResponseEntity.ok(following);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Endpoint para seguir/dejar de seguir a un usuario.
+     * Si el usuario ya está siendo seguido, lo deja de seguir.
+     * Si no lo está siguiendo, comienza a seguirlo.
+     * 
+     * @param targetUserId ID del usuario al que se quiere seguir/dejar de seguir
+     * @param session Sesión HTTP con la información del usuario autenticado
+     * @return El usuario actualizado después de la operación
+     */
+    @PostMapping("/follow/{targetUserId}")
+    public ResponseEntity<?> toggleFollowUser(@PathVariable Long targetUserId, HttpSession session) {
+        // Verificar si hay un usuario autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        
+        try {
+            // Obtener el nombre de usuario del usuario autenticado
+            String username = "";
+            if (auth.getPrincipal() instanceof UserDetails) {
+                username = ((UserDetails) auth.getPrincipal()).getUsername();
+            } else {
+                username = auth.getName();
+            }
+            
+            // Buscar el usuario por su nombre de usuario
+            UserDTO currentUser = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Current user not found"));
+            
+            // Obtener el usuario objetivo
+            UserDTO targetUser = userService.getUserById(targetUserId)
+                    .orElseThrow(() -> new RuntimeException("Target user not found"));
+            
+            // Verificar si el usuario ya está siguiendo al objetivo
+            boolean isFollowing = userService.isFollowing(currentUser.id(), targetUserId);
+            
+            UserDTO updatedUser;
+            if (isFollowing) {
+                // Dejar de seguir al usuario
+                updatedUser = userService.unfollowUser(currentUser.id(), targetUserId, session);
+                return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "action", "unfollow",
+                    "message", "You have unfollowed " + targetUser.username()
+                ));
+            } else {
+                // Comenzar a seguir al usuario
+                updatedUser = userService.followUser(currentUser.id(), targetUserId, session);
+                return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "action", "follow",
+                    "message", "You are now following " + targetUser.username()
+                ));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "error", e.getMessage()
+            ));
         }
     }
 }
