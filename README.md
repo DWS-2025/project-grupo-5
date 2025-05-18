@@ -175,9 +175,25 @@ EchoReviews is a web-based platform that allows users to explore, review, and ma
 
 ## @noegomezz
 
-### [numerodelcomit](url_del_comit)
-- Descripción
-   
+### [1f49bf0](https://github.com/DWS-2025/project-grupo-5/commit/1f49bf07d7917a488a84471e5bc8b90fce0ee557) and [aebb443](https://github.com/DWS-2025/project-grupo-5/commit/aebb44394bbd87a3eec84b63b78973524c536fbd)
+- Admin can edit user profile (password included)
+
+### [bd03e5b](https://github.com/DWS-2025/project-grupo-5/commit/bd03e5be373a10c7190ca49d073858524b426746) and [d006831](https://github.com/DWS-2025/project-grupo-5/commit/d0068318efd458898f213ce1cc9a43c11a300270)
+- Full project translated
+  
+### [88cc52b](https://github.com/DWS-2025/project-grupo-5/commit/88cc52b8b7a6bad08b75a64a8d447fcd48f6ee85)
+- JWT implemented
+
+### [7eadfbe](https://github.com/DWS-2025/project-grupo-5/commit/7eadfbe39ba8d728363521ecfe98e853ec339fab) and [bc86b48](https://github.com/DWS-2025/project-grupo-5/commit/bc86b483db587114eb4e14fe785bc7b91d289aa5) and [925c499](https://github.com/DWS-2025/project-grupo-5/commit/925c49985d2587cae57c4c5d0471522cbb148f20) and [da7abf9](https://github.com/DWS-2025/project-grupo-5/commit/da7abf9f8bd6de6100777d5e3a7b1bcf235b492f) 
+- Delete User API
+- Update User API
+- Update User Password API
+- Upload User Image API
+
+### [c9549e0](https://github.com/DWS-2025/project-grupo-5/commit/c9549e0d45ad4ffcdfcebf65abd57e661a8d7582) 
+- Postman Collection Final Version
+
+  
 ---
 ## Project Structure
 ```
