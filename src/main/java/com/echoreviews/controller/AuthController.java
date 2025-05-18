@@ -1,50 +1,56 @@
 package com.echoreviews.controller;
 
+import com.echoreviews.dto.UserDTO;
 import com.echoreviews.model.User;
+import com.echoreviews.security.JwtUtil;
 import com.echoreviews.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.echoreviews.dto.UserDTO;
-import com.echoreviews.dto.ArtistDTO;
-import com.echoreviews.dto.AlbumDTO;
-import com.echoreviews.dto.ReviewDTO;
-import com.echoreviews.mapper.UserMapper;
-import com.echoreviews.mapper.AlbumMapper;
-import com.echoreviews.mapper.ReviewMapper;
-import com.echoreviews.mapper.ArtistMapper;
+
 import java.util.ArrayList;
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    // Rutas Web
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("user", new User());
         return "auth/login";
     }
 
-    @PostMapping("/auth/register")
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new User());
+        return "auth/register";
+    }
+
+    @PostMapping("/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {
         try {
             // Check if username already exists
             if (userService.getUserByUsername(user.getUsername()).isPresent()) {
                 model.addAttribute("error", "Username already in use");
-                return "error";
-            }
-
-            // Check if email already exists
-            if (userService.getAllUsers().stream().anyMatch(existingUser ->
-                    existingUser.email().equalsIgnoreCase(user.getEmail()))) {
-                model.addAttribute("error", "Email already in use");
                 return "error";
             }
 
@@ -76,7 +82,7 @@ public class AuthController {
             return "redirect:/login";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error_message", e.getMessage());
-            return "redirect:/auth/register";
+            return "redirect:/register";
         }
     }
 
@@ -84,5 +90,41 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+
+    // Rutas API REST
+    @PostMapping("/api/auth/login")
+    @ResponseBody
+    public ResponseEntity<?> apiLogin(@RequestBody Map<String, String> loginRequest) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(username, password)
+        );
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        UserDTO user = userService.getUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String jwt = jwtUtil.generateToken(userDetails, user.isAdmin());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", jwt);
+        response.put("user", user);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/api/auth/register")
+    @ResponseBody
+    public ResponseEntity<?> apiRegister(@RequestBody UserDTO userDTO) {
+        UserDTO registeredUser = userService.registerUser(userDTO);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Registration successful. Please login.");
+        response.put("user", registeredUser);
+
+        return ResponseEntity.ok(response);
     }
 }
