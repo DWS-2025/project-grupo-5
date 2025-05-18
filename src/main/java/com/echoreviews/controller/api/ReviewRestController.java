@@ -65,23 +65,23 @@ public class ReviewRestController {
             @RequestBody ReviewDTO reviewDTO,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get username from token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario
+            // Get the user
             UserDTO user = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Verificar que el albumId existe
+            // Verify that the albumId exists
             albumService.getAlbumById(albumId)
                     .orElseThrow(() -> new RuntimeException("Album not found"));
 
@@ -90,15 +90,15 @@ public class ReviewRestController {
                 return ResponseEntity.badRequest().build();
             }
 
-            // Crear una nueva review con la información del usuario
+            // Create a new review with user information
             ReviewDTO newReviewDTO = new ReviewDTO(
                 null,
                 albumId,
                 user.id(),
                 user.username(),
                 user.imageUrl(),
-                null, // albumTitle se establecerá en el servicio
-                null, // albumImageUrl se establecerá en el servicio
+                null, // albumTitle will be set in the service
+                null, // albumImageUrl will be set in the service
                 reviewDTO.content(),
                 reviewDTO.rating()
             );
@@ -166,19 +166,19 @@ public class ReviewRestController {
             @RequestBody ReviewDTO reviewDTO,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get username from token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario
+            // Get the user
             UserDTO user = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -194,13 +194,13 @@ public class ReviewRestController {
 
             ReviewDTO existingReview = existingReviewOpt.get();
             
-            // Verificar que el usuario es el dueño de la review o es admin
+            // Verify that the user is the review owner or is admin
             if (!existingReview.username().equals(username) && !jwtUtil.isAdmin(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
             try {
-                // Crear el DTO con la información actualizada pero manteniendo los datos del usuario y álbum
+                // Create the DTO with updated information but keeping user and album data
                 ReviewDTO updatedReviewDTO = new ReviewDTO(
                     reviewId,
                     existingReview.albumId(),
@@ -230,31 +230,31 @@ public class ReviewRestController {
             @PathVariable Long reviewId,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get username from token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario
+            // Get the user
             UserDTO user = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             return reviewService.getReviewById(reviewId)
                     .map(review -> {
-                        // Verificar que el usuario es el dueño de la review o es admin
+                        // Verify that the user is the review owner or is admin
                         if (!review.username().equals(username) && !jwtUtil.isAdmin(token)) {
                             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                         }
 
                         try {
-                            // Obtener el albumId antes de eliminar la review
+                            // Get albumId before deleting the review
                             Long albumId = review.albumId();
                             
                             reviewService.deleteReview(reviewId);

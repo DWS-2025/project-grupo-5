@@ -76,15 +76,15 @@ public class AlbumRestController {
 
     @PostMapping
     public ResponseEntity<AlbumDTO> createAlbum(@RequestBody AlbumDTO albumDTO, @RequestHeader("Authorization") String authHeader) {
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
-        // Verificar si el usuario es admin
+        // Verify if the user is admin
         try {
             if (!jwtUtil.isAdmin(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -105,15 +105,15 @@ public class AlbumRestController {
             @RequestBody AlbumDTO albumDTO,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
-        // Verificar si el usuario es admin
+        // Verify if the user is admin
         try {
             if (!jwtUtil.isAdmin(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -137,15 +137,15 @@ public class AlbumRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAlbum(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
-        // Verificar si el usuario es admin
+        // Verify if the user is admin
         try {
             if (!jwtUtil.isAdmin(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -173,7 +173,7 @@ public class AlbumRestController {
                             // Save the entity in the database
                             Album updatedAlbum = albumService.saveAlbum(album).toAlbum();
                             // Convert the entity back to a DTO to return it
-                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum)); // Respondemos con el DTO
+                            return ResponseEntity.ok(albumMapper.toDTO(updatedAlbum)); // Return the DTO
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }
@@ -234,26 +234,26 @@ public class AlbumRestController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get username from token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario
+            // Get user
             UserDTO user = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Añadir el álbum a favoritos
+            // Add album to favorites
             UserDTO updatedUser = userService.addFavoriteAlbum(user.id(), id, null);
             
-            // Obtener el álbum actualizado
+            // Get updated album
             return albumService.getAlbumById(id)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
@@ -268,26 +268,26 @@ public class AlbumRestController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get username from token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario
+            // Get user
             UserDTO user = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Eliminar el álbum de favoritos
+            // Remove album from favorites
             UserDTO updatedUser = userService.deleteFavoriteAlbum(user.id(), id, null);
             
-            // Obtener el álbum actualizado
+            // Get updated album
             return albumService.getAlbumById(id)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
@@ -298,11 +298,11 @@ public class AlbumRestController {
     }
 
     /**
-     * Endpoint para crear un álbum con imagen usando multipart/form-data
-     * @param albumJson Los datos del álbum en formato JSON como string
-     * @param image La imagen del álbum (opcional)
-     * @param authHeader El token de autenticación
-     * @return El álbum creado
+     * Endpoint to create an album with image using multipart/form-data
+     * @param albumJson The album data in JSON format as string
+     * @param image The album image (optional)
+     * @param authHeader The authentication token
+     * @return The created album
      */
     @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AlbumDTO> createAlbumWithImage(
@@ -310,33 +310,33 @@ public class AlbumRestController {
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
-        // Verificar si el usuario es admin
+        // Verify if the user is admin
         try {
             if (!jwtUtil.isAdmin(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             
-            // Convertir el JSON a AlbumDTO
+            // Convert JSON to AlbumDTO
             AlbumDTO albumDTO = albumMapper.fromJson(albumJson);
             
-            // Validar la imagen si se proporcionó
+            // Validate image if provided
             if (image != null && !image.isEmpty()) {
-                // Validación de contenido de imagen
+                // Validate image content
                 validateImageFile(image);
                 
-                // Guardar el álbum con la imagen
+                // Save album with image
                 AlbumDTO savedAlbum = albumService.saveAlbumWithImage(albumDTO, image);
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
             } else {
-                // Guardar el álbum sin imagen
+                // Save album without image
                 AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
             }
@@ -350,12 +350,12 @@ public class AlbumRestController {
     }
     
     /**
-     * Endpoint para actualizar un álbum con imagen usando multipart/form-data
-     * @param id ID del álbum a actualizar
-     * @param albumJson Los datos del álbum en formato JSON como string
-     * @param image La imagen del álbum (opcional)
-     * @param authHeader El token de autenticación
-     * @return El álbum actualizado
+     * Endpoint to update an album with image using multipart/form-data
+     * @param id ID of the album to update
+     * @param albumJson The album data in JSON format as string
+     * @param image The album image (optional)
+     * @param authHeader The authentication token
+     * @return The updated album
      */
     @PutMapping(value = "/{id}/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AlbumDTO> updateAlbumWithImage(
@@ -364,45 +364,45 @@ public class AlbumRestController {
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
-        // Verificar si el usuario es admin
+        // Verify if the user is admin
         try {
             if (!jwtUtil.isAdmin(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             
-            // Verificar que el álbum existe
+            // Verify that the album exists
             return albumService.getAlbumById(id)
                     .map(existingAlbum -> {
                         try {
-                            // Convertir el JSON a AlbumDTO
+                            // Convert JSON to AlbumDTO
                             AlbumDTO albumDTO = albumMapper.fromJson(albumJson);
                             
-                            // Asegurar que el ID sea el correcto
+                            // Ensure ID is correct
                             albumDTO = albumDTO.withId(id);
                             
                             if (image != null && !image.isEmpty()) {
-                                // Validación de contenido de imagen
+                                // Validate image content
                                 validateImageFile(image);
                                 
-                                // Actualizar el álbum con la imagen
+                                // Update album with image
                                 AlbumDTO updatedAlbum = albumService.saveAlbumWithImage(albumDTO, image);
                                 return ResponseEntity.ok(updatedAlbum);
                             } else {
-                                // Mantener la imagen existente si no se proporciona una nueva
+                                // Keep existing image if no new one is provided
                                 if (existingAlbum.imageData() != null) {
                                     albumDTO = albumDTO.withImageData(existingAlbum.imageData());
                                     albumDTO = albumDTO.withImageUrl(existingAlbum.imageUrl());
                                 }
                                 
-                                // Guardar la actualización
+                                // Save the update
                                 AlbumDTO updatedAlbum = albumService.saveAlbum(albumDTO);
                                 return ResponseEntity.ok(updatedAlbum);
                             }
@@ -421,18 +421,18 @@ public class AlbumRestController {
     }
     
     /**
-     * Valida una imagen para asegurar que es segura
-     * @param image La imagen a validar
-     * @throws IOException Si hay errores al procesar la imagen
-     * @throws IllegalArgumentException Si la imagen no es válida o segura
+     * Validate an image to ensure it is safe
+     * @param image The image to validate
+     * @throws IOException If there are errors processing the image
+     * @throws IllegalArgumentException If the image is not valid or safe
      */
     private void validateImageFile(MultipartFile image) throws IOException, IllegalArgumentException {
-        // Verificar que no es nulo y tiene contenido
+        // Verify that it is not null and has content
         if (image == null || image.isEmpty()) {
             throw new IllegalArgumentException("Image file cannot be empty");
         }
         
-        // Verificar el tipo de contenido (MIME type)
+        // Verify the content type (MIME type)
         String contentType = image.getContentType();
         if (contentType == null || !(contentType.equals("image/jpeg") || 
                                      contentType.equals("image/png") || 
@@ -441,7 +441,7 @@ public class AlbumRestController {
             throw new IllegalArgumentException("File must be a valid image (JPEG, PNG, GIF or WEBP)");
         }
         
-        // Verificar la extensión del archivo
+        // Verify the file extension
         String filename = StringUtils.cleanPath(image.getOriginalFilename());
         if (filename == null) {
             throw new IllegalArgumentException("Filename cannot be null");
@@ -459,19 +459,19 @@ public class AlbumRestController {
             throw new IllegalArgumentException("File must have a valid image extension (jpg, jpeg, png, gif, webp)");
         }
         
-        // Verificar el tamaño del archivo (máximo 5 MB)
+        // Verify the file size (maximum 5 MB)
         long maxSizeBytes = 5 * 1024 * 1024; // 5MB
         if (image.getSize() > maxSizeBytes) {
             throw new IllegalArgumentException("Image file size must be less than 5MB");
         }
         
-        // Validar magic numbers para seguridad adicional
+        // Validate magic numbers for additional security
         byte[] bytes = image.getBytes();
-        if (bytes.length < 8) { // Las imágenes válidas deberían tener al menos algunos bytes
+        if (bytes.length < 8) { // Valid images should have at least some bytes
             throw new IllegalArgumentException("File is too small to be a valid image");
         }
         
-        // Verificar los magic numbers de las imágenes comunes
+        // Verify magic numbers of common images
         // JPEG: FF D8 FF
         // PNG: 89 50 4E 47 0D 0A 1A 0A
         // GIF: 47 49 46 38

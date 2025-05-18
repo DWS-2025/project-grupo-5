@@ -99,7 +99,7 @@ public class AdminController {
         }
 
         try {
-            // Make sure the artists list is not null
+            // Make sure the artists list is initialized
             if (album.getArtists() == null) {
                 album.setArtists(new ArrayList<>());
             } else {
@@ -218,17 +218,17 @@ public class AdminController {
         
         try {
             Album albumEntity = albumOpt.get().toAlbum();
-            // Asegurarnos de que la lista de artistas está inicializada
+            // Make sure the artists list is initialized
             if (albumEntity.getArtists() == null) {
                 albumEntity.setArtists(new ArrayList<>());
             }
             
-            // Convertir el álbum a DTO manteniendo sus artistas actuales
+            // Convert the album to DTO while maintaining its current artists
             AlbumDTO albumDTO = AlbumDTO.fromAlbum(albumEntity);
             model.addAttribute("album", albumDTO);
             model.addAttribute("artists", artistService.getAllArtists());
             
-            // Añadir la lista de IDs de artistas actuales
+            // Add the list of current artist IDs
             List<Long> currentArtistIds = albumEntity.getArtists().stream()
                 .map(Artist::getId)
                 .collect(Collectors.toList());

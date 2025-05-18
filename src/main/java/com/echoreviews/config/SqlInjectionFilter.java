@@ -14,29 +14,29 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Filtro para prevenir inyecciones SQL
- * Este filtro inspecciona los parámetros de la solicitud y los encabezados
- * en busca de patrones sospechosos de inyección SQL
+ * Filter to prevent SQL injections
+ * This filter inspects request parameters and headers
+ * looking for suspicious SQL injection patterns
  * 
- * Nota: Temporalmente deshabilitado para resolver problemas con CSS.
+ * Note: Temporarily disabled to resolve CSS issues.
  */
-// @Component // Comentado temporalmente para desactivar el filtro
+// @Component // Temporarily commented to disable the filter
 public class SqlInjectionFilter extends OncePerRequestFilter {
 
-    // Patrones sospechosos de inyección SQL
+    // Suspicious SQL injection patterns
     private static final List<Pattern> SUSPICIOUS_PATTERNS = Arrays.asList(
-            // Buscar comillas simples solo si van seguidas de comandos SQL o está en un contexto sospechoso
+            // Look for single quotes only if followed by SQL commands or in a suspicious context
             Pattern.compile(".*'\\s*(or|and|insert|update|delete|drop|alter|select|union)\\s+.*", Pattern.CASE_INSENSITIVE),
-            // Detectar comentarios SQL seguidos de comandos
+            // Detect SQL comments followed by commands
             Pattern.compile(".*--\\s*.*", Pattern.CASE_INSENSITIVE),
-            // Comandos destructivos más específicos
+            // More specific destructive commands
             Pattern.compile(".*\\bdrop\\s+table\\b.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\bdelete\\s+from\\b.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\binsert\\s+into\\b.*\\bvalues\\b.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\bupdate\\s+\\w+\\s+set\\b.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\bunion\\s+select\\b.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\bexec\\s+\\w+\\b.*", Pattern.CASE_INSENSITIVE),
-            // Detectar casos clásicos de bypass de autenticación
+            // Detect classic authentication bypass cases
             Pattern.compile(".*\\bor\\s+1\\s*=\\s*1\\b.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\bor\\s+'\\s*'\\s*=\\s*'\\s*'\\b.*", Pattern.CASE_INSENSITIVE)
     );
@@ -45,10 +45,10 @@ public class SqlInjectionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Rutas a excluir (recursos estáticos)
+        // Paths to exclude (static resources)
         String path = request.getRequestURI();
         
-        // Mejorar la exclusión de recursos estáticos
+        // Improve static resource exclusion
         if (path.contains("/css/") || 
             path.contains("/js/") || 
             path.contains("/images/") || 
@@ -70,7 +70,7 @@ public class SqlInjectionFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Comprobar parámetros de la solicitud
+        // Check request parameters
         Enumeration<String> parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
             String paramName = parameterNames.nextElement();
@@ -78,47 +78,47 @@ public class SqlInjectionFilter extends OncePerRequestFilter {
             if (paramValues != null) {
                 for (String paramValue : paramValues) {
                     if (isSqlInjectionSuspicious(paramValue)) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Posible intento de inyección SQL detectado.");
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Possible SQL injection attempt detected.");
                         return;
                     }
                 }
             }
         }
 
-        // Comprobar valores en los encabezados personalizados
+        // Check values in custom headers
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            // Excluir cabeceras estándar que podrían contener contenido complejo
+            // Exclude standard headers that might contain complex content
             if (!isStandardHeader(headerName)) {
                 String headerValue = request.getHeader(headerName);
                 if (isSqlInjectionSuspicious(headerValue)) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Posible intento de inyección SQL detectado.");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Possible SQL injection attempt detected.");
                     return;
                 }
             }
         }
 
-        // Si no se detecta inyección, continuar con la cadena de filtros
+        // If no injection is detected, continue with the filter chain
         filterChain.doFilter(request, response);
     }
 
     /**
-     * Comprueba si una cadena contiene patrones sospechosos de inyección SQL
-     * @param value Valor a comprobar
-     * @return true si es sospechoso, false si no
+     * Checks if a string contains suspicious SQL injection patterns
+     * @param value Value to check
+     * @return true if suspicious, false if not
      */
     private boolean isSqlInjectionSuspicious(String value) {
         if (value == null || value.isEmpty()) {
             return false;
         }
 
-        // Comprobar contra patrones sospechosos
+        // Check against suspicious patterns
         for (Pattern pattern : SUSPICIOUS_PATTERNS) {
             if (pattern.matcher(value).find()) {
-                // Registrar el patrón que coincidió y el valor para depuración
-                System.out.println("Posible inyección SQL detectada: " + value);
-                System.out.println("Patrón que coincidió: " + pattern.pattern());
+                // Log the matching pattern and value for debugging
+                System.out.println("Possible SQL injection detected: " + value);
+                System.out.println("Matching pattern: " + pattern.pattern());
                 return true;
             }
         }
@@ -127,10 +127,10 @@ public class SqlInjectionFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Determina si un nombre de encabezado es estándar o no
-     * Los encabezados estándar no se comprueban para inyección SQL
-     * @param headerName Nombre del encabezado
-     * @return true si es un encabezado estándar, false en caso contrario
+     * Determines if a header name is standard or not
+     * Standard headers are not checked for SQL injection
+     * @param headerName Header name
+     * @return true if it's a standard header, false otherwise
      */
     private boolean isStandardHeader(String headerName) {
         List<String> standardHeaders = Arrays.asList(

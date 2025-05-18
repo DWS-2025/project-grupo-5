@@ -26,16 +26,16 @@ public class AdminRestController {
             @RequestBody UserFlagToggleRequest toggleRequest,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
         
         try {
-            // Verificar que el usuario es admin
+
             if (!jwtUtil.isAdmin(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                                     .body("Unauthorized access: You must be an admin to perform this action");

@@ -40,13 +40,13 @@ public class UserAgentValidationFilter extends OncePerRequestFilter {
             if (!originalUA.equals(currentUA) || !originalIP.equals(currentIP)) {
                 // Possible session hijacking
                 String sessionId = session.getId();
-                logger.warn("POSIBLE INTENTO DE SESSION HIJACKING DETECTADO:");
+                logger.warn("POSSIBLE SESSION HIJACKING ATTEMPT DETECTED:");
                 logger.warn("Session ID: {}", sessionId);
-                logger.warn("Usuario Agente Original: {}", originalUA);
-                logger.warn("Usuario Agente Actual: {}", currentUA);
-                logger.warn("IP Original: {}", originalIP);
-                logger.warn("IP Actual: {}", currentIP);
-                logger.warn("Ruta de acceso: {}", request.getRequestURI());
+                logger.warn("Original User Agent: {}", originalUA);
+                logger.warn("Current User Agent: {}", currentUA);
+                logger.warn("Original IP: {}", originalIP);
+                logger.warn("Current IP: {}", currentIP);
+                logger.warn("Access path: {}", request.getRequestURI());
                 
                 session.invalidate();
                 SecurityContextHolder.clearContext();

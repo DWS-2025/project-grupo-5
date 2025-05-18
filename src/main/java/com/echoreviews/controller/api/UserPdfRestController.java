@@ -38,7 +38,7 @@ public class UserPdfRestController {
     @Autowired
     private ResourceLoader resourceLoader;
     
-    // Directorio base para los PDFs (por defecto user.dir para usar el directorio del proyecto)
+    // Base directory for PDFs (default user.dir to use project directory)
     @Value("${app.pdf.storage.directory:./user-pdfs}")
     private String pdfBaseDirectory;
     
@@ -46,9 +46,9 @@ public class UserPdfRestController {
         try {
             String username = jwtUtil.extractUsername(token);
             UserDTO requestingUser = userService.getUserByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                    .orElseThrow(() -> new RuntimeException("User not found"));
             
-            // El usuario está autorizado si es admin o si es el propietario del recurso
+            // User is authorized if they are admin or the resource owner
             return requestingUser.isAdmin() || requestingUser.id().equals(userId);
         } catch (Exception e) {
             return false;
@@ -56,13 +56,13 @@ public class UserPdfRestController {
     }
     
     /**
-     * Endpoint para subir un archivo PDF a un usuario.
-     * El usuario debe estar autenticado y solo puede subir PDF a su propio perfil.
+     * Endpoint to upload a PDF file to a user.
+     * User must be authenticated and can only upload PDF to their own profile.
      * 
-     * @param userId ID del usuario al que se le asignará el PDF
-     * @param pdf El archivo PDF a subir
-     * @param authHeader El token de autenticación
-     * @return Respuesta con información del resultado
+     * @param userId ID of the user to assign the PDF to
+     * @param pdf The PDF file to upload
+     * @param authHeader The authentication token
+     * @return Response with result information
      */
     @PostMapping("/{userId}/pdf")
     public ResponseEntity<Map<String, Object>> uploadUserPdf(
@@ -70,32 +70,32 @@ public class UserPdfRestController {
             @RequestParam("pdf") MultipartFile pdf,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("success", false, "error", "No se proporcionó un token de autenticación válido"));
+                    .body(Map.of("success", false, "error", "No valid authentication token provided"));
         }
 
         String token = authHeader.substring(7);
         
-        // Verificar autorización
+        // Verify authorization
         if (!isAuthorized(token, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("success", false, "error", "No tienes permiso para subir archivos PDF a este usuario"));
+                    .body(Map.of("success", false, "error", "You don't have permission to upload PDF files to this user"));
         }
         
         try {
-            // Obtener el usuario al que se le asignará el PDF
+            // Get the target user for the PDF
             UserDTO targetUser = userService.getUserById(userId)
-                    .orElseThrow(() -> new RuntimeException("Usuario objetivo no encontrado"));
+                    .orElseThrow(() -> new RuntimeException("Target user not found"));
             
-            // Subir el PDF
+            // Upload the PDF
             PdfUploadResult result = userService.uploadUserPdf(targetUser, pdf);
             
             if (result.isSuccess()) {
                 return ResponseEntity.ok(Map.of(
                     "success", true, 
-                    "message", "Archivo PDF subido correctamente",
+                    "message", "PDF file uploaded successfully",
                     "pdfPath", result.getUser().pdfPath()
                 ));
             } else {
@@ -111,11 +111,11 @@ public class UserPdfRestController {
     }
     
     /**
-     * Endpoint para descargar el PDF de un usuario.
+     * Endpoint to download a user's PDF.
      * 
-     * @param userId ID del usuario cuyo PDF se quiere descargar
-     * @param authHeader El token de autenticación
-     * @return El archivo PDF para descargar
+     * @param userId ID of the user whose PDF is to be downloaded
+     * @param authHeader The authentication token
+     * @return The PDF file for download
      */
     @GetMapping("/{userId}/pdf")
     public ResponseEntity<?> downloadUserPdf(
@@ -124,15 +124,15 @@ public class UserPdfRestController {
         
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "No se proporcionó un token de autenticación válido"));
+                    .body(Map.of("error", "No valid authentication token provided"));
         }
 
         String token = authHeader.substring(7);
         
-        // Verificar autorización
+        // Verify authorization
         if (!isAuthorized(token, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", "No tienes permiso para descargar el PDF de este usuario"));
+                    .body(Map.of("error", "You don't have permission to download this user's PDF"));
         }
         
         try {
@@ -146,7 +146,7 @@ public class UserPdfRestController {
             
             if (user.pdfPath() == null || user.pdfPath().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "El usuario no tiene un archivo PDF asociado"));
+                        .body(Map.of("error", "User does not have an associated PDF file"));
             }
             
             String relativePath = user.pdfPath();
@@ -176,7 +176,7 @@ public class UserPdfRestController {
                     pdfPath = expectedPath;
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body(Map.of("error", "No se pudo acceder al archivo PDF"));
+                            .body(Map.of("error", "Could not access the PDF file"));
                 }
             }
             
@@ -185,7 +185,7 @@ public class UserPdfRestController {
                 
                 if (!resource.exists() || !resource.isReadable()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body(Map.of("error", "No se pudo acceder al archivo PDF"));
+                            .body(Map.of("error", "Could not access the PDF file"));
                 }
                 
                 String filename = "user_" + userId + "_document.pdf";
@@ -197,7 +197,7 @@ public class UserPdfRestController {
                 
             } catch (MalformedURLException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(Map.of("error", "Error al acceder al archivo: " + e.getMessage()));
+                        .body(Map.of("error", "Error accessing file: " + e.getMessage()));
             }
             
         } catch (RuntimeException e) {
@@ -207,11 +207,11 @@ public class UserPdfRestController {
     }
     
     /**
-     * Endpoint para eliminar el PDF de un usuario.
+     * Endpoint to delete a user's PDF.
      * 
-     * @param userId ID del usuario cuyo PDF se quiere eliminar
-     * @param authHeader El token de autenticación
-     * @return Respuesta con información del resultado
+     * @param userId ID of the user whose PDF is to be deleted
+     * @param authHeader The authentication token
+     * @return Response with result information
      */
     @DeleteMapping("/{userId}/pdf")
     public ResponseEntity<Map<String, Object>> deleteUserPdf(
@@ -220,36 +220,36 @@ public class UserPdfRestController {
         
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("success", false, "error", "No se proporcionó un token de autenticación válido"));
+                    .body(Map.of("success", false, "error", "No valid authentication token provided"));
         }
 
         String token = authHeader.substring(7);
         
-        // Verificar autorización
+        // Verify authorization
         if (!isAuthorized(token, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("success", false, "error", "No tienes permiso para eliminar el PDF de este usuario"));
+                    .body(Map.of("success", false, "error", "You don't have permission to delete this user's PDF"));
         }
         
         try {
-            // Obtener el usuario al que se le eliminará el PDF
+            // Get the target user for the PDF
             UserDTO targetUser = userService.getUserById(userId)
-                    .orElseThrow(() -> new RuntimeException("Usuario objetivo no encontrado"));
+                    .orElseThrow(() -> new RuntimeException("Target user not found"));
             
             if (targetUser.pdfPath() == null || targetUser.pdfPath().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("success", false, "error", "El usuario no tiene un archivo PDF asociado"));
+                        .body(Map.of("success", false, "error", "User does not have an associated PDF file"));
             }
             
             try {
                 UserDTO updatedUser = userService.deleteUserPdf(targetUser);
                 return ResponseEntity.ok(Map.of(
                     "success", true, 
-                    "message", "Archivo PDF eliminado correctamente"
+                    "message", "PDF file deleted successfully"
                 ));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(Map.of("success", false, "error", "Error al eliminar el archivo: " + e.getMessage()));
+                        .body(Map.of("success", false, "error", "Error deleting file: " + e.getMessage()));
             }
             
         } catch (RuntimeException e) {

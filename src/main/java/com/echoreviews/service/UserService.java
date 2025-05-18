@@ -45,16 +45,11 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final InputSanitizer inputSanitizer;
 
-    // Patrón para validar entradas y prevenir inyecciones SQL
+
     private static final Pattern SAFE_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9._@-]{3,50}$");
     private static final Pattern SAFE_EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     
-    /**
-     * Método para validar que una entrada de texto sea segura
-     * @param input El texto a validar
-     * @param pattern El patrón contra el que validar
-     * @return true si la entrada es válida, false en caso contrario
-     */
+
     private boolean isValidInput(String input, Pattern pattern) {
         return input != null && pattern.matcher(input).matches();
     }
@@ -72,7 +67,7 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Validar entrada para prevenir inyecciones SQL
+
         if (!inputSanitizer.isValidUsername(username)) {
             throw new UsernameNotFoundException("Invalid username format");
         }
@@ -80,7 +75,7 @@ public class UserService implements UserDetailsService {
         User userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // Check if the user is banned and prevent authentication if so
+
         if (userEntity.isBanned()) {
             throw new UsernameNotFoundException("This account has been banned. Please contact customer support for more information.");
         }
@@ -147,7 +142,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<UserDTO> getUserByUsername(String username) {
-        // Validar entrada para prevenir inyecciones SQL
+
         if (!inputSanitizer.isValidUsername(username)) {
             return Optional.empty();
         }
@@ -182,11 +177,11 @@ public class UserService implements UserDetailsService {
             System.out.println("Existing user following: " + existingUser.getFollowing());
             System.out.println("Existing user followers: " + existingUser.getFollowers());
             
-            // Mantener las listas actualizadas
+
             user.setFollowing(userDTO.following() != null ? userDTO.following() : existingUser.getFollowing());
             user.setFollowers(userDTO.followers() != null ? userDTO.followers() : existingUser.getFollowers());
             
-            // Mantener la contraseña si no se proporciona una nueva
+
             if (userDTO.password() == null || userDTO.password().isBlank()) {
                 user.setPassword(existingUser.getPassword());
             } else if (!userDTO.password().startsWith("$2a$") && !userDTO.password().startsWith("$2b$") && !userDTO.password().startsWith("$2y$")) {
@@ -195,10 +190,10 @@ public class UserService implements UserDetailsService {
                 user.setPassword(userDTO.password());
             }
             
-            // Mantener el estado de admin
+
             user.setAdmin(existingUser.isAdmin());
         } else {
-            // Validaciones para nuevo usuario
+
             if (userRepository.existsByUsername(userDTO.username())) {
                 throw new RuntimeException("Username '" + userDTO.username() + "' already exists");
             }
@@ -208,7 +203,7 @@ public class UserService implements UserDetailsService {
             if (userDTO.password() == null || userDTO.password().isBlank()) {
                 throw new IllegalArgumentException("Password cannot be blank for a new user.");
             }
-            // Encriptar contraseña para nuevo usuario
+
             user.setPassword(passwordEncoder.encode(userDTO.password()));
         }
         
@@ -220,7 +215,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<UserDTO> authenticateUser(String username, String password) {
-        // Validar entrada para prevenir inyecciones SQL
+
         if (!inputSanitizer.isValidUsername(username)) {
             return Optional.empty();
         }
@@ -250,7 +245,7 @@ public class UserService implements UserDetailsService {
              throw new RuntimeException("Password cannot be empty");
         }
         
-        // Validar entradas para prevenir inyecciones SQL
+
         if (!inputSanitizer.isValidUsername(userDTO.username())) {
             throw new RuntimeException("Invalid username format. Only alphanumeric characters, dots, underscores, @ and hyphens are allowed.");
         }
@@ -416,7 +411,7 @@ public class UserService implements UserDetailsService {
         System.out.println("Current following list: " + follower.getFollowing());
         System.out.println("Current followers list: " + target.getFollowers());
 
-        // Trabajar directamente con las entidades
+
         if (follower.getFollowing().contains(targetUserId)) {
             follower.getFollowing().remove(targetUserId);
             target.getFollowers().remove(followerId);
@@ -424,7 +419,7 @@ public class UserService implements UserDetailsService {
             System.out.println("Updated following list: " + follower.getFollowing());
             System.out.println("Updated followers list: " + target.getFollowers());
 
-            // Guardar directamente las entidades
+
             follower = userRepository.save(follower);
             target = userRepository.save(target);
 
@@ -518,45 +513,44 @@ public class UserService implements UserDetailsService {
             return PdfUploadResult.error("PDF file cannot be null or empty");
         }
         
-        // Vamos a hacer una validación para comprobar que el archivo subido es realmente un pdf. Es cierto que esta verificación de aquí
-        // es facilmente bypaseable interceptando la petición con burbsuite
+
         if (!pdfFile.getContentType().equals("application/pdf")) {
             System.err.println("Error: File must be a PDF (invalid content type: " + pdfFile.getContentType() + ")");
             return PdfUploadResult.error("File must be a PDF");
         }
         
-        // Vamos a validar que sea un PDF verificando los magic bytes del archivo
+
         try {
             byte[] fileBytes = pdfFile.getBytes();
             
-            // 1. Si el archivo tiene menos de 5 bytes, lo tiramos
+
             if (fileBytes.length < 5) {
                 System.err.println("Error: File is too small to be a valid PDF (" + fileBytes.length + " bytes)");
                 return PdfUploadResult.error("File is too small to be a valid PDF");
             }
             
-            // 2. Si el archivo tiene mas de 10 MB, lo tiramos
+
             final long MAX_PDF_SIZE = 10 * 1024 * 1024; // 10 MB
             if (fileBytes.length > MAX_PDF_SIZE) {
                 System.err.println("Error: PDF file is too large (max 10 MB)");
                 return PdfUploadResult.error("PDF file is too large (max 10 MB)");
             }
             
-            // 3. Comprobamos los magic numbers check - debe comenzar con %PDF- si realmente es un pdf
+
             String magicNumber = new String(fileBytes, 0, 5);
             if (!magicNumber.startsWith("%PDF-")) {
                 System.err.println("Error: File does not have valid PDF signature (starts with '" + magicNumber + "')");
                 return PdfUploadResult.error("File does not have valid PDF signature");
             }
             
-            // 4. Verificar marcador de fin de archivo (%%EOF)
+
             String fileContent = new String(fileBytes);
             if (!fileContent.contains("%%EOF")) {
                 System.err.println("Error: File does not have valid PDF structure (missing EOF marker)");
                 return PdfUploadResult.error("File does not have valid PDF structure (missing EOF marker)");
             }
             
-            // 5. Verificar que el archivo no tenga código ejecutable sospechoso
+
             if (fileContent.toLowerCase().contains("/js") || 
                 fileContent.toLowerCase().contains("/javascript") ||
                 fileContent.toLowerCase().contains("/action") ||
@@ -569,7 +563,7 @@ public class UserService implements UserDetailsService {
             return PdfUploadResult.error("Failed to read file content: " + e.getMessage());
         }
         
-        // Primero eliminamos cualquier PDF existente del usuario
+
         if (userDTO.pdfPath() != null) {
             try {
                 deleteUserPdf(userDTO);
@@ -579,18 +573,18 @@ public class UserService implements UserDetailsService {
             }
         }
         
-        // Obtener la ruta de la configuración
+
         String pdfBaseDir = System.getProperty("app.pdf.storage.directory", "./user-pdfs");
         
         try {
-            // Crear directorio base para PDFs
+
             Path pdfBasePath = Paths.get(pdfBaseDir);
             if (!Files.exists(pdfBasePath)) {
                 Files.createDirectories(pdfBasePath);
                 System.out.println("Directorio base para PDFs creado: " + pdfBasePath.toAbsolutePath());
             }
             
-            // Crear el directorio para este usuario usando su ID
+
             String userFolderName = "user_" + userDTO.id();
             Path userPdfDir = pdfBasePath.resolve(userFolderName);
             if (!Files.exists(userPdfDir)) {
@@ -598,17 +592,17 @@ public class UserService implements UserDetailsService {
                 System.out.println("Directorio de usuario para PDFs creado: " + userPdfDir.toAbsolutePath());
             }
             
-            // Guardar el PDF con su nombre original seguro
+
             String originalFilename = pdfFile.getOriginalFilename();
             String fileName = originalFilename != null ? 
                     originalFilename.replaceAll("[^a-zA-Z0-9._-]", "_") : 
                     "document.pdf";
             Path filePath = userPdfDir.resolve(fileName);
             
-            // Copiar el archivo
+
             Files.copy(pdfFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             
-            // Guardar la ruta relativa al directorio base (más portable)
+
             String relativePath = "user-pdfs/" + userFolderName + "/" + fileName;
             UserDTO updatedUser = userDTO.withPdfPath(relativePath);
             
@@ -630,29 +624,29 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("User cannot be null");
         }
         
-        // Si el usuario no tiene PDF, no hacer nada
+
         if (userDTO.pdfPath() == null || userDTO.pdfPath().isEmpty()) {
             return userDTO;
         }
         
         try {
-            // Resolver la ruta relativa a absoluta
+
             String relativePath = userDTO.pdfPath();
             Path filePath = Paths.get(relativePath);
             
-            // Si la ruta no existe directamente, intentar resolver desde la raíz del proyecto
+
             if (!Files.exists(filePath)) {
                 filePath = Paths.get(".", relativePath).normalize();
             }
             
             System.out.println("Intentando eliminar archivo: " + filePath.toString());
             
-            // Eliminar el archivo si existe
+
             if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
                 Files.delete(filePath);
                 System.out.println("Archivo PDF eliminado: " + filePath.toString());
                 
-                // Intentar eliminar la carpeta del usuario si está vacía
+
                 Path userDir = filePath.getParent();
                 if (Files.exists(userDir) && Files.isDirectory(userDir)) {
                     try (var entries = Files.list(userDir)) {
@@ -666,7 +660,7 @@ public class UserService implements UserDetailsService {
                 System.out.println("El archivo no existe: " + filePath.toString());
             }
             
-            // Actualizar el usuario sin la ruta del PDF
+
             UserDTO updatedUser = userDTO.withPdfPath(null);
             return saveUser(updatedUser);
         } catch (IOException e) {
@@ -675,9 +669,7 @@ public class UserService implements UserDetailsService {
         }
     }
     
-    /**
-     * Limpia cualquier estructura incorrecta de carpetas PDF
-     */
+
     private void cleanupIncorrectPdfStructure() {
         try {
             Path staticDir = Paths.get("src/main/resources/static");
@@ -685,7 +677,7 @@ public class UserService implements UserDetailsService {
                 return;
             }
             
-            // Buscar carpetas con formato incorrecto "pdfs.user_X"
+
             try (var paths = Files.list(staticDir)) {
                 paths.filter(path -> {
                     String fileName = path.getFileName().toString();
@@ -694,13 +686,13 @@ public class UserService implements UserDetailsService {
                     try {
                         System.out.println("Encontrada estructura incorrecta: " + incorrectPath);
                         
-                        // Crear carpeta correcta si no existe
+
                         Path pdfBaseDir = Paths.get("src/main/resources/static/pdfs");
                         if (!Files.exists(pdfBaseDir)) {
                             Files.createDirectories(pdfBaseDir);
                         }
                         
-                        // Extraer el ID de usuario del nombre pdfs.user_X
+
                         String incorrectFolderName = incorrectPath.getFileName().toString();
                         String userId = incorrectFolderName.substring("pdfs.user_".length());
                         String correctFolderName = "user_" + userId;
@@ -710,7 +702,7 @@ public class UserService implements UserDetailsService {
                             Files.createDirectories(correctUserDir);
                         }
                         
-                        // Mover cualquier PDF de la carpeta incorrecta a la correcta
+
                         try (var files = Files.list(incorrectPath)) {
                             files.forEach(pdfFile -> {
                                 try {
@@ -723,7 +715,7 @@ public class UserService implements UserDetailsService {
                             });
                         }
                         
-                        // Eliminar carpeta incorrecta
+
                         Files.delete(incorrectPath);
                         System.out.println("Eliminada carpeta incorrecta: " + incorrectPath);
                         
