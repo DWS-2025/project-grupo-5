@@ -36,11 +36,11 @@ public class PathTraversalFilter extends OncePerRequestFilter {
         String fullPath = requestURI + (queryString != null ? "?" + queryString : "");
         
         // Log de todas las peticiones para depuración
-        logger.info("Petición recibida: {} {}", request.getMethod(), fullPath);
+        // logger.info("Petición recibida: {} {}", request.getMethod(), fullPath);
         
         // Imprime la URL decodificada para ayudar a depurar
         String decodedUrl = java.net.URLDecoder.decode(fullPath, "UTF-8");
-        logger.info("URL decodificada: {}", decodedUrl);
+        // logger.info("URL decodificada: {}", decodedUrl);
         
         // Verificación más simple para detectar patrones básicos de path traversal
         boolean containsPathTraversal = fullPath.contains("../") || 

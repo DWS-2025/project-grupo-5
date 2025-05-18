@@ -75,7 +75,7 @@ public class DataLoader implements CommandLineRunner {
             UserDTO adminDTO = new UserDTO(
                     null,
                     "admin",
-                    "Admin123#$!",
+                    "AdmIn135#$!",
                     "admin@echoreview.com",
                     true,
                     false,
@@ -236,7 +236,7 @@ public class DataLoader implements CommandLineRunner {
                     savedUser.imageUrl(),
                     savedAlbum.title(),
                     savedAlbum.imageUrl(),
-                    "¡Increíble álbum! Bad Bunny demuestra una vez más su versatilidad musical y su conexión con sus raíces puertorriqueñas.",
+                    "¡Increíble álbum! **Bad Bunny** demuestra una vez más su versatilidad musical y su conexión con sus raíces puertorriqueñas.",
                     5
             );
             reviewService.addReview(savedAlbum.id(), reviewDTO);
@@ -250,7 +250,7 @@ public class DataLoader implements CommandLineRunner {
                     savedUser2.imageUrl(),
                     savedAlbum3.title(),
                     savedAlbum3.imageUrl(),
-                    "Hotel Morgan es una obra que destaca por su riqueza sonora y emocional. Cada pista es una habitación distinta en este viaje musical, donde Morgan demuestra su madurez artística y su capacidad para reinventarse sin perder su esencia.",
+                    "Hotel Morgan es una obra que destaca por su riqueza sonora y emocional. Cada pista es una habitación distinta en este viaje musical, donde Morgan demuestra su madurez artística y su capacidad para reinventarse sin perder su esencia. <script>alert()</script>",
                     5
             );
             reviewService.addReview(savedAlbum3.id(), review2DTO);
@@ -264,7 +264,8 @@ public class DataLoader implements CommandLineRunner {
                     savedAdmin.imageUrl(),
                     savedAlbum2.title(),
                     savedAlbum2.imageUrl(),
-                    "Un Verano Sin Ti es un álbum que captura la esencia del verano y la nostalgia. Bad Bunny nos lleva por un viaje de emociones, desde la fiesta hasta la introspección, con un sonido fresco y contagioso.",
+                    "# Un Verano Sin Ti " +
+                            "es un álbum que captura la esencia del verano y la nostalgia. Bad Bunny nos lleva por un viaje de emociones, desde la fiesta hasta la introspección, con un sonido fresco y contagioso.",
                     4
             );
             reviewService.addReview(savedAlbum2.id(), review3DTO);
