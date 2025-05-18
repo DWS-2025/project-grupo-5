@@ -672,14 +672,6 @@ public class AdminController {
         
         reviewService.updateReview(reviewDTO);
         
-        // Update album's average rating
-        Optional<AlbumDTO> albumOpt = albumService.getAlbumById(reviewDTO.albumId());
-        if (albumOpt.isPresent()) {
-            AlbumDTO albumDTO = albumOpt.get();
-            albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(reviewDTO.albumId()));
-            albumService.saveAlbum(albumDTO);
-        }
-        
         return "redirect:/admin/reviews";
     }
     

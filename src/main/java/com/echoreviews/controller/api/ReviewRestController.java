@@ -104,12 +104,6 @@ public class ReviewRestController {
             Review savedReview = reviewService.addReview(albumId, newReviewDTO);
             ReviewDTO savedReviewDTO = ReviewDTO.fromReview(savedReview);
 
-            // Update album's average rating
-            albumService.getAlbumById(albumId).ifPresent(album -> {
-                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                albumService.saveAlbum(album);
-            });
-
             return ResponseEntity.status(HttpStatus.CREATED).body(savedReviewDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -129,12 +123,6 @@ public class ReviewRestController {
 
             Long albumId = reviewDTO.albumId();
             ReviewDTO savedReview = ReviewDTO.fromReview(reviewService.addReview(albumId, reviewDTO));
-
-            // Update album's average rating
-            albumService.getAlbumById(albumId).ifPresent(album -> {
-                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                albumService.saveAlbum(album);
-            });
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
         } catch (IllegalArgumentException e) {
@@ -159,13 +147,6 @@ public class ReviewRestController {
                     .map(existingReview -> {
                         try {
                             ReviewDTO updatedReview = reviewService.updateReview(albumId, reviewId, reviewDTO);
-
-                            // Update album's average rating
-                            albumService.getAlbumById(albumId).ifPresent(album -> {
-                                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                                albumService.saveAlbum(album);
-                            });
-
                             return ResponseEntity.ok(updatedReview);
                         } catch (RuntimeException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -231,14 +212,6 @@ public class ReviewRestController {
                 );
 
                 ReviewDTO updatedReview = reviewService.updateReview(updatedReviewDTO);
-
-                // Update album's average rating
-                Long albumId = updatedReview.albumId();
-                albumService.getAlbumById(albumId).ifPresent(album -> {
-                    album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbum(album);
-                });
-
                 return ResponseEntity.ok(updatedReview);
             } catch (RuntimeException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -283,12 +256,6 @@ public class ReviewRestController {
                             Long albumId = review.albumId();
                             
                             reviewService.deleteReview(reviewId);
-
-                            // Update album's average rating
-                            albumService.getAlbumById(albumId).ifPresent(album -> {
-                                album.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                                albumService.saveAlbum(album);
-                            });
 
                             return ResponseEntity.noContent().build();
                         } catch (RuntimeException e) {

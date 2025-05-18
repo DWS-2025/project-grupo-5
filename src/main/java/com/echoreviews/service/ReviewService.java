@@ -90,7 +90,17 @@ public class ReviewService {
 
         // Raw Markdown from reviewDTO is now used directly
         Review review = reviewMapper.toEntity(reviewDTO);
-        return reviewRepository.save(review);
+        Review savedReview = reviewRepository.save(review);
+
+        // Update album's average rating
+        Album album = albumRepository.findById(albumId)
+                .orElseThrow(() -> new RuntimeException("Album not found"));
+        
+        List<Review> albumReviews = reviewRepository.findByAlbum_Id(albumId);
+        album.updateAverageRating(albumReviews);
+        albumRepository.save(album);
+
+        return savedReview;
     }
 
     public ReviewDTO updateReview(Long albumId, Long reviewId, ReviewDTO reviewDTO) {
@@ -106,6 +116,15 @@ public class ReviewService {
         updated.setId(reviewId);
         updated.setAlbum(existing.getAlbum()); // Ensure the album doesn't change
         Review savedReview = reviewRepository.save(updated);
+
+        // Update album's average rating
+        Album album = albumRepository.findById(albumId)
+                .orElseThrow(() -> new RuntimeException("Album not found"));
+        
+        List<Review> albumReviews = reviewRepository.findByAlbum_Id(albumId);
+        album.updateAverageRating(albumReviews);
+        albumRepository.save(album);
+
         return reviewMapper.toDTO(savedReview);
     }
     
@@ -150,6 +169,14 @@ public class ReviewService {
         }
 
         reviewRepository.deleteById(reviewId);
+
+        // Update album's average rating
+        Album album = albumRepository.findById(albumId)
+                .orElseThrow(() -> new RuntimeException("Album not found"));
+        
+        List<Review> albumReviews = reviewRepository.findByAlbum_Id(albumId);
+        album.updateAverageRating(albumReviews);
+        albumRepository.save(album);
     }
     
     public void deleteReview(Long reviewId) {
