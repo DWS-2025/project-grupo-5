@@ -43,7 +43,7 @@ public class AuthController {
     // Pattern to sanitize inputs and prevent SQL injections
     private static final Pattern SAFE_INPUT_PATTERN = Pattern.compile("^[a-zA-Z0-9._@-]{3,50}$");
 
-    // Rutas Web
+    // Web Routes
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("user", new User());
