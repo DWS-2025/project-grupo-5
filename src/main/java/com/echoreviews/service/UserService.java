@@ -169,56 +169,54 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDTO saveUser(UserDTO userDTO) {
+        System.out.println("Saving user - ID: " + userDTO.id());
+        System.out.println("Following list before save: " + userDTO.following());
+        System.out.println("Followers list before save: " + userDTO.followers());
+        
         User user = userMapper.toEntity(userDTO);
         
         if (userDTO.id() != null) {
-            // If it's an update, get the existing user
             User existingUser = userRepository.findById(userDTO.id())
                 .orElseThrow(() -> new RuntimeException("User not found"));
             
-            // Preserve follower and following lists if no new ones are provided
-            if (userDTO.followers() == null || userDTO.followers().isEmpty()) {
-                user.setFollowers(existingUser.getFollowers());
-            }
-            if (userDTO.following() == null || userDTO.following().isEmpty()) {
-                user.setFollowing(existingUser.getFollowing());
-            }
-        }
-        
-        if (userDTO.password() != null && !userDTO.password().isBlank()) {
-            if (!userDTO.password().startsWith("$2a$") && !userDTO.password().startsWith("$2b$") && !userDTO.password().startsWith("$2y$")) {
+            System.out.println("Existing user following: " + existingUser.getFollowing());
+            System.out.println("Existing user followers: " + existingUser.getFollowers());
+            
+            // Mantener las listas actualizadas
+            user.setFollowing(userDTO.following() != null ? userDTO.following() : existingUser.getFollowing());
+            user.setFollowers(userDTO.followers() != null ? userDTO.followers() : existingUser.getFollowers());
+            
+            // Mantener la contraseña si no se proporciona una nueva
+            if (userDTO.password() == null || userDTO.password().isBlank()) {
+                user.setPassword(existingUser.getPassword());
+            } else if (!userDTO.password().startsWith("$2a$") && !userDTO.password().startsWith("$2b$") && !userDTO.password().startsWith("$2y$")) {
                 user.setPassword(passwordEncoder.encode(userDTO.password()));
             } else {
                 user.setPassword(userDTO.password());
             }
-        } else if (user.getId() != null) {
-            User existingUserFromDb = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found for password retention"));
-            user.setPassword(existingUserFromDb.getPassword());
+            
+            // Mantener el estado de admin
+            user.setAdmin(existingUser.isAdmin());
         } else {
-            throw new IllegalArgumentException("Password cannot be blank for a new user.");
-        }
-
-        if (userDTO.id() == null) { 
+            // Validaciones para nuevo usuario
             if (userRepository.existsByUsername(userDTO.username())) {
                 throw new RuntimeException("Username '" + userDTO.username() + "' already exists");
             }
             if (userDTO.email() != null && userRepository.existsByEmail(userDTO.email())) {
                 throw new RuntimeException("Email '" + userDTO.email() + "' already exists");
             }
-        } else { 
-            User existingUser = userRepository.findById(userDTO.id()).orElseThrow(() -> new RuntimeException("User not found with ID: " + userDTO.id()));
-            if (!existingUser.getUsername().equals(userDTO.username()) && userRepository.existsByUsername(userDTO.username())) {
-                throw new RuntimeException("Username '" + userDTO.username() + "' already exists for another user");
+            if (userDTO.password() == null || userDTO.password().isBlank()) {
+                throw new IllegalArgumentException("Password cannot be blank for a new user.");
             }
-            if (userDTO.email() != null && !existingUser.getEmail().equals(userDTO.email()) && userRepository.existsByEmail(userDTO.email())) {
-                 throw new RuntimeException("Email '" + userDTO.email() + "' already exists for another user");
-            }
-            user.setAdmin(existingUser.isAdmin()); // Ensures that isAdmin is preserved from DB state for updates
+            // Encriptar contraseña para nuevo usuario
+            user.setPassword(passwordEncoder.encode(userDTO.password()));
         }
         
         User savedUser = userRepository.save(user);
-        UserDTO resultDTO = userMapper.toDTO(savedUser);
-        return resultDTO;
+        System.out.println("User saved - Following: " + savedUser.getFollowing());
+        System.out.println("User saved - Followers: " + savedUser.getFollowers());
+        
+        return UserDTO.fromUser(savedUser);
     }
 
     public Optional<UserDTO> authenticateUser(String username, String password) {
@@ -404,27 +402,33 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDTO unfollowUser(Long followerId, Long targetUserId, HttpSession session) {
-        UserDTO followerDTO = getUserById(followerId)
+        System.out.println("Attempting to unfollow - Follower ID: " + followerId + ", Target ID: " + targetUserId);
+        
+        User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower user not found"));
-        UserDTO targetDTO = getUserById(targetUserId)
+        User target = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
-        if (followerDTO.following().contains(targetUserId)) {
-            List<Long> updatedFollowing = new ArrayList<>(followerDTO.following());
-            List<Long> updatedTargetFollowers = new ArrayList<>(targetDTO.followers());
-            
-            updatedFollowing.remove(targetUserId);
-            updatedTargetFollowers.remove(followerId);
+        System.out.println("Current following list: " + follower.getFollowing());
+        System.out.println("Current followers list: " + target.getFollowers());
 
-            UserDTO updatedFollowerDTO = followerDTO.withFollowing(updatedFollowing);
-            UserDTO updatedTargetDTO = targetDTO.withFollowers(updatedTargetFollowers);
-            UserDTO savedFollowerDTO = saveUser(updatedFollowerDTO);
-            saveUser(updatedTargetDTO);
+        // Trabajar directamente con las entidades
+        if (follower.getFollowing().contains(targetUserId)) {
+            follower.getFollowing().remove(targetUserId);
+            target.getFollowers().remove(followerId);
 
-            session.setAttribute("user", savedFollowerDTO);
-            return savedFollowerDTO;
+            System.out.println("Updated following list: " + follower.getFollowing());
+            System.out.println("Updated followers list: " + target.getFollowers());
+
+            // Guardar directamente las entidades
+            follower = userRepository.save(follower);
+            target = userRepository.save(target);
+
+            UserDTO updatedFollowerDTO = UserDTO.fromUser(follower);
+            session.setAttribute("user", updatedFollowerDTO);
+            return updatedFollowerDTO;
         }
-        return followerDTO;
+        return UserDTO.fromUser(follower);
     }
 
     public boolean isFollowing(Long followerId, Long targetUserId) {
@@ -581,7 +585,7 @@ public class UserService implements UserDetailsService {
                 Files.createDirectories(pdfBaseDir);
             }
             
-            // Crear el directorio para este usuario dentro de pdfs/
+            // Crear el directorio para este usuario usando su ID
             String userFolderName = "user_" + userDTO.id();
             Path userPdfDir = pdfBaseDir.resolve(userFolderName);
             if (!Files.exists(userPdfDir)) {
@@ -596,7 +600,7 @@ public class UserService implements UserDetailsService {
             // Copiar el archivo
             Files.copy(pdfFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             
-            // La ruta relativa para acceder desde la web
+            // La ruta relativa para acceder desde la web usando el ID del usuario
             String relativePath = "/pdfs/" + userFolderName + "/" + fileName;
             UserDTO updatedUser = userDTO.withPdfPath(relativePath);
             

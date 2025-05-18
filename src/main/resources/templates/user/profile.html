@@ -128,7 +128,7 @@
                             <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.hasPdf()}">
                                 <i class="bi bi-file-earmark-pdf-fill" style="font-size: 2rem; color: #1db954;"></i>
                                 <div>
-                                    <a th:href="@{/profile/{username}/pdf(username=${user.username()})}" target="_blank" 
+                                    <a th:href="@{/profile/{userId}/pdf(userId=${user.id()})}" target="_blank" 
                                        class="btn btn-sm btn-success me-2">
                                         <i class="bi bi-eye"></i> View
                                     </a>

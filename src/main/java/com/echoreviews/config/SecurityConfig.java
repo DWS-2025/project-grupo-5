@@ -113,32 +113,30 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/favorites/**", "/reviews/**").authenticated()
-                        .requestMatchers("/login", "/auth/register", "/register").permitAll()
-                        .requestMatchers(
-                            "/", 
-                            "/css/**", 
-                            "/js/**", 
-                            "/images/**", 
-                            "/fonts/**",
-                            "/webjars/**", 
-                            "/error", 
-                            "/api/**", 
-                            "/album/**", 
-                            "/artists/**", 
-                            "/top-albums/**", 
-                            "/profile/**",
-                            "/**/*.css",
-                            "/**/*.js",
-                            "/**/*.png",
-                            "/**/*.jpg",
-                            "/**/*.jpeg",
-                            "/**/*.gif",
-                            "/**/*.svg",
-                            "/**/*.ico",
-                            "/**/*.woff",
-                            "/**/*.woff2",
-                            "/**/*.ttf"
-                        ).permitAll()
+                        .requestMatchers("/login", "/auth/register", "/register", "/follow/**").permitAll()
+                        .requestMatchers("/",
+                                "/css/**", 
+                                "/js/**", 
+                                "/images/**", 
+                                "/fonts/**",
+                                "/webjars/**", 
+                                "/error", 
+                                "/api/**", 
+                                "/album/**", 
+                                "/artists/**", 
+                                "/top-albums/**", 
+                                "/profile/**").permitAll()
+                        .requestMatchers("/**/*.css",
+                                "/**/*.js",
+                                "/**/*.png",
+                                "/**/*.jpg",
+                                "/**/*.jpeg",
+                                "/**/*.gif",
+                                "/**/*.svg",
+                                "/**/*.ico",
+                                "/**/*.woff",
+                                "/**/*.woff2",
+                                "/**/*.ttf").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

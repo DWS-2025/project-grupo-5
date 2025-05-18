@@ -20,6 +20,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
@@ -493,14 +494,26 @@ public class ProfileController{
         return "redirect:/profile";
     }
 
-    @GetMapping("/profile/{username}/pdf")
-    public ResponseEntity<Resource> viewUserPdf(@PathVariable String username) {
+    @GetMapping("/profile/{userId}/pdf")
+    public ResponseEntity<Resource> viewUserPdf(@PathVariable Long userId, HttpSession session) {
         try {
-            String pdfPath = userService.getUserPdfPath(username);
-            if (pdfPath == null) {
+            // Verificar que hay un usuario en sesión
+            UserDTO currentUser = (UserDTO) session.getAttribute("user");
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            // Verificar que el usuario está intentando acceder a su propio PDF
+            if (!currentUser.id().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            Optional<UserDTO> userOpt = userService.getUserById(userId);
+            if (userOpt.isEmpty() || userOpt.get().pdfPath() == null) {
                 return ResponseEntity.notFound().build();
             }
-            // Aqui tenemos que mirar porque tiene toda la pinta de PathTrasversal ehhh
+            
+            String pdfPath = userOpt.get().pdfPath();
             Path filePath = Paths.get("src/main/resources/static" + pdfPath);
             Resource resource = new UrlResource(filePath.toUri());
             

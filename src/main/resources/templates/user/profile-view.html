@@ -100,8 +100,8 @@
             <div class="ms-auto d-flex align-items-center">
                 <!-- PDF Button -->
                 <div class="text-center me-4 d-flex flex-column justify-content-center" style="font-size: 1.2rem; color: white;" 
-                     th:if="${profileUser != null && profileUser.hasPdf()}">
-                    <a th:href="@{/profile/{username}/pdf(username=${profileUser.username()})}" target="_blank" 
+                     th:if="${profileUser != null && profileUser.hasPdf() && session.user != null && session.user.id() == profileUser.id()}">
+                    <a th:href="@{/profile/{userId}/pdf(userId=${profileUser.id()})}" target="_blank" 
                        class="btn btn-sm pdf-button">
                         <i class="bi bi-file-earmark-pdf-fill"></i> View PDF
                     </a>
