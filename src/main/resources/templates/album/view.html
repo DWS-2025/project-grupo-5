@@ -346,7 +346,6 @@
                                     <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
                                         <button type="button" class="edit-review"
                                                 th:data-review-id="${review.id()}"
-                                                th:data-review-content="${review.content()}"
                                                 th:data-review-rating="${review.rating()}"
                                                 th:attr="onclick='editReview(this, \'' + ${review.id} + '\')'">
                                             <i class="bi bi-pencil"></i>
@@ -534,7 +533,8 @@
         const originalStarsEl = cardReviewDiv.querySelector('.stars');
         const reviewActionsEl = cardReviewDiv.querySelector('.review-actions'); // The div containing edit/delete buttons
 
-        const rawReviewContent = buttonElement.getAttribute('data-review-content'); // Get raw HTML content
+        // No longer using data-review-content from button
+        // const rawReviewContent = buttonElement.getAttribute('data-review-content');
         const originalRating = buttonElement.getAttribute('data-review-rating');
         
         const albumIdMeta = document.querySelector('meta[name="albumId"]');
@@ -593,18 +593,16 @@
             cardReviewDiv.appendChild(editForm); // Fallback
         }
 
-
         const editTextArea = document.getElementById(`edit-review-content-${reviewId}`);
-        // EasyMDE will handle the initial value. For raw HTML, it's tricky.
-        // We will set initial value via EasyMDE's options.
 
         if (activeEditMDEs[reviewId]) { // Should not happen due to check at the start, but as a safeguard
              activeEditMDEs[reviewId].toTextArea();
         }
         
+        // Initialize EasyMDE first with empty content
         const editMDE = new EasyMDE({
             element: editTextArea,
-            initialValue: rawReviewContent, // EasyMDE will convert HTML to Markdown if it can, or display as is.
+            initialValue: '', // Empty for now, we'll populate it after fetching from API
             spellChecker: false,
             minHeight: "100px",
             maxHeight: "150px",
@@ -621,6 +619,37 @@
             },
         });
         activeEditMDEs[reviewId] = editMDE;
+        
+        // Fetch the markdown content from the API
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+        const headers = {};
+        if (csrfHeader && csrfTokenMeta) {
+            headers[csrfHeader.content] = csrfTokenMeta.content;
+        }
+        
+        // Show loading indicator
+        editMDE.codemirror.setValue('Loading content...');
+        
+        fetch(`/reviews/details/${reviewId}`, {
+            method: 'GET',
+            headers: headers
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch review: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Set the raw markdown content in the editor
+            editMDE.codemirror.setValue(data.content || '');
+            // Update character count
+            updateCharCount();
+        })
+        .catch(error => {
+            console.error('Error fetching review details:', error);
+            editMDE.codemirror.setValue('Error loading content. Please try again.');
+        });
         
         // Character counter for the edit review editor
         const editCharCountSpan = document.getElementById(`edit-char-count-${reviewId}`);
