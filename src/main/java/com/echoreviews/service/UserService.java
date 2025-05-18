@@ -579,37 +579,41 @@ public class UserService implements UserDetailsService {
             }
         }
         
-        // Limpiar carpetas con estructura incorrecta
-        cleanupIncorrectPdfStructure();
+        // Obtener la ruta de la configuración
+        String pdfBaseDir = System.getProperty("app.pdf.storage.directory", "./user-pdfs");
         
         try {
-            // Crear directorio base para PDFs (asegurarnos que la carpeta 'pdfs' existe)
-            Path pdfBaseDir = Paths.get("src/main/resources/static/pdfs");
-            if (!Files.exists(pdfBaseDir)) {
-                Files.createDirectories(pdfBaseDir);
+            // Crear directorio base para PDFs
+            Path pdfBasePath = Paths.get(pdfBaseDir);
+            if (!Files.exists(pdfBasePath)) {
+                Files.createDirectories(pdfBasePath);
+                System.out.println("Directorio base para PDFs creado: " + pdfBasePath.toAbsolutePath());
             }
             
             // Crear el directorio para este usuario usando su ID
             String userFolderName = "user_" + userDTO.id();
-            Path userPdfDir = pdfBaseDir.resolve(userFolderName);
+            Path userPdfDir = pdfBasePath.resolve(userFolderName);
             if (!Files.exists(userPdfDir)) {
                 Files.createDirectories(userPdfDir);
+                System.out.println("Directorio de usuario para PDFs creado: " + userPdfDir.toAbsolutePath());
             }
             
-            // Guardar el PDF con su nombre original
+            // Guardar el PDF con su nombre original seguro
             String originalFilename = pdfFile.getOriginalFilename();
-            String fileName = originalFilename != null ? originalFilename : "document.pdf";
+            String fileName = originalFilename != null ? 
+                    originalFilename.replaceAll("[^a-zA-Z0-9._-]", "_") : 
+                    "document.pdf";
             Path filePath = userPdfDir.resolve(fileName);
             
             // Copiar el archivo
             Files.copy(pdfFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             
-            // La ruta relativa para acceder desde la web usando el ID del usuario
-            String relativePath = "/pdfs/" + userFolderName + "/" + fileName;
+            // Guardar la ruta relativa al directorio base (más portable)
+            String relativePath = "user-pdfs/" + userFolderName + "/" + fileName;
             UserDTO updatedUser = userDTO.withPdfPath(relativePath);
             
             System.out.println("PDF guardado en: " + filePath.toAbsolutePath());
-            System.out.println("Ruta relativa: " + relativePath);
+            System.out.println("Ruta relativa guardada: " + relativePath);
             
             UserDTO savedUser = saveUser(updatedUser);
             return PdfUploadResult.success(savedUser);
@@ -627,33 +631,39 @@ public class UserService implements UserDetailsService {
         }
         
         // Si el usuario no tiene PDF, no hacer nada
-        if (userDTO.pdfPath() == null) {
+        if (userDTO.pdfPath() == null || userDTO.pdfPath().isEmpty()) {
             return userDTO;
         }
         
         try {
-            // Eliminar el archivo si existe
+            // Resolver la ruta relativa a absoluta
             String relativePath = userDTO.pdfPath();
-            Path pdfPath = Paths.get("src/main/resources/static" + relativePath);
+            Path filePath = Paths.get(relativePath);
             
-            System.out.println("Intentando eliminar archivo: " + pdfPath.toAbsolutePath());
+            // Si la ruta no existe directamente, intentar resolver desde la raíz del proyecto
+            if (!Files.exists(filePath)) {
+                filePath = Paths.get(".", relativePath).normalize();
+            }
             
-            if (Files.exists(pdfPath) && Files.isRegularFile(pdfPath)) {
-                Files.delete(pdfPath);
-                System.out.println("Archivo PDF eliminado: " + pdfPath.toAbsolutePath());
+            System.out.println("Intentando eliminar archivo: " + filePath.toString());
+            
+            // Eliminar el archivo si existe
+            if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
+                Files.delete(filePath);
+                System.out.println("Archivo PDF eliminado: " + filePath.toString());
                 
                 // Intentar eliminar la carpeta del usuario si está vacía
-                Path userDir = pdfPath.getParent();
+                Path userDir = filePath.getParent();
                 if (Files.exists(userDir) && Files.isDirectory(userDir)) {
                     try (var entries = Files.list(userDir)) {
                         if (entries.findFirst().isEmpty()) {
                             Files.delete(userDir);
-                            System.out.println("Carpeta de usuario eliminada: " + userDir.toAbsolutePath());
+                            System.out.println("Carpeta de usuario eliminada: " + userDir.toString());
                         }
                     }
                 }
             } else {
-                System.out.println("El archivo no existe: " + pdfPath.toAbsolutePath());
+                System.out.println("El archivo no existe: " + filePath.toString());
             }
             
             // Actualizar el usuario sin la ruta del PDF
