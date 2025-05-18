@@ -155,34 +155,6 @@ public class ReviewController {
         return "reviews/user-review";
     }
 
-    @GetMapping("/details/{reviewId}")
-    @ResponseBody
-    public ResponseEntity<?> getReviewDetails(@PathVariable Long reviewId, HttpSession session) {
-        UserDTO userDTO = (UserDTO) session.getAttribute("user");
-        if (userDTO == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
-        }
-
-        Optional<ReviewDTO> reviewOpt = reviewService.getReviewByIdWithMarkdown(reviewId);
-        
-        if (reviewOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        ReviewDTO review = reviewOpt.get();
-        
-        // Check if the user is authorized to edit this review
-        if (!review.username().equals(userDTO.username()) && !userDTO.isAdmin()) {
-            return ResponseEntity.status(403).body(Map.of("error", "Not authorized to edit this review"));
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("content", review.content());
-        response.put("rating", review.rating());
-        
-        return ResponseEntity.ok(response);
-    }
-
 }
 
 

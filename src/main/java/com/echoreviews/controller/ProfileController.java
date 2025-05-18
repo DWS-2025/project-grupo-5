@@ -405,10 +405,15 @@ public class ProfileController{
             userToUpdate = sessionUser;
         }
 
-        // Verify that the current password is correct
-        if (userService.authenticateUser(userToUpdate.username(), currentPassword).isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Current password is incorrect");
-            return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
+        // Verify that the current password is correct (only for non-admin users or admin changing their own password)
+        boolean isAdminChangingOtherUser = sessionUser.isAdmin() && !userToUpdate.id().equals(sessionUser.id());
+        
+        // Skip password verification if admin is changing another user's password
+        if (!isAdminChangingOtherUser) {
+            if (userService.authenticateUser(userToUpdate.username(), currentPassword).isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Current password is incorrect");
+                return "redirect:/profile/change-password" + (userIdToEdit != null ? "?userIdToEdit=" + userIdToEdit : "");
+            }
         }
 
         // Verify that the new passwords match

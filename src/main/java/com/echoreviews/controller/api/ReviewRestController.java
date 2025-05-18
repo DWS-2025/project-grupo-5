@@ -15,6 +15,8 @@ import com.echoreviews.dto.UserDTO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -272,11 +274,42 @@ public class ReviewRestController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReviewDTO>> getReviewsByUser(@PathVariable Long userId) {
-        try {
-            List<ReviewDTO> reviews = reviewService.getReviewsByUserId(userId);
-            return ResponseEntity.ok(reviews);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        List<ReviewDTO> reviews = reviewService.getReviewsByUserId(userId);
+        return ResponseEntity.ok(reviews);
+    }
+    
+    @GetMapping("/details/{reviewId}")
+    public ResponseEntity<?> getReviewDetails(@PathVariable Long reviewId, @RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        
+        Optional<UserDTO> userOpt = userService.getUserByUsername(username);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
+        }
+
+        UserDTO userDTO = userOpt.get();
+        Optional<ReviewDTO> reviewOpt = reviewService.getReviewByIdWithMarkdown(reviewId);
+        
+        if (reviewOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ReviewDTO review = reviewOpt.get();
+        
+        // Check if the user is authorized to edit this review
+        if (!review.username().equals(userDTO.username()) && !userDTO.isAdmin()) {
+            return ResponseEntity.status(403).body(Map.of("error", "Not authorized to edit this review"));
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", review.content());
+        response.put("rating", review.rating());
+        
+        return ResponseEntity.ok(response);
     }
 }
