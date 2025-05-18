@@ -98,4 +98,44 @@ public class UserRestController {
                 })
                 .orElseGet(() -> ResponseEntity.of(Optional.<UserDTO>empty()));
     }
+
+    @GetMapping("/{username}/followers")
+    public ResponseEntity<List<UserDTO>> getUserFollowers(@PathVariable String username) {
+        try {
+            Optional<UserDTO> userOpt = userService.getUserByUsername(username);
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<UserDTO> followers = userOpt.get().followers().stream()
+                    .map(userId -> userService.getUserById(userId))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(followers);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{username}/following")
+    public ResponseEntity<List<UserDTO>> getUserFollowing(@PathVariable String username) {
+        try {
+            Optional<UserDTO> userOpt = userService.getUserByUsername(username);
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<UserDTO> following = userOpt.get().following().stream()
+                    .map(userId -> userService.getUserById(userId))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(following);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

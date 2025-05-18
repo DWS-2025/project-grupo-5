@@ -22,6 +22,8 @@ import com.echoreviews.mapper.ReviewMapper;
 import com.echoreviews.mapper.ArtistMapper;
 import java.util.Map;
 import java.util.HashMap;
+import com.echoreviews.service.UserService;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/albums")
@@ -35,6 +37,9 @@ public class AlbumRestController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllAlbums(
@@ -184,5 +189,21 @@ public class AlbumRestController {
             @RequestParam(required = false) Integer year) {
         List<AlbumDTO> albums = albumService.searchAlbums(title, artist, year);
         return ResponseEntity.ok(albums);
+    }
+
+    @GetMapping("/favorites/{username}")
+    public ResponseEntity<List<AlbumDTO>> getUserFavorites(@PathVariable String username) {
+        try {
+            List<Long> favoriteAlbumIds = userService.getFavoriteAlbums(username);
+            List<AlbumDTO> favoriteAlbums = favoriteAlbumIds.stream()
+                    .map(albumService::getAlbumById)
+                    .filter(java.util.Optional::isPresent)
+                    .map(java.util.Optional::get)
+                    .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(favoriteAlbums);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

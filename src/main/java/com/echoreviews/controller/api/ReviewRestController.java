@@ -302,4 +302,14 @@ public class ReviewRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ReviewDTO>> getReviewsByUser(@PathVariable Long userId) {
+        try {
+            List<ReviewDTO> reviews = reviewService.getReviewsByUserId(userId);
+            return ResponseEntity.ok(reviews);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
