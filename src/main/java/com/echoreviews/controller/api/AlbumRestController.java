@@ -2,6 +2,7 @@ package com.echoreviews.controller.api;
 
 import com.echoreviews.model.Album;
 import com.echoreviews.service.AlbumService;
+import com.echoreviews.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,9 @@ public class AlbumRestController {
 
     @Autowired
     private AlbumMapper albumMapper;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllAlbums(
@@ -64,8 +68,21 @@ public class AlbumRestController {
     }
 
     @PostMapping
-    public ResponseEntity<AlbumDTO> createAlbum(@RequestBody AlbumDTO albumDTO) {
+    public ResponseEntity<AlbumDTO> createAlbum(@RequestBody AlbumDTO albumDTO, @RequestHeader("Authorization") String authHeader) {
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
         try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
         } catch (IllegalArgumentException e) {
@@ -78,8 +95,23 @@ public class AlbumRestController {
     @PutMapping("/{id}")
     public ResponseEntity<AlbumDTO> updateAlbum(
             @PathVariable Long id,
-            @RequestBody AlbumDTO albumDTO) {
+            @RequestBody AlbumDTO albumDTO,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
         try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             return (ResponseEntity<AlbumDTO>) albumService.getAlbumById(id)
                     .map(existingAlbum -> {
                         AlbumDTO updatedAlbumDTO = albumDTO.withId(id);
@@ -97,8 +129,21 @@ public class AlbumRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAlbum(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAlbum(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
         try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             albumService.deleteAlbum(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
