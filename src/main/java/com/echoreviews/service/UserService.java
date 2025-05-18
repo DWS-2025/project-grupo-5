@@ -457,22 +457,75 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDTO uploadUserPdf(UserDTO userDTO, MultipartFile pdfFile) throws IOException {
+    public PdfUploadResult uploadUserPdf(UserDTO userDTO, MultipartFile pdfFile) {
         if (userDTO == null) {
-            throw new IllegalArgumentException("User cannot be null");
+            System.err.println("Error: User cannot be null");
+            return PdfUploadResult.error("User cannot be null");
         }
         if (pdfFile == null || pdfFile.isEmpty()) {
-            throw new IllegalArgumentException("PDF file cannot be null or empty");
+            System.err.println("Error: PDF file cannot be null or empty");
+            return PdfUploadResult.error("PDF file cannot be null or empty");
         }
         
-        // Validar que sea un PDF
+        // Vamos a hacer una validación para comprobar que el archivo subido es realmente un pdf. Es cierto que esta verificación de aquí
+        // es facilmente bypaseable interceptando la petición con burbsuite
         if (!pdfFile.getContentType().equals("application/pdf")) {
-            throw new IllegalArgumentException("File must be a PDF");
+            System.err.println("Error: File must be a PDF (invalid content type: " + pdfFile.getContentType() + ")");
+            return PdfUploadResult.error("File must be a PDF");
+        }
+        
+        // Vamos a validar que sea un PDF verificando los magic bytes del archivo
+        try {
+            byte[] fileBytes = pdfFile.getBytes();
+            
+            // 1. Si el archivo tiene menos de 5 bytes, lo tiramos
+            if (fileBytes.length < 5) {
+                System.err.println("Error: File is too small to be a valid PDF (" + fileBytes.length + " bytes)");
+                return PdfUploadResult.error("File is too small to be a valid PDF");
+            }
+            
+            // 2. Si el archivo tiene mas de 10 MB, lo tiramos
+            final long MAX_PDF_SIZE = 10 * 1024 * 1024; // 10 MB
+            if (fileBytes.length > MAX_PDF_SIZE) {
+                System.err.println("Error: PDF file is too large (max 10 MB)");
+                return PdfUploadResult.error("PDF file is too large (max 10 MB)");
+            }
+            
+            // 3. Comprobamos los magic numbers check - debe comenzar con %PDF- si realmente es un pdf
+            String magicNumber = new String(fileBytes, 0, 5);
+            if (!magicNumber.startsWith("%PDF-")) {
+                System.err.println("Error: File does not have valid PDF signature (starts with '" + magicNumber + "')");
+                return PdfUploadResult.error("File does not have valid PDF signature");
+            }
+            
+            // 4. Verificar marcador de fin de archivo (%%EOF)
+            String fileContent = new String(fileBytes);
+            if (!fileContent.contains("%%EOF")) {
+                System.err.println("Error: File does not have valid PDF structure (missing EOF marker)");
+                return PdfUploadResult.error("File does not have valid PDF structure (missing EOF marker)");
+            }
+            
+            // 5. Verificar que el archivo no tenga código ejecutable sospechoso
+            if (fileContent.toLowerCase().contains("/js") || 
+                fileContent.toLowerCase().contains("/javascript") ||
+                fileContent.toLowerCase().contains("/action") ||
+                fileContent.toLowerCase().contains("/launch")) {
+                System.err.println("Error: PDF contains potentially unsafe elements");
+                return PdfUploadResult.error("PDF contains potentially unsafe elements");
+            }
+        } catch (IOException e) {
+            System.err.println("Error: Failed to read file content: " + e.getMessage());
+            return PdfUploadResult.error("Failed to read file content: " + e.getMessage());
         }
         
         // Primero eliminamos cualquier PDF existente del usuario
         if (userDTO.pdfPath() != null) {
-            deleteUserPdf(userDTO);
+            try {
+                deleteUserPdf(userDTO);
+            } catch (IOException e) {
+                System.err.println("Error: Failed to delete existing PDF: " + e.getMessage());
+                return PdfUploadResult.error("Failed to delete existing PDF: " + e.getMessage());
+            }
         }
         
         // Limpiar carpetas con estructura incorrecta
@@ -507,10 +560,12 @@ public class UserService implements UserDetailsService {
             System.out.println("PDF guardado en: " + filePath.toAbsolutePath());
             System.out.println("Ruta relativa: " + relativePath);
             
-            return saveUser(updatedUser);
+            UserDTO savedUser = saveUser(updatedUser);
+            return PdfUploadResult.success(savedUser);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Error al guardar PDF: " + e.getMessage(), e);
+            System.err.println("Error: Failed to save PDF: " + e.getMessage());
+            return PdfUploadResult.error("Error al guardar PDF: " + e.getMessage());
         }
     }
 
@@ -631,5 +686,37 @@ public class UserService implements UserDetailsService {
         
         UserDTO user = userOpt.get();
         return user.pdfPath();
+    }
+
+    public static class PdfUploadResult {
+        private final boolean success;
+        private final String errorMessage;
+        private final UserDTO user;
+
+        private PdfUploadResult(boolean success, String errorMessage, UserDTO user) {
+            this.success = success;
+            this.errorMessage = errorMessage;
+            this.user = user;
+        }
+
+        public static PdfUploadResult success(UserDTO user) {
+            return new PdfUploadResult(true, null, user);
+        }
+
+        public static PdfUploadResult error(String errorMessage) {
+            return new PdfUploadResult(false, errorMessage, null);
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public UserDTO getUser() {
+            return user;
+        }
     }
 }

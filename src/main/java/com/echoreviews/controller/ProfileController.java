@@ -98,6 +98,7 @@ public class ProfileController{
     public String profileUpdate(
             @ModelAttribute ProfileUpdateDTO profileUpdateDTO,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile,
             @RequestParam(value = "userIdBeingEdited", required = false) Long userIdBeingEdited,
             HttpSession session,
             RedirectAttributes redirectAttributes,
@@ -107,6 +108,10 @@ public class ProfileController{
         if (sessionUser == null) {
             return "redirect:/login";
         }
+
+        // Log para depuración
+        System.out.println("Profile Update - Username: " + profileUpdateDTO.username());
+        System.out.println("Profile Update - Email: " + profileUpdateDTO.email());
 
         UserDTO userToUpdate;
         boolean isAdminEditingOther = false;
@@ -152,11 +157,20 @@ public class ProfileController{
             passwordForUpdate = newPlainPassword; // New plain password for service to hash
         }
 
+        // Asegurarse de que el nombre de usuario y el email no estén vacíos
+        String username = (profileUpdateDTO.username() != null && !profileUpdateDTO.username().isBlank()) 
+                        ? profileUpdateDTO.username() 
+                        : userToUpdate.username();
+        
+        String email = (profileUpdateDTO.email() != null && !profileUpdateDTO.email().isBlank()) 
+                     ? profileUpdateDTO.email() 
+                     : userToUpdate.email();
+
         UserDTO updatedUserDTO = new UserDTO(
             userToUpdate.id(),
-            (profileUpdateDTO.username() != null && !profileUpdateDTO.username().isBlank()) ? profileUpdateDTO.username() : userToUpdate.username(),
+            username,
             passwordForUpdate, // This will be new plain or old hashed. Service must handle.
-            (profileUpdateDTO.email() != null && !profileUpdateDTO.email().isBlank()) ? profileUpdateDTO.email() : userToUpdate.email(),
+            email,
             userToUpdate.isAdmin(), // Admin status not changed here
             userToUpdate.potentiallyDangerous(), // Preserve existing flag
             userToUpdate.banned(), // Preserve existing flag
@@ -169,9 +183,11 @@ public class ProfileController{
         );
 
         try {
-            UserDTO savedUser;
+            UserDTO savedUser = updatedUserDTO;
+            
+            // Process image file if uploaded
             if (imageFile != null && !imageFile.isEmpty()) {
-                 UserDTO userDtoForImageSave = new UserDTO(
+                UserDTO userDtoForImageSave = new UserDTO(
                     updatedUserDTO.id(), updatedUserDTO.username(), updatedUserDTO.password(), updatedUserDTO.email(),
                     updatedUserDTO.isAdmin(), updatedUserDTO.potentiallyDangerous(), updatedUserDTO.banned(), 
                     null, null, // Null out image fields for new image
@@ -181,6 +197,16 @@ public class ProfileController{
                 savedUser = userService.saveUserWithProfileImage(userDtoForImageSave, imageFile);
             } else {
                 savedUser = userService.saveUser(updatedUserDTO);
+            }
+            
+            // Process PDF file if uploaded
+            if (pdfFile != null && !pdfFile.isEmpty()) {
+                UserService.PdfUploadResult pdfResult = userService.uploadUserPdf(savedUser, pdfFile);
+                if (pdfResult.isSuccess()) {
+                    savedUser = pdfResult.getUser();
+                } else {
+                    throw new IOException("Error uploading PDF: " + pdfResult.getErrorMessage());
+                }
             }
 
             if (!isAdminEditingOther) {
@@ -437,12 +463,13 @@ public class ProfileController{
             return "redirect:/login";
         }
         
-        try {
-            UserDTO updatedUser = userService.uploadUserPdf(currentUserDTO, pdfFile);
-            session.setAttribute("user", updatedUser);
+        UserService.PdfUploadResult result = userService.uploadUserPdf(currentUserDTO, pdfFile);
+        
+        if (result.isSuccess()) {
+            session.setAttribute("user", result.getUser());
             redirectAttributes.addFlashAttribute("success", "PDF uploaded successfully");
-        } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("error", "Error uploading PDF: " + e.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("error", result.getErrorMessage());
         }
         
         return "redirect:/profile/" + currentUserDTO.username();
@@ -463,7 +490,7 @@ public class ProfileController{
             redirectAttributes.addFlashAttribute("error", "Error deleting PDF: " + e.getMessage());
         }
         
-        return "redirect:/profile/" + currentUserDTO.username();
+        return "redirect:/profile";
     }
 
     @GetMapping("/profile/{username}/pdf")
@@ -473,7 +500,7 @@ public class ProfileController{
             if (pdfPath == null) {
                 return ResponseEntity.notFound().build();
             }
-            
+            // Aqui tenemos que mirar porque tiene toda la pinta de PathTrasversal ehhh
             Path filePath = Paths.get("src/main/resources/static" + pdfPath);
             Resource resource = new UrlResource(filePath.toUri());
             

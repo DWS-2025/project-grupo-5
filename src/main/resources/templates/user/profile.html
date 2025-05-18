@@ -98,7 +98,7 @@
             <h2 class="text-center mb-4">Profile Settings</h2>
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data">
+                    <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data" id="profile-form">
                         <input type="hidden" name="userIdBeingEdited" th:if="${editingUserAsAdmin}" th:value="${user.id()}">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
@@ -108,6 +108,11 @@
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" th:value="${user.email()}" required>
                         </div>
+                        
+                        <!-- Campos ocultos para password (no se están cambiando) -->
+                        <input type="hidden" name="currentPassword" value="">
+                        <input type="hidden" name="newPassword" value="">
+                        <input type="hidden" name="confirmPassword" value="">
 
                         <div class="mb-3">
                             <label for="imageFile" class="form-label">Profile Photo</label>
@@ -118,10 +123,31 @@
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
                         </div>
 
+                        <div class="mb-3">
+                            <label for="pdfFile" class="form-label">PDF Document</label>
+                            <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.hasPdf()}">
+                                <i class="bi bi-file-earmark-pdf-fill" style="font-size: 2rem; color: #1db954;"></i>
+                                <div>
+                                    <a th:href="@{/profile/{username}/pdf(username=${user.username()})}" target="_blank" 
+                                       class="btn btn-sm btn-success me-2">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                    <a href="#" onclick="document.getElementById('delete-pdf-form').submit(); return false;" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                    <div class="text-muted mt-1">PDF Document attached</div>
+                                </div>
+                            </div>
+                            <input type="file" class="form-control" id="pdfFile" name="pdfFile" accept="application/pdf">
+                            <div class="form-text text-muted">Max file size: 10MB</div>
+                        </div>
+
                         <div class="text-center mb-3">
                             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                         </div>
                     </form>
+
+                    <form id="delete-pdf-form" th:action="@{/profile/delete-pdf}" method="post" style="display: none;"></form>
 
                     <div class="text-center mb-3">
                         <a th:href="@{${editingUserAsAdmin != null && editingUserAsAdmin ? '/profile/change-password?userIdToEdit=' + user.id() : '/profile/change-password'}}" class="btn btn-info">
@@ -155,6 +181,19 @@
                         notification.remove();
                     }, 400);
                 }, 5000);
+            }
+            
+            // Manejo del formulario de perfil
+            const profileForm = document.getElementById('profile-form');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    // Solo para depuración - puedes eliminar estos logs en producción
+                    console.log('Formulario enviado');
+                    const formData = new FormData(profileForm);
+                    for (let [key, value] of formData.entries()) {
+                        console.log(key + ': ' + value);
+                    }
+                });
             }
         });
     </script>
