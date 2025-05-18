@@ -153,8 +153,11 @@
 </head>
 <body>
 
-<h1>Error <span id="error-code" th:text="${status}">404</span></h1>
-<p th:text="${error}">The page doesn't exist or has been moved.</p>
+<h1 th:if="${status == 500}">Error</h1>
+<h1 th:unless="${status == 500}">Error <span id="error-code" th:text="${status}">404</span></h1>
+
+<p th:if="${status == 500}">Lo sentimos, ha ocurrido un problema. Por favor, inténtalo de nuevo más tarde.</p>
+<p th:unless="${status == 500}" th:text="${error}">The page doesn't exist or has been moved.</p>
 
 <div class="container">
   <div class="plate">
@@ -168,7 +171,7 @@
   </div>
 </div>
 
-<a href="/" class="btn">Return to Home</a>
+<a href="/" class="btn">Volver al Inicio</a>
 
 </body>
 </html>
