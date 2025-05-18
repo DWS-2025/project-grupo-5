@@ -319,7 +319,7 @@
                             </div>
                             <div th:each="review : ${reviews}" class="review-card">
                                 <div class="card-review">
-                                    <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
+                                    <div class="review-actions" th:if="${session.user != null && (session.user.id == review.userId() || session.user.admin)}">
                                         <button type="button" class="edit-review"
                                                 th:data-review-id="${review.id()}"
                                                 th:data-review-rating="${review.rating()}"
@@ -342,13 +342,13 @@
                                     <div class="infos d-flex flex-column">
                                         <div class="d-flex align-items-center">
                                             <div class="me-2" style="width: 40px; height: 40px;">
-                                                <a th:href="@{/profile/{username}(username=${review.username()})}">
+                                                <a th:href="@{/profile/{username}(username=${userService.getUserById(review.userId()).get().username()})}">
                                                     <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
                                                     <i th:unless="${review.userImageUrl() != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>
                                                 </a>
                                             </div>
                                             <div class="username" style="font-weight: bold;">
-                                                <a th:href="@{/profile/{username}(username=${review.username()})}" class="author" th:text="${review.username()}"></a>
+                                                <a th:href="@{/profile/{username}(username=${userService.getUserById(review.userId()).get().username()})}" class="author" th:text="${userService.getUserById(review.userId()).get().username()}"></a>
                                             </div>
                                         </div>
                                         <!-- Content container, below username -->

@@ -60,8 +60,8 @@ public class ReviewController {
                     null,
                     albumId,
                     userDTO.id(),
-                    userDTO.username(),
-                    userDTO.imageUrl(),
+                    null,
+                    null,
                     null,
                     null,
                     content,
@@ -74,6 +74,15 @@ public class ReviewController {
         return "redirect:/album/" + albumId;
     }
 
+    @GetMapping("/details/{reviewId}")
+    public ResponseEntity<?> getReviewDetails(@PathVariable Long reviewId) {
+        Optional<ReviewDTO> reviewOpt = reviewService.getReviewByIdWithMarkdown(reviewId);
+        if (reviewOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(reviewOpt.get());
+    }
+
     @PostMapping("/{albumId}/edit/{reviewId}")
     public String editReview(
             @PathVariable Long albumId,
@@ -81,32 +90,36 @@ public class ReviewController {
             @RequestParam String content,
             @RequestParam int rating,
             HttpSession session,
-            Model model
-    ) {
+            Model model) {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO != null) {
+            Optional<ReviewDTO> existingReviewOpt = reviewService.getReviewById(albumId, reviewId);
+            if (existingReviewOpt.isEmpty()) {
+                return "redirect:/album/" + albumId;
+            }
+
+            ReviewDTO existingReview = existingReviewOpt.get();
+            if (!existingReview.userId().equals(userDTO.id()) && !userDTO.isAdmin()) {
+                return "redirect:/album/" + albumId;
+            }
+
             if (rating < 1 || rating > 5 || content.isBlank()) {
                 return "redirect:/album/" + albumId;
             }
-            if (content.length() > 255) {
-                model.addAttribute("error", "Se ha superado el límite de caracteres");
-                return "error";
-            }
-            ReviewDTO existingReview = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (existingReview != null && existingReview.username().equals(userDTO.username())) {
-                ReviewDTO reviewDTO = new ReviewDTO(
-                        reviewId,
-                        albumId,
-                        userDTO.id(),
-                        userDTO.username(),
-                        userDTO.imageUrl(),
-                        null,
-                        null,
-                        content,
-                        rating
-                );
-                reviewService.updateReview(albumId, reviewId, reviewDTO);
-            }
+
+            ReviewDTO updatedReview = new ReviewDTO(
+                    reviewId,
+                    albumId,
+                    existingReview.userId(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    content,
+                    rating
+            );
+
+            reviewService.updateReview(albumId, reviewId, updatedReview);
         }
         return "redirect:/album/" + albumId;
     }
@@ -120,13 +133,12 @@ public class ReviewController {
         UserDTO userDTO = (UserDTO) session.getAttribute("user");
         if (userDTO != null) {
             ReviewDTO review = reviewService.getReviewById(albumId, reviewId).orElse(null);
-            if (review != null && (review.username().equals(userDTO.username()) || userDTO.isAdmin())) {
+            if (review != null && (review.userId().equals(userDTO.id()) || userDTO.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
             }
         }
         return "redirect:/album/" + albumId;
     }
-
 
     @GetMapping("/user/{username}")
     public String viewReviews(@PathVariable String username, Model model, HttpSession session) {
@@ -154,7 +166,6 @@ public class ReviewController {
 
         return "reviews/user-review";
     }
-
 }
 
 

@@ -2,6 +2,8 @@ package com.echoreviews.mapper;
 
 import com.echoreviews.dto.ReviewDTO;
 import com.echoreviews.model.Review;
+import com.echoreviews.model.Album;
+import com.echoreviews.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -29,6 +31,7 @@ public interface ReviewMapper {
     @Named("toHTMLDTO")
     @Mapping(source = "album.id", target = "albumId")
     @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.username", target = "username")
     @Mapping(source = "album.title", target = "albumTitle")
     @Mapping(source = "album.imageUrl", target = "albumImageUrl")
     @Mapping(source = "user.imageUrl", target = "userImageUrl")
@@ -38,12 +41,14 @@ public interface ReviewMapper {
     @Named("toMarkdownDTO")
     @Mapping(source = "album.id", target = "albumId")
     @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.username", target = "username")
     @Mapping(source = "album.title", target = "albumTitle")
     @Mapping(source = "album.imageUrl", target = "albumImageUrl")
     @Mapping(source = "user.imageUrl", target = "userImageUrl")
     ReviewDTO toDTOWithMarkdown(Review review);
 
-    // No changes needed for toEntity as it will take raw markdown from DTO
+    @Mapping(target = "album", source = "albumId", qualifiedByName = "idToAlbum")
+    @Mapping(target = "user", source = "userId", qualifiedByName = "idToUser")
     Review toEntity(ReviewDTO reviewDTO);
 
     @IterableMapping(qualifiedByName = "toHTMLDTO")
@@ -62,5 +67,21 @@ public interface ReviewMapper {
         Node document = FLEXMARK_PARSER.parse(markdown);
         String rawHtml = FLEXMARK_RENDERER.render(document);
         return SANITIZER_POLICY.sanitize(rawHtml);
+    }
+
+    @Named("idToAlbum")
+    default Album idToAlbum(Long id) {
+        if (id == null) return null;
+        Album album = new Album();
+        album.setId(id);
+        return album;
+    }
+
+    @Named("idToUser")
+    default User idToUser(Long id) {
+        if (id == null) return null;
+        User user = new User();
+        user.setId(id);
+        return user;
     }
 }
