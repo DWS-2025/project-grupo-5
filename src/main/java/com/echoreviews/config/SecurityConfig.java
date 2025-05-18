@@ -24,7 +24,12 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -47,8 +52,9 @@ public class SecurityConfig {
     @Autowired
     private UserAgentValidationFilter userAgentValidationFilter;
     
-    @Autowired
-    private SqlInjectionFilter sqlInjectionFilter;
+    // Comentar o eliminar temporalmente para verificar si este filtro es el problema
+    // @Autowired
+    // private SqlInjectionFilter sqlInjectionFilter;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -65,9 +71,37 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+    
+    /**
+     * Define un matcher para identificar las rutas de recursos estáticos que deben excluirse
+     * del filtro de inyección SQL.
+     */
+    private RequestMatcher staticResourcesMatcher() {
+        return new OrRequestMatcher(
+            new AntPathRequestMatcher("/css/**"),
+            new AntPathRequestMatcher("/js/**"),
+            new AntPathRequestMatcher("/images/**"),
+            new AntPathRequestMatcher("/webjars/**"),
+            new AntPathRequestMatcher("/fonts/**"),
+            new AntPathRequestMatcher("/**/*.css"),
+            new AntPathRequestMatcher("/**/*.js"),
+            new AntPathRequestMatcher("/**/*.jpg"),
+            new AntPathRequestMatcher("/**/*.jpeg"),
+            new AntPathRequestMatcher("/**/*.png"),
+            new AntPathRequestMatcher("/**/*.gif"),
+            new AntPathRequestMatcher("/**/*.ico"),
+            new AntPathRequestMatcher("/**/*.woff"),
+            new AntPathRequestMatcher("/**/*.woff2"),
+            new AntPathRequestMatcher("/**/*.ttf"),
+            new AntPathRequestMatcher("/**/*.svg")
+        );
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Crear un matcher para todas las rutas excepto los recursos estáticos
+        RequestMatcher nonStaticResourcesMatcher = new NegatedRequestMatcher(staticResourcesMatcher());
+        
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository())
@@ -80,7 +114,31 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/favorites/**", "/reviews/**").authenticated()
                         .requestMatchers("/login", "/auth/register", "/register").permitAll()
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/webjars/**", "/error", "/api/**", "/album/**", "/artists/**", "/top-albums/**", "/profile/**").permitAll()
+                        .requestMatchers(
+                            "/", 
+                            "/css/**", 
+                            "/js/**", 
+                            "/images/**", 
+                            "/fonts/**",
+                            "/webjars/**", 
+                            "/error", 
+                            "/api/**", 
+                            "/album/**", 
+                            "/artists/**", 
+                            "/top-albums/**", 
+                            "/profile/**",
+                            "/**/*.css",
+                            "/**/*.js",
+                            "/**/*.png",
+                            "/**/*.jpg",
+                            "/**/*.jpeg",
+                            "/**/*.gif",
+                            "/**/*.svg",
+                            "/**/*.ico",
+                            "/**/*.woff",
+                            "/**/*.woff2",
+                            "/**/*.ttf"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -100,8 +158,15 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                         .httpStrictTransportSecurity(hsts -> hsts.maxAgeInSeconds(31536000))
-                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' https://trusted-cdn.com; style-src 'self' https://trusted-cdn.com; img-src 'self' data:;"))
-                        .xssProtection()
+
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                            "default-src 'self'; " +
+                            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; " +
+                            "style-src 'self' 'unsafe-inline' https:; " +
+                            "img-src 'self' data: https:; " +
+                            "font-src 'self' data: https:; " +
+                            "connect-src 'self' https:;"
+                        ))
                 )
                 .sessionManagement(session -> session
                         .sessionFixation().migrateSession()
@@ -110,8 +175,9 @@ public class SecurityConfig {
                         .expiredUrl("/login?session-expired=true")
                 )
                 .addFilterAfter(bannedUserFilter, BasicAuthenticationFilter.class)
-                .addFilterAfter(userAgentValidationFilter, BannedUserFilter.class)
-                .addFilterAfter(sqlInjectionFilter, UserAgentValidationFilter.class);
+                .addFilterAfter(userAgentValidationFilter, BannedUserFilter.class);
+                // Eliminar temporalmente este filtro para verificar si es la causa del problema
+                // .addFilterAfter(sqlInjectionFilter, UserAgentValidationFilter.class);
 
         return http.build();
     }
