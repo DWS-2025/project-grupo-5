@@ -206,4 +206,24 @@ public class AlbumRestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/top/liked")
+    public ResponseEntity<List<AlbumDTO>> getTopLikedAlbums() {
+        try {
+            List<AlbumDTO> topAlbums = albumService.getTopLikedAlbums();
+            return ResponseEntity.ok(topAlbums);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/top/rated")
+    public ResponseEntity<List<AlbumDTO>> getTopRatedAlbums() {
+        try {
+            List<AlbumDTO> topAlbums = albumService.getTopRatedAlbums();
+            return ResponseEntity.ok(topAlbums);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

@@ -22,4 +22,10 @@ public interface AlbumRepository extends JpaRepository<Album, Long>, QueryByExam
     
     @Query("SELECT a FROM Album a WHERE a.averageRating >= :rating ORDER BY a.averageRating DESC")
     List<Album> findByAverageRatingGreaterThanEqual(@Param("rating") Double rating);
+
+    @Query("SELECT a FROM Album a LEFT JOIN a.favoriteUsers u GROUP BY a ORDER BY COUNT(u) DESC")
+    List<Album> findTop10ByOrderByFavoriteUsersDesc();
+
+    @Query("SELECT a FROM Album a WHERE a.averageRating > 0 ORDER BY a.averageRating DESC")
+    List<Album> findTop10ByOrderByAverageRatingDesc();
 }

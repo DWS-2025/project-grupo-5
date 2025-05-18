@@ -173,4 +173,22 @@ public class AlbumService {
             albumRepository.delete(album);
         });
     }
+
+    public List<AlbumDTO> getTopLikedAlbums() {
+        return albumMapper.toDTOList(
+            albumRepository.findTop10ByOrderByFavoriteUsersDesc()
+                .stream()
+                .limit(10)
+                .collect(Collectors.toList())
+        );
+    }
+
+    public List<AlbumDTO> getTopRatedAlbums() {
+        return albumMapper.toDTOList(
+            albumRepository.findTop10ByOrderByAverageRatingDesc()
+                .stream()
+                .limit(10)
+                .collect(Collectors.toList())
+        );
+    }
 }

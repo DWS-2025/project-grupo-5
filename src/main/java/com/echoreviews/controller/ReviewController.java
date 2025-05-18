@@ -70,12 +70,6 @@ public class ReviewController {
 
             System.out.println("Saving user review: " + userDTO.username());
             reviewService.addReview(albumId, reviewDTO);
-
-            // Update album's average rating
-            albumService.getAlbumById(albumId).ifPresent(albumDTO -> {
-                albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                albumService.saveAlbumReview(albumDTO);
-            });
         }
         return "redirect:/album/" + albumId;
     }
@@ -112,14 +106,6 @@ public class ReviewController {
                         rating
                 );
                 reviewService.updateReview(albumId, reviewId, reviewDTO);
-
-                // Update album's average rating
-                Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
-                if (albumOptional.isPresent()) {
-                    AlbumDTO albumDTO = albumOptional.get();
-                    albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbumReview(albumDTO);
-                }
             }
         }
         return "redirect:/album/" + albumId;
@@ -136,14 +122,6 @@ public class ReviewController {
             ReviewDTO review = reviewService.getReviewById(albumId, reviewId).orElse(null);
             if (review != null && (review.username().equals(userDTO.username()) || userDTO.isAdmin())) {
                 reviewService.deleteReview(albumId, reviewId);
-
-                // Update album's average rating
-                Optional<AlbumDTO> albumOptional = albumService.getAlbumById(albumId);
-                if (albumOptional.isPresent()) {
-                    AlbumDTO albumDTO = albumOptional.get();
-                    albumDTO.updateAverageRating(reviewService.getReviewsByAlbumId(albumId));
-                    albumService.saveAlbumReview(albumDTO);
-                }
             }
         }
         return "redirect:/album/" + albumId;
