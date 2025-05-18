@@ -72,7 +72,7 @@ public class UserRestController {
         if (!updates.containsKey(field) || updates.get(field) == null) {
             return null;
         }
-        // No permitir cambios de contraseña a través del endpoint general de actualización
+        // Do not allow password changes through the general update endpoint
         if (field.equals("password")) {
             return null;
         }
@@ -85,32 +85,32 @@ public class UserRestController {
             @RequestBody Map<String, Object> updates,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get the username from the token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario que hace la petición
+            // Get the requesting user
             UserDTO requestingUser = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Obtener el usuario a actualizar
+            // Get the user to update
             return userService.getUserById(id)
                     .map(userToUpdate -> {
-                        // Verificar que el usuario es el mismo que se quiere actualizar o es admin
+                        // Verify that the user is the same one being updated or is admin
                         if (!userToUpdate.username().equals(username) && !jwtUtil.isAdmin(token)) {
                             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                         }
 
                         try {
-                            // Crear un nuevo UserDTO con los campos actualizados
+                            // Create a new UserDTO with updated fields
                             UserDTO updatedUserDTO = new UserDTO(
                                 id,
                                 getValueIfPresent(updates, "username") != null ? 
@@ -119,7 +119,7 @@ public class UserRestController {
                                     (String) getValueIfPresent(updates, "password") : userToUpdate.password(),
                                 getValueIfPresent(updates, "email") != null ? 
                                     (String) getValueIfPresent(updates, "email") : userToUpdate.email(),
-                                // Solo permitir cambios en estos campos si es admin
+                                // Only allow changes to these fields if admin
                                 jwtUtil.isAdmin(token) && getValueIfPresent(updates, "isAdmin") != null ? 
                                     (Boolean) getValueIfPresent(updates, "isAdmin") : userToUpdate.isAdmin(),
                                 jwtUtil.isAdmin(token) && getValueIfPresent(updates, "potentiallyDangerous") != null ? 
@@ -128,10 +128,10 @@ public class UserRestController {
                                     (Boolean) getValueIfPresent(updates, "banned") : userToUpdate.banned(),
                                 getValueIfPresent(updates, "imageUrl") != null ? 
                                     (String) getValueIfPresent(updates, "imageUrl") : userToUpdate.imageUrl(),
-                                userToUpdate.imageData(), // No se permite actualizar imageData directamente
-                                userToUpdate.followers(), // No se permite actualizar followers directamente
-                                userToUpdate.following(), // No se permite actualizar following directamente
-                                userToUpdate.favoriteAlbumIds(), // No se permite actualizar favoritos directamente
+                                userToUpdate.imageData(), // Cannot update imageData directly
+                                userToUpdate.followers(), // Cannot update followers directly
+                                userToUpdate.following(), // Cannot update following directly
+                                userToUpdate.favoriteAlbumIds(), // Cannot update favorites directly
                                 getValueIfPresent(updates, "pdfPath") != null ? 
                                     (String) getValueIfPresent(updates, "pdfPath") : userToUpdate.pdfPath()
                             );
@@ -158,26 +158,26 @@ public class UserRestController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get the username from the token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario que hace la petición
+            // Get the requesting user
             UserDTO requestingUser = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Obtener el usuario a eliminar
+            // Get the user to delete
             return userService.getUserById(id)
                     .map(userToDelete -> {
-                        // Verificar que el usuario es el mismo que se quiere eliminar o es admin
+                        // Verify that the user is the same one being deleted or is admin
                         if (!userToDelete.username().equals(username) && !jwtUtil.isAdmin(token)) {
                             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                         }
@@ -255,24 +255,24 @@ public class UserRestController {
     }
 
     /**
-     * Endpoint para seguir/dejar de seguir a un usuario.
-     * Si el usuario ya está siendo seguido, lo deja de seguir.
-     * Si no lo está siguiendo, comienza a seguirlo.
+     * Endpoint to follow/unfollow a user.
+     * If the user is already being followed, it unfollows them.
+     * If not following, it starts following them.
      * 
-     * @param targetUserId ID del usuario al que se quiere seguir/dejar de seguir
-     * @param session Sesión HTTP con la información del usuario autenticado
-     * @return El usuario actualizado después de la operación
+     * @param targetUserId ID of the user to follow/unfollow
+     * @param session HTTP session with authenticated user information
+     * @return The updated user after the operation
      */
     @PostMapping("/follow/{targetUserId}")
     public ResponseEntity<?> toggleFollowUser(@PathVariable Long targetUserId, HttpSession session) {
-        // Verificar si hay un usuario autenticado
+        // Verify if there is an authenticated user
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
         
         try {
-            // Obtener el nombre de usuario del usuario autenticado
+            // Get the username of the authenticated user
             String username = "";
             if (auth.getPrincipal() instanceof UserDetails) {
                 username = ((UserDetails) auth.getPrincipal()).getUsername();
@@ -280,20 +280,20 @@ public class UserRestController {
                 username = auth.getName();
             }
             
-            // Buscar el usuario por su nombre de usuario
+            // Find the user by their username
             UserDTO currentUser = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Current user not found"));
             
-            // Obtener el usuario objetivo
+            // Get the target user
             UserDTO targetUser = userService.getUserById(targetUserId)
                     .orElseThrow(() -> new RuntimeException("Target user not found"));
             
-            // Verificar si el usuario ya está siguiendo al objetivo
+            // Check if the user is already following the target
             boolean isFollowing = userService.isFollowing(currentUser.id(), targetUserId);
             
             UserDTO updatedUser;
             if (isFollowing) {
-                // Dejar de seguir al usuario
+                // Unfollow the user
                 updatedUser = userService.unfollowUser(currentUser.id(), targetUserId, session);
                 return ResponseEntity.ok().body(Map.of(
                     "success", true,
@@ -301,7 +301,7 @@ public class UserRestController {
                     "message", "You have unfollowed " + targetUser.username()
                 ));
             } else {
-                // Comenzar a seguir al usuario
+                // Start following the user
                 updatedUser = userService.followUser(currentUser.id(), targetUserId, session);
                 return ResponseEntity.ok().body(Map.of(
                     "success", true,
@@ -323,23 +323,23 @@ public class UserRestController {
             @RequestBody Map<String, String> passwordData,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
+            // Get the username from the token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario que hace la petición
+            // Get the requesting user
             UserDTO requestingUser = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Verificar que los campos requeridos están presentes
+            // Verify that the required fields are present
             if (!passwordData.containsKey("currentPassword") || !passwordData.containsKey("newPassword")) {
                 return ResponseEntity.badRequest()
                     .body(Map.of("error", "Both currentPassword and newPassword are required"));
@@ -348,28 +348,28 @@ public class UserRestController {
             String currentPassword = passwordData.get("currentPassword");
             String newPassword = passwordData.get("newPassword");
 
-            // Obtener el usuario a actualizar
+            // Get the user to update
             return userService.getUserById(id)
                     .map(userToUpdate -> {
-                        // Verificar que el usuario es el mismo que se quiere actualizar o es admin
+                        // Verify that the user is the same one being updated or is admin
                         if (!userToUpdate.username().equals(username) && !jwtUtil.isAdmin(token)) {
                             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                         }
 
                         try {
-                            // Si es el mismo usuario, verificar la contraseña actual
+                            // If it's the same user, verify the current password
                             if (userToUpdate.username().equals(username)) {
-                                // Verificar la contraseña actual usando el servicio de autenticación
+                                // Verify the current password using the authentication service
                                 if (!userService.verifyPassword(userToUpdate.username(), currentPassword)) {
                                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                         .body(Map.of("error", "Current password is incorrect"));
                                 }
                             }
 
-                            // Actualizar la contraseña usando el método específico
+                            // Update the password using the specific method
                             userService.updatePassword(userToUpdate.id(), newPassword);
 
-                            // Generar un nuevo token después del cambio de contraseña
+                            // Generate a new token after password change
                             UserDetails userDetails = userService.loadUserByUsername(userToUpdate.username());
                             String newToken = jwtUtil.generateToken(userDetails, userToUpdate.isAdmin());
 

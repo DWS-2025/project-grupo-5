@@ -40,7 +40,7 @@ public class AuthController {
     @Autowired
     private InputSanitizer inputSanitizer;
     
-    // Patrón para sanitizar entradas y prevenir inyecciones SQL
+    // Pattern to sanitize inputs and prevent SQL injections
     private static final Pattern SAFE_INPUT_PATTERN = Pattern.compile("^[a-zA-Z0-9._@-]{3,50}$");
 
     // Rutas Web
@@ -57,9 +57,9 @@ public class AuthController {
     }
     
     /**
-     * Método para sanitizar entradas de usuario y prevenir inyecciones SQL
-     * @param input El texto a sanitizar
-     * @return true si la entrada es segura, false en caso contrario
+     * Method to sanitize user inputs and prevent SQL injections
+     * @param input The text to sanitize
+     * @return true if the input is safe, false otherwise
      */
     private boolean isSafeInput(String input) {
         return input != null && SAFE_INPUT_PATTERN.matcher(input).matches();
@@ -68,19 +68,19 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {
         try {
-            // Sanitizar entradas para prevenir inyecciones SQL
+            // Sanitize inputs to prevent SQL injections
             String username = user.getUsername();
             String email = user.getEmail();
             
-            // Verificar que el nombre de usuario sea seguro usando la utilidad de sanitización
+            // Verify that the username is safe using the sanitization utility
             if (!inputSanitizer.isValidUsername(username)) {
-                model.addAttribute("error", "El nombre de usuario contiene caracteres no permitidos");
+                model.addAttribute("error", "The username contains invalid characters");
                 return "error";
             }
             
-            // Verificar que el email sea seguro
+            // Verify that the email is safe
             if (!inputSanitizer.isValidEmail(email)) {
-                model.addAttribute("error", "El formato de email no es válido");
+                model.addAttribute("error", "Invalid email format");
                 return "error";
             }
             

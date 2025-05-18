@@ -118,7 +118,7 @@
                             <label for="imageFile" class="form-label">Profile Photo</label>
                             <div class="d-flex align-items-center gap-3 mb-2" th:if="${user.imageUrl() != null}">
                                 <img th:src="${user.imageUrl()}" alt="Current profile photo" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
-                                <span class="text-muted">Foto actual</span>
+                                <span class="text-muted">Current photo</span>
                             </div>
                             <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
                         </div>
@@ -143,7 +143,7 @@
                         </div>
 
                         <div class="text-center mb-3">
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
 
@@ -151,14 +151,14 @@
 
                     <div class="text-center mb-3">
                         <a th:href="@{${editingUserAsAdmin != null && editingUserAsAdmin ? '/profile/change-password?userIdToEdit=' + user.id() : '/profile/change-password'}}" class="btn btn-info">
-                            <i class="bi bi-key"></i> Cambiar Contraseña
+                            <i class="bi bi-key"></i> Change Password
                         </a>
                     </div>
 
                     <div class="text-center">
-                        <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')">
+                        <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
                             <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash"></i> Eliminar Cuenta
+                                <i class="bi bi-trash"></i> Delete Account
                             </button>
                         </form>
                     </div>
@@ -187,8 +187,8 @@
             const profileForm = document.getElementById('profile-form');
             if (profileForm) {
                 profileForm.addEventListener('submit', function(e) {
-                    // Solo para depuración - puedes eliminar estos logs en producción
-                    console.log('Formulario enviado');
+                    // Debug only - you can remove these logs in production
+                    console.log('Form Sent');
                     const formData = new FormData(profileForm);
                     for (let [key, value] of formData.entries()) {
                         console.log(key + ': ' + value);
