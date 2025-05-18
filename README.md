@@ -2,7 +2,7 @@
 > [!NOTE]
 > You can visit our web in: [echoreviews.site](https://echoreviews.site)
 ## Overview
-EchoReview is a web-based platform that allows users to explore, review, and manage their favorite music albums. Built with Spring Boot, this application provides a robust and user-friendly interface for music enthusiasts to share their thoughts and discover new music.
+EchoReviews is a web-based platform that allows users to explore, review, and manage their favorite music albums. Built with Spring Boot, this application provides a robust and user-friendly interface for music enthusiasts to share their thoughts and discover new music.
 
 ## Features
 ### User Management
