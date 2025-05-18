@@ -154,6 +154,14 @@ public record AlbumDTO(
         );
     }
     
+    public AlbumDTO withImageUrl(String newImageUrl) {
+        return new AlbumDTO(
+                id, title, genre, newImageUrl, audioFile, description, tracklist, year,
+                spotify_url, applemusic_url, tidal_url, averageRating,
+                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData, audioPreview
+        );
+    }
+    
     public byte[] getAudioPreview() {
         return audioPreview;
     }

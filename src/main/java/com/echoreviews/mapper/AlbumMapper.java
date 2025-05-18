@@ -8,9 +8,12 @@ import com.echoreviews.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Mapper(componentModel = "spring", uses = {ArtistMapper.class, ReviewMapper.class})
 public interface AlbumMapper {
@@ -71,4 +74,15 @@ public interface AlbumMapper {
     List<User> mapUserIdsToUsers(List<String> userIds);
 
     User map(String userId);
+    
+    /**
+     * Convierte una cadena JSON a un objeto AlbumDTO
+     * @param json String con formato JSON que representa un AlbumDTO
+     * @return AlbumDTO construido a partir del JSON
+     * @throws IOException si hay errores al parsear el JSON
+     */
+    default AlbumDTO fromJson(String json) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, AlbumDTO.class);
+    }
 }

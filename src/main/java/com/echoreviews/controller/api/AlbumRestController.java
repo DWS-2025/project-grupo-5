@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 import com.echoreviews.service.UserService;
 import java.util.stream.Collectors;
+import org.springframework.util.StringUtils;
 
 @RestController
 @RequestMapping("/api/albums")
@@ -292,6 +294,226 @@ public class AlbumRestController {
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint para crear un álbum con imagen usando multipart/form-data
+     * @param albumJson Los datos del álbum en formato JSON como string
+     * @param image La imagen del álbum (opcional)
+     * @param authHeader El token de autenticación
+     * @return El álbum creado
+     */
+    @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AlbumDTO> createAlbumWithImage(
+            @RequestPart("album") String albumJson,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
+        try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            
+            // Convertir el JSON a AlbumDTO
+            AlbumDTO albumDTO = albumMapper.fromJson(albumJson);
+            
+            // Validar la imagen si se proporcionó
+            if (image != null && !image.isEmpty()) {
+                // Validación de contenido de imagen
+                validateImageFile(image);
+                
+                // Guardar el álbum con la imagen
+                AlbumDTO savedAlbum = albumService.saveAlbumWithImage(albumDTO, image);
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
+            } else {
+                // Guardar el álbum sin imagen
+                AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+    }
+    
+    /**
+     * Endpoint para actualizar un álbum con imagen usando multipart/form-data
+     * @param id ID del álbum a actualizar
+     * @param albumJson Los datos del álbum en formato JSON como string
+     * @param image La imagen del álbum (opcional)
+     * @param authHeader El token de autenticación
+     * @return El álbum actualizado
+     */
+    @PutMapping(value = "/{id}/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AlbumDTO> updateAlbumWithImage(
+            @PathVariable Long id,
+            @RequestPart("album") String albumJson,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
+        try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            
+            // Verificar que el álbum existe
+            return albumService.getAlbumById(id)
+                    .map(existingAlbum -> {
+                        try {
+                            // Convertir el JSON a AlbumDTO
+                            AlbumDTO albumDTO = albumMapper.fromJson(albumJson);
+                            
+                            // Asegurar que el ID sea el correcto
+                            albumDTO = albumDTO.withId(id);
+                            
+                            if (image != null && !image.isEmpty()) {
+                                // Validación de contenido de imagen
+                                validateImageFile(image);
+                                
+                                // Actualizar el álbum con la imagen
+                                AlbumDTO updatedAlbum = albumService.saveAlbumWithImage(albumDTO, image);
+                                return ResponseEntity.ok(updatedAlbum);
+                            } else {
+                                // Mantener la imagen existente si no se proporciona una nueva
+                                if (existingAlbum.imageData() != null) {
+                                    albumDTO = albumDTO.withImageData(existingAlbum.imageData());
+                                    albumDTO = albumDTO.withImageUrl(existingAlbum.imageUrl());
+                                }
+                                
+                                // Guardar la actualización
+                                AlbumDTO updatedAlbum = albumService.saveAlbum(albumDTO);
+                                return ResponseEntity.ok(updatedAlbum);
+                            }
+                        } catch (IOException e) {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<AlbumDTO>build();
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.badRequest().<AlbumDTO>build();
+                        }
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+    
+    /**
+     * Valida una imagen para asegurar que es segura
+     * @param image La imagen a validar
+     * @throws IOException Si hay errores al procesar la imagen
+     * @throws IllegalArgumentException Si la imagen no es válida o segura
+     */
+    private void validateImageFile(MultipartFile image) throws IOException, IllegalArgumentException {
+        // Verificar que no es nulo y tiene contenido
+        if (image == null || image.isEmpty()) {
+            throw new IllegalArgumentException("Image file cannot be empty");
+        }
+        
+        // Verificar el tipo de contenido (MIME type)
+        String contentType = image.getContentType();
+        if (contentType == null || !(contentType.equals("image/jpeg") || 
+                                     contentType.equals("image/png") || 
+                                     contentType.equals("image/gif") ||
+                                     contentType.equals("image/webp"))) {
+            throw new IllegalArgumentException("File must be a valid image (JPEG, PNG, GIF or WEBP)");
+        }
+        
+        // Verificar la extensión del archivo
+        String filename = StringUtils.cleanPath(image.getOriginalFilename());
+        if (filename == null) {
+            throw new IllegalArgumentException("Filename cannot be null");
+        }
+        
+        String extension = "";
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex > 0) {
+            extension = filename.substring(lastDotIndex + 1).toLowerCase();
+        }
+        
+        if (!extension.equals("jpg") && !extension.equals("jpeg") && 
+            !extension.equals("png") && !extension.equals("gif") && 
+            !extension.equals("webp")) {
+            throw new IllegalArgumentException("File must have a valid image extension (jpg, jpeg, png, gif, webp)");
+        }
+        
+        // Verificar el tamaño del archivo (máximo 5 MB)
+        long maxSizeBytes = 5 * 1024 * 1024; // 5MB
+        if (image.getSize() > maxSizeBytes) {
+            throw new IllegalArgumentException("Image file size must be less than 5MB");
+        }
+        
+        // Validar magic numbers para seguridad adicional
+        byte[] bytes = image.getBytes();
+        if (bytes.length < 8) { // Las imágenes válidas deberían tener al menos algunos bytes
+            throw new IllegalArgumentException("File is too small to be a valid image");
+        }
+        
+        // Verificar los magic numbers de las imágenes comunes
+        // JPEG: FF D8 FF
+        // PNG: 89 50 4E 47 0D 0A 1A 0A
+        // GIF: 47 49 46 38
+        // WEBP: 52 49 46 46 ** ** ** ** 57 45 42 50
+        boolean validMagicNumber = false;
+        
+        if (contentType.equals("image/jpeg") && 
+            bytes[0] == (byte) 0xFF && 
+            bytes[1] == (byte) 0xD8 && 
+            bytes[2] == (byte) 0xFF) {
+            validMagicNumber = true;
+        } else if (contentType.equals("image/png") && 
+                  bytes[0] == (byte) 0x89 && 
+                  bytes[1] == (byte) 0x50 && 
+                  bytes[2] == (byte) 0x4E && 
+                  bytes[3] == (byte) 0x47 && 
+                  bytes[4] == (byte) 0x0D && 
+                  bytes[5] == (byte) 0x0A && 
+                  bytes[6] == (byte) 0x1A && 
+                  bytes[7] == (byte) 0x0A) {
+            validMagicNumber = true;
+        } else if (contentType.equals("image/gif") && 
+                  bytes[0] == (byte) 0x47 && 
+                  bytes[1] == (byte) 0x49 && 
+                  bytes[2] == (byte) 0x46 && 
+                  bytes[3] == (byte) 0x38) {
+            validMagicNumber = true;
+        } else if (contentType.equals("image/webp") && 
+                  bytes.length > 12 &&
+                  bytes[0] == (byte) 0x52 && 
+                  bytes[1] == (byte) 0x49 && 
+                  bytes[2] == (byte) 0x46 && 
+                  bytes[3] == (byte) 0x46 && 
+                  bytes[8] == (byte) 0x57 && 
+                  bytes[9] == (byte) 0x45 && 
+                  bytes[10] == (byte) 0x42 && 
+                  bytes[11] == (byte) 0x50) {
+            validMagicNumber = true;
+        }
+        
+        if (!validMagicNumber) {
+            throw new IllegalArgumentException("File content does not match its declared image type");
         }
     }
 }
