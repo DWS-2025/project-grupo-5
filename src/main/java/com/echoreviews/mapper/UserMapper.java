@@ -62,7 +62,7 @@ public class UserMapper {
         return new UserDTO(
             user.getId(),
             user.getUsername(),
-            user.getPassword(),
+            null,
             user.getEmail(),
             user.isAdmin(),
             user.isPotentiallyDangerous(),

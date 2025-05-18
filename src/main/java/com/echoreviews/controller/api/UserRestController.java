@@ -68,6 +68,17 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
+    private Object getValueIfPresent(Map<String, Object> updates, String field) {
+        if (!updates.containsKey(field) || updates.get(field) == null) {
+            return null;
+        }
+        // No permitir cambios de contraseña a través del endpoint general de actualización
+        if (field.equals("password")) {
+            return null;
+        }
+        return updates.get(field);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
@@ -102,22 +113,27 @@ public class UserRestController {
                             // Crear un nuevo UserDTO con los campos actualizados
                             UserDTO updatedUserDTO = new UserDTO(
                                 id,
-                                updates.containsKey("username") ? (String) updates.get("username") : userToUpdate.username(),
-                                updates.containsKey("password") ? (String) updates.get("password") : userToUpdate.password(),
-                                updates.containsKey("email") ? (String) updates.get("email") : userToUpdate.email(),
+                                getValueIfPresent(updates, "username") != null ? 
+                                    (String) getValueIfPresent(updates, "username") : userToUpdate.username(),
+                                getValueIfPresent(updates, "password") != null ? 
+                                    (String) getValueIfPresent(updates, "password") : userToUpdate.password(),
+                                getValueIfPresent(updates, "email") != null ? 
+                                    (String) getValueIfPresent(updates, "email") : userToUpdate.email(),
                                 // Solo permitir cambios en estos campos si es admin
-                                jwtUtil.isAdmin(token) && updates.containsKey("isAdmin") ? 
-                                    (Boolean) updates.get("isAdmin") : userToUpdate.isAdmin(),
-                                jwtUtil.isAdmin(token) && updates.containsKey("potentiallyDangerous") ? 
-                                    (Boolean) updates.get("potentiallyDangerous") : userToUpdate.potentiallyDangerous(),
-                                jwtUtil.isAdmin(token) && updates.containsKey("banned") ? 
-                                    (Boolean) updates.get("banned") : userToUpdate.banned(),
-                                updates.containsKey("imageUrl") ? (String) updates.get("imageUrl") : userToUpdate.imageUrl(),
+                                jwtUtil.isAdmin(token) && getValueIfPresent(updates, "isAdmin") != null ? 
+                                    (Boolean) getValueIfPresent(updates, "isAdmin") : userToUpdate.isAdmin(),
+                                jwtUtil.isAdmin(token) && getValueIfPresent(updates, "potentiallyDangerous") != null ? 
+                                    (Boolean) getValueIfPresent(updates, "potentiallyDangerous") : userToUpdate.potentiallyDangerous(),
+                                jwtUtil.isAdmin(token) && getValueIfPresent(updates, "banned") != null ? 
+                                    (Boolean) getValueIfPresent(updates, "banned") : userToUpdate.banned(),
+                                getValueIfPresent(updates, "imageUrl") != null ? 
+                                    (String) getValueIfPresent(updates, "imageUrl") : userToUpdate.imageUrl(),
                                 userToUpdate.imageData(), // No se permite actualizar imageData directamente
                                 userToUpdate.followers(), // No se permite actualizar followers directamente
                                 userToUpdate.following(), // No se permite actualizar following directamente
                                 userToUpdate.favoriteAlbumIds(), // No se permite actualizar favoritos directamente
-                                updates.containsKey("pdfPath") ? (String) updates.get("pdfPath") : userToUpdate.pdfPath()
+                                getValueIfPresent(updates, "pdfPath") != null ? 
+                                    (String) getValueIfPresent(updates, "pdfPath") : userToUpdate.pdfPath()
                             );
                             
                             UserDTO savedUser = userService.saveUser(updatedUserDTO);
@@ -298,6 +314,85 @@ public class UserRestController {
                 "success", false,
                 "error", e.getMessage()
             ));
+        }
+    }
+
+    @PostMapping("/{id}/change-password")
+    public ResponseEntity<?> changePassword(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> passwordData,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        try {
+            // Obtener el username del token
+            String username = jwtUtil.extractUsername(token);
+            
+            // Obtener el usuario que hace la petición
+            UserDTO requestingUser = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Verificar que los campos requeridos están presentes
+            if (!passwordData.containsKey("currentPassword") || !passwordData.containsKey("newPassword")) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Both currentPassword and newPassword are required"));
+            }
+
+            String currentPassword = passwordData.get("currentPassword");
+            String newPassword = passwordData.get("newPassword");
+
+            // Obtener el usuario a actualizar
+            return userService.getUserById(id)
+                    .map(userToUpdate -> {
+                        // Verificar que el usuario es el mismo que se quiere actualizar o es admin
+                        if (!userToUpdate.username().equals(username) && !jwtUtil.isAdmin(token)) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                        }
+
+                        try {
+                            // Si es el mismo usuario, verificar la contraseña actual
+                            if (userToUpdate.username().equals(username)) {
+                                // Verificar la contraseña actual usando el servicio de autenticación
+                                if (!userService.verifyPassword(userToUpdate.username(), currentPassword)) {
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                        .body(Map.of("error", "Current password is incorrect"));
+                                }
+                            }
+
+                            // Actualizar la contraseña usando el método específico
+                            userService.updatePassword(userToUpdate.id(), newPassword);
+
+                            // Generar un nuevo token después del cambio de contraseña
+                            UserDetails userDetails = userService.loadUserByUsername(userToUpdate.username());
+                            String newToken = jwtUtil.generateToken(userDetails, userToUpdate.isAdmin());
+
+                            return ResponseEntity.ok()
+                                .body(Map.of(
+                                    "message", "Password updated successfully",
+                                    "token", newToken
+                                ));
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.badRequest()
+                                .body(Map.of("error", e.getMessage()));
+                        } catch (RuntimeException e) {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(Map.of("error", e.getMessage()));
+                        }
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", e.getMessage()));
         }
     }
 }

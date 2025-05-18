@@ -770,4 +770,29 @@ public class UserService implements UserDetailsService {
             return user;
         }
     }
+
+    public boolean verifyPassword(String username, String password) {
+        return authenticateUser(username, password).isPresent();
+    }
+
+    @Transactional
+    public UserDTO updatePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Validate password format
+        if (!newPassword.matches("^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=\\S+$).{8,25}$")) {
+            throw new IllegalArgumentException(
+                "Password must be between 8 and 25 characters and contain at least one number, " +
+                "one uppercase letter, and one special character"
+            );
+        }
+
+        // Encode and set the new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        
+        // Save the user
+        User savedUser = userRepository.save(user);
+        return UserDTO.fromUser(savedUser);
+    }
 }
