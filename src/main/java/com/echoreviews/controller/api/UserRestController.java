@@ -2,6 +2,7 @@ package com.echoreviews.controller.api;
 
 import com.echoreviews.model.User;
 import com.echoreviews.service.UserService;
+import com.echoreviews.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,9 @@ public class UserRestController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -73,13 +77,47 @@ public class UserRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(user -> {
-                    userService.deleteUser(user.username());
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Object> deleteUser(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        try {
+            // Obtener el username del token
+            String username = jwtUtil.extractUsername(token);
+            
+            // Obtener el usuario que hace la petición
+            UserDTO requestingUser = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Obtener el usuario a eliminar
+            return userService.getUserById(id)
+                    .map(userToDelete -> {
+                        // Verificar que el usuario es el mismo que se quiere eliminar o es admin
+                        if (!userToDelete.username().equals(username) && !jwtUtil.isAdmin(token)) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                        }
+
+                        try {
+                            userService.deleteUser(userToDelete.username());
+                            return ResponseEntity.noContent().build();
+                        } catch (RuntimeException e) {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                        }
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/{id}/image")
