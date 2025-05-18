@@ -39,7 +39,7 @@ public class AuthRestController {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
         
-        // Sanitizar entradas para prevenir inyecciones SQL usando la utilidad de sanitización
+        // Sanitize inputs to prevent SQL injections using the sanitization utility
         if (!inputSanitizer.isValidUsername(username)) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid username format");
@@ -71,18 +71,18 @@ public class AuthRestController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        // Verificar que el token existe y tiene el formato correcto
+        // Verify that the token exists and has the correct format
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Token no proporcionado o formato inválido");
+            errorResponse.put("error", "Token not provided or invalid format");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
-        // Extraer el token
+        // Extract the token
         String token = authHeader.substring(7);
         
         try {
-            // Invalidar el token
+            // Invalidate the token
             jwtUtil.invalidateToken(token);
             
             Map<String, String> response = new HashMap<>();
@@ -90,17 +90,17 @@ public class AuthRestController {
             
             return ResponseEntity.ok(response);
         } catch (ExpiredJwtException e) {
-            // Si el token ya expiró, consideramos el logout como exitoso
+            // If the token is already expired, consider the logout successful
             Map<String, String> response = new HashMap<>();
             response.put("message", "Logout successful. Token already expired.");
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            // Error de formato o token inválido
+            // Format error or invalid token
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Token inválido: " + e.getMessage());
+            errorResponse.put("error", "Invalid token: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
-            // Cualquier otro error
+            // Any other error
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Logout failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -109,14 +109,14 @@ public class AuthRestController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
-        // Sanitizar entradas para prevenir inyecciones SQL usando la utilidad de sanitización
+        // Sanitize inputs to prevent SQL injections using the sanitization utility
         if (!inputSanitizer.isValidUsername(userDTO.username())) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid username format");
             return ResponseEntity.badRequest().body(errorResponse);
         }
         
-        // Verificar que el email sea seguro
+        // Verify that the email is safe
         if (!inputSanitizer.isValidEmail(userDTO.email())) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid email format");
