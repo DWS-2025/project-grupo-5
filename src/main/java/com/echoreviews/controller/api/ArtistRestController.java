@@ -2,6 +2,7 @@ package com.echoreviews.controller.api;
 
 import com.echoreviews.model.Artist;
 import com.echoreviews.service.ArtistService;
+import com.echoreviews.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class ArtistRestController {
 
     @Autowired
     private ArtistMapper artistMapper;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<ArtistDTO>> getAllArtists() {
@@ -63,8 +67,21 @@ public class ArtistRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ArtistDTO> createArtist(@RequestBody ArtistDTO artistDTO) {
+    public ResponseEntity<ArtistDTO> createArtist(@RequestBody ArtistDTO artistDTO, @RequestHeader("Authorization") String authHeader) {
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
         try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             Artist artist = artistMapper.toEntity(artistDTO);
             Artist savedArtist = artistService.saveArtist(ArtistDTO.fromArtist(artist)).toArtist();
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -79,19 +96,34 @@ public class ArtistRestController {
     @PutMapping("/{id}")
     public ResponseEntity<ArtistDTO> updateArtist(
             @PathVariable Long id,
-            @RequestBody ArtistDTO artistDTO) {
+            @RequestBody ArtistDTO artistDTO,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
         try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             return (ResponseEntity<ArtistDTO>) artistService.getArtistById(id)
                     .map(existingArtist -> {
                         ArtistDTO artistToUpdate = artistDTO.withId(id);
                         try {
                             ArtistDTO updatedArtist = artistService.updateArtist(artistToUpdate);
-                            return ResponseEntity.ok(updatedArtist); // <-- OK
+                            return ResponseEntity.ok(updatedArtist);
                         } catch (RuntimeException e) {
-                            return ResponseEntity.<ArtistDTO>status(HttpStatus.CONFLICT).build(); // <-- OK
+                            return ResponseEntity.<ArtistDTO>status(HttpStatus.CONFLICT).build();
                         }
                     })
-                    .orElseGet(() -> ResponseEntity.<ArtistDTO>notFound().build()); // <-- PERFECTO
+                    .orElseGet(() -> ResponseEntity.<ArtistDTO>notFound().build());
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -99,8 +131,21 @@ public class ArtistRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteArtist(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteArtist(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        // Verificar si el usuario es admin
         try {
+            if (!jwtUtil.isAdmin(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             artistService.deleteArtist(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
