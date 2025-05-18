@@ -137,8 +137,21 @@ EchoReviews is a web-based platform that allows users to explore, review, and ma
 
 ## @M0ntoto
 
-### [numerodelcomit](url_del_comit)
-- Descripción
+### [88dd6f4](https://github.com/DWS-2025/project-grupo-5/commit/88dd6f41c61146678bd88ea75d8b61c9a76252b1) and [64ab000](https://github.com/DWS-2025/project-grupo-5/commit/64ab000e45917c60d024608460c4d42520326749) and [07870a3](https://github.com/DWS-2025/project-grupo-5/commit/07870a35c01af96c927a0af57acc3a2444490cd3)
+- Api Rest Album, User, Artist with Image (JWT) (CREATE AND UPDATE)
+- Postman Collection
+
+### [0793e9b](https://github.com/DWS-2025/project-grupo-5/commit/0793e9b3e2a9db1c33787dcbb63738c1085ea723)
+- Api Rest PDF (UPLOAD, DELETE, VIEW)
+- Postman Collection
+
+### [50d2190](https://github.com/DWS-2025/project-grupo-5/commit/50d21908772c91b49e3e48b61247823f42e320a5)
+- Api Rest Follow and Unfollow
+- Postman Collection
+
+### [cb47f6d](https://github.com/DWS-2025/project-grupo-5/commit/cb47f6d80aebe73be2c65a17fac70257b67c4ea2)
+- Add and save PDF without DataBase
+
 
 ## @paaul19
 

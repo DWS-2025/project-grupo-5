@@ -126,30 +126,6 @@
 
 
                     </div>
-                    <div class="audio-container">
-                        <strong class="audio-preview-text">Audio Preview:</strong>
-                        <audio th:if="${album.audioData()}" autoplay loop controls controlsList="nodownload noremoteplayback">
-                            <source th:src="@{${album.audioData()}}" type="audio/mpeg">
-                            Your browser does not support audio playback.
-                        </audio>
-                        <input type="checkbox" id="checkboxInput">
-                        <label for="checkboxInput" class="toggleSwitch">
-                            <div class="speaker">
-                                <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 75 75">
-                                    <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" style="stroke:#fff;stroke-width:5;stroke-linejoin:round;fill:#fff;"></path>
-                                    <path d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6" style="fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round"></path>
-                                </svg>
-                            </div>
-                            <div class="mute-speaker">
-                                <svg version="1.0" viewBox="0 0 75 75" stroke="#fff" stroke-width="5">
-                                    <path d="m39,14-17,15H6V48H22l17,15z" fill="#fff" stroke-linejoin="round"></path>
-                                    <path d="m49,26 20,24m0-24-20,24" fill="#fff" stroke-linecap="round"></path>
-                                </svg>
-                            </div>
-                        </label>
-                    </div>
-                    <p th:unless="${album.audioData()}">
-                        <!--No audio associated.-->
                     </p>
 
                     <div class="review-card2">
@@ -343,7 +319,7 @@
                             </div>
                             <div th:each="review : ${reviews}" class="review-card">
                                 <div class="card-review">
-                                    <div class="review-actions" th:if="${session.user != null && (session.user.username == review.username || session.user.admin)}">
+                                    <div class="review-actions" th:if="${session.user != null && (session.user.id == review.userId() || session.user.admin)}">
                                         <button type="button" class="edit-review"
                                                 th:data-review-id="${review.id()}"
                                                 th:data-review-rating="${review.rating()}"
@@ -366,13 +342,13 @@
                                     <div class="infos d-flex flex-column">
                                         <div class="d-flex align-items-center">
                                             <div class="me-2" style="width: 40px; height: 40px;">
-                                                <a th:href="@{/profile/{username}(username=${review.username()})}">
+                                                <a th:href="@{/profile/{username}(username=${userService.getUserById(review.userId()).get().username()})}">
                                                     <img th:if="${review.userImageUrl() != null}" th:src="${review.userImageUrl()}" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Profile Picture">
                                                     <i th:unless="${review.userImageUrl() != null}" class="bi bi-person-circle" style="font-size: 2rem;"></i>
                                                 </a>
                                             </div>
                                             <div class="username" style="font-weight: bold;">
-                                                <a th:href="@{/profile/{username}(username=${review.username()})}" class="author" th:text="${review.username()}"></a>
+                                                <a th:href="@{/profile/{username}(username=${userService.getUserById(review.userId()).get().username()})}" class="author" th:text="${userService.getUserById(review.userId()).get().username()}"></a>
                                             </div>
                                         </div>
                                         <!-- Content container, below username -->
