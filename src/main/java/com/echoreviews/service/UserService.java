@@ -274,7 +274,9 @@ public class UserService implements UserDetailsService {
                 updatedFavorites.add(albumId);
                 UserDTO updatedUserDTO = userDTO.withFavoriteAlbumIds(updatedFavorites);
                 UserDTO savedUserDTO = saveUser(updatedUserDTO);
-                session.setAttribute("user", savedUserDTO);
+                if (session != null) {
+                    session.setAttribute("user", savedUserDTO);
+                }
                 return savedUserDTO;
             }
             return userDTO;
@@ -304,7 +306,9 @@ public class UserService implements UserDetailsService {
                 updatedFavorites.remove(albumId);
                 UserDTO updatedUserDTO = userDTO.withFavoriteAlbumIds(updatedFavorites);
                 UserDTO savedUserDTO = saveUser(updatedUserDTO);
-                session.setAttribute("user",savedUserDTO);
+                if (session != null) {
+                    session.setAttribute("user", savedUserDTO);
+                }
                 return savedUserDTO;
             }
             throw new RuntimeException("Album not found in user's favorites");
