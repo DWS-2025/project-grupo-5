@@ -1,7 +1,9 @@
 package com.echoreviews.security;
 
+import com.echoreviews.service.TokenBlacklistService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,9 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+    
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
 
     private Key getSigningKey() {
         byte[] keyBytes = secret.getBytes();
@@ -54,6 +59,11 @@ public class JwtUtil {
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+    
+    private Boolean isTokenBlacklisted(String token) {
+        String tokenId = extractTokenId(token);
+        return tokenBlacklistService.isTokenBlacklisted(tokenId);
     }
 
     public String generateToken(UserDetails userDetails, boolean isAdmin) {
@@ -90,7 +100,28 @@ public class JwtUtil {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && !isTokenBlacklisted(token));
+    }
+    
+    public void invalidateToken(String token) {
+        try {
+            String tokenId = extractTokenId(token);
+            
+            // Verificar que el tokenId no sea nulo (podría pasar si el formato del token es inválido)
+            if (tokenId == null) {
+                throw new IllegalArgumentException("Token ID no encontrado en el token");
+            }
+            
+            String username = extractUsername(token);
+            Date expirationDate = extractExpiration(token);
+            tokenBlacklistService.blacklistToken(tokenId, expirationDate, username);
+        } catch (ExpiredJwtException e) {
+            // Si el token ya expiró, no hay necesidad de bloquearlo
+            // Pero no lanzamos excepción, porque el objetivo de invalidar se logra
+        } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            // Reenviar la excepción para que el controlador la maneje adecuadamente
+            throw new IllegalArgumentException("Token inválido: " + e.getMessage(), e);
+        }
     }
 
     public Boolean isAdmin(String token) {

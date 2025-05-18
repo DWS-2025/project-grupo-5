@@ -7,6 +7,7 @@ import com.echoreviews.service.UserService;
 import com.echoreviews.util.InputSanitizer;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import io.jsonwebtoken.ExpiredJwtException;
 
 @Controller
 public class AuthController {
@@ -159,6 +162,45 @@ public class AuthController {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Authentication failed: " + e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PostMapping("/api/auth/logout")
+    @ResponseBody
+    public ResponseEntity<?> apiLogout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Token no proporcionado o formato inválido");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+        
+        try {
+            // Invalidar el token
+            jwtUtil.invalidateToken(token);
+            
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Logout successful. Token invalidated.");
+            
+            return ResponseEntity.ok(response);
+        } catch (ExpiredJwtException e) {
+            // Si el token ya expiró, consideramos el logout como exitoso
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Logout successful. Token already expired.");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            // Error de formato o token inválido
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Token inválido: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            // Cualquier otro error
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Logout failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 

@@ -5,6 +5,7 @@ import com.echoreviews.config.CustomAuthenticationSuccessHandler;
 import com.echoreviews.config.BannedUserFilter;
 import com.echoreviews.config.UserAgentValidationFilter;
 import com.echoreviews.config.SqlInjectionFilter;
+import com.echoreviews.security.JwtAuthenticationFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -51,6 +52,9 @@ public class SecurityConfig {
     
     @Autowired
     private UserAgentValidationFilter userAgentValidationFilter;
+    
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
     
     // Comentar o eliminar temporalmente para verificar si este filtro es el problema
     // @Autowired
@@ -115,6 +119,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/favorites/**", "/reviews/**").authenticated()
                         .requestMatchers("/login", "/auth/register", "/register", "/follow/**").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout").permitAll()
                         .requestMatchers("/",
                                 "/css/**", 
                                 "/js/**", 
@@ -174,7 +179,8 @@ public class SecurityConfig {
                         .expiredUrl("/login?session-expired=true")
                 )
                 .addFilterAfter(bannedUserFilter, BasicAuthenticationFilter.class)
-                .addFilterAfter(userAgentValidationFilter, BannedUserFilter.class);
+                .addFilterAfter(userAgentValidationFilter, BannedUserFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter, UserAgentValidationFilter.class);
                 // Eliminar temporalmente este filtro para verificar si es la causa del problema
                 // .addFilterAfter(sqlInjectionFilter, UserAgentValidationFilter.class);
 
