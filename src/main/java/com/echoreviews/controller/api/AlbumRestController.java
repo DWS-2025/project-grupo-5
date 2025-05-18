@@ -226,4 +226,72 @@ public class AlbumRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<AlbumDTO> addLike(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        try {
+            // Obtener el username del token
+            String username = jwtUtil.extractUsername(token);
+            
+            // Obtener el usuario
+            UserDTO user = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Añadir el álbum a favoritos
+            UserDTO updatedUser = userService.addFavoriteAlbum(user.id(), id, null);
+            
+            // Obtener el álbum actualizado
+            return albumService.getAlbumById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<AlbumDTO> removeLike(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        // Verificar que el token existe y tiene el formato correcto
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Extraer el token
+        String token = authHeader.substring(7);
+
+        try {
+            // Obtener el username del token
+            String username = jwtUtil.extractUsername(token);
+            
+            // Obtener el usuario
+            UserDTO user = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Eliminar el álbum de favoritos
+            UserDTO updatedUser = userService.deleteFavoriteAlbum(user.id(), id, null);
+            
+            // Obtener el álbum actualizado
+            return albumService.getAlbumById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
