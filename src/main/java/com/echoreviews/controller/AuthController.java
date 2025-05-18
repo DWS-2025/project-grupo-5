@@ -4,6 +4,7 @@ import com.echoreviews.dto.UserDTO;
 import com.echoreviews.model.User;
 import com.echoreviews.security.JwtUtil;
 import com.echoreviews.service.UserService;
+import com.echoreviews.util.InputSanitizer;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Controller
 public class AuthController {
@@ -31,6 +33,12 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    private InputSanitizer inputSanitizer;
+    
+    // Patrón para sanitizar entradas y prevenir inyecciones SQL
+    private static final Pattern SAFE_INPUT_PATTERN = Pattern.compile("^[a-zA-Z0-9._@-]{3,50}$");
 
     // Rutas Web
     @GetMapping("/login")
@@ -44,12 +52,37 @@ public class AuthController {
         model.addAttribute("user", new User());
         return "auth/register";
     }
+    
+    /**
+     * Método para sanitizar entradas de usuario y prevenir inyecciones SQL
+     * @param input El texto a sanitizar
+     * @return true si la entrada es segura, false en caso contrario
+     */
+    private boolean isSafeInput(String input) {
+        return input != null && SAFE_INPUT_PATTERN.matcher(input).matches();
+    }
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes, Model model) {
         try {
+            // Sanitizar entradas para prevenir inyecciones SQL
+            String username = user.getUsername();
+            String email = user.getEmail();
+            
+            // Verificar que el nombre de usuario sea seguro usando la utilidad de sanitización
+            if (!inputSanitizer.isValidUsername(username)) {
+                model.addAttribute("error", "El nombre de usuario contiene caracteres no permitidos");
+                return "error";
+            }
+            
+            // Verificar que el email sea seguro
+            if (!inputSanitizer.isValidEmail(email)) {
+                model.addAttribute("error", "El formato de email no es válido");
+                return "error";
+            }
+            
             // Check if username already exists
-            if (userService.getUserByUsername(user.getUsername()).isPresent()) {
+            if (userService.getUserByUsername(username).isPresent()) {
                 model.addAttribute("error", "Username already in use");
                 return "error";
             }
@@ -64,9 +97,9 @@ public class AuthController {
             // Convert User to UserDTO
             UserDTO userDTO = new UserDTO(
                     null,
-                    user.getUsername(),
-                    user.getPassword(),
-                    user.getEmail(),
+                    username,
+                    password,
+                    email,
                     false,
                     false,
                     false,
@@ -98,33 +131,66 @@ public class AuthController {
     public ResponseEntity<?> apiLogin(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
+        
+        // Sanitizar entradas para prevenir inyecciones SQL usando la utilidad de sanitización
+        if (!inputSanitizer.isValidUsername(username)) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Invalid username format");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
 
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(username, password)
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+            );
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        UserDTO user = userService.getUserByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            UserDTO user = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String jwt = jwtUtil.generateToken(userDetails, user.isAdmin());
+            String jwt = jwtUtil.generateToken(userDetails, user.isAdmin());
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", jwt);
-        response.put("user", user);
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", jwt);
+            response.put("user", user);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Authentication failed: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<?> apiRegister(@RequestBody UserDTO userDTO) {
-        UserDTO registeredUser = userService.registerUser(userDTO);
+        // Sanitizar entradas para prevenir inyecciones SQL usando la utilidad de sanitización
+        if (!inputSanitizer.isValidUsername(userDTO.username())) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Invalid username format");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
         
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Registration successful. Please login.");
-        response.put("user", registeredUser);
+        // Verificar que el email sea seguro
+        if (!inputSanitizer.isValidEmail(userDTO.email())) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Invalid email format");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+        
+        try {
+            UserDTO registeredUser = userService.registerUser(userDTO);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Registration successful. Please login.");
+            response.put("user", registeredUser);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Registration failed: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 }

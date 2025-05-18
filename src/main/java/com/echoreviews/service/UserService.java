@@ -9,6 +9,7 @@ import com.echoreviews.model.Review;
 import com.echoreviews.model.User;
 import com.echoreviews.repository.UserRepository;
 import com.echoreviews.repository.AlbumRepository;
+import com.echoreviews.util.InputSanitizer;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,19 +43,40 @@ public class UserService implements UserDetailsService {
     private final AlbumService albumService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final InputSanitizer inputSanitizer;
+
+    // Patrón para validar entradas y prevenir inyecciones SQL
+    private static final Pattern SAFE_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9._@-]{3,50}$");
+    private static final Pattern SAFE_EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+    
+    /**
+     * Método para validar que una entrada de texto sea segura
+     * @param input El texto a validar
+     * @param pattern El patrón contra el que validar
+     * @return true si la entrada es válida, false en caso contrario
+     */
+    private boolean isValidInput(String input, Pattern pattern) {
+        return input != null && pattern.matcher(input).matches();
+    }
 
     @Autowired
-    public UserService(UserRepository userRepository, @Lazy ReviewService reviewService, @Lazy AlbumService albumService, UserMapper userMapper, @Lazy PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, @Lazy ReviewService reviewService, @Lazy AlbumService albumService, UserMapper userMapper, @Lazy PasswordEncoder passwordEncoder, InputSanitizer inputSanitizer) {
         this.userRepository = userRepository;
         this.reviewService = reviewService;
         this.albumService = albumService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.inputSanitizer = inputSanitizer;
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Validar entrada para prevenir inyecciones SQL
+        if (!inputSanitizer.isValidUsername(username)) {
+            throw new UsernameNotFoundException("Invalid username format");
+        }
+        
         User userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
@@ -124,6 +147,11 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<UserDTO> getUserByUsername(String username) {
+        // Validar entrada para prevenir inyecciones SQL
+        if (!inputSanitizer.isValidUsername(username)) {
+            return Optional.empty();
+        }
+        
         Optional<User> userEntityOptional = userRepository.findByUsername(username);
         if (userEntityOptional.isPresent()) {
             User userEntity = userEntityOptional.get();
@@ -194,6 +222,11 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<UserDTO> authenticateUser(String username, String password) {
+        // Validar entrada para prevenir inyecciones SQL
+        if (!inputSanitizer.isValidUsername(username)) {
+            return Optional.empty();
+        }
+        
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -218,6 +251,16 @@ public class UserService implements UserDetailsService {
         if (userDTO.password() == null || userDTO.password().trim().isEmpty()) {
              throw new RuntimeException("Password cannot be empty");
         }
+        
+        // Validar entradas para prevenir inyecciones SQL
+        if (!inputSanitizer.isValidUsername(userDTO.username())) {
+            throw new RuntimeException("Invalid username format. Only alphanumeric characters, dots, underscores, @ and hyphens are allowed.");
+        }
+        
+        if (!inputSanitizer.isValidEmail(userDTO.email())) {
+            throw new RuntimeException("Invalid email format");
+        }
+        
         UserDTO dtoToSave = userDTO.withIsAdmin(false);
         return saveUser(dtoToSave); 
     }
