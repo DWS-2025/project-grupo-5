@@ -519,18 +519,21 @@ public class ProfileController{
             }
             
             String pdfPath = userOpt.get().pdfPath();
-            Path filePath = Paths.get("src/main/resources/static" + pdfPath);
+            // Construir la ruta absoluta desde la raíz del proyecto
+            Path filePath = Paths.get(".", pdfPath).normalize().toAbsolutePath();
+            
             Resource resource = new UrlResource(filePath.toUri());
             
             if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + resource.getFilename())
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
             } else {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
