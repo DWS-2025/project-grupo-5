@@ -105,6 +105,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository())
+                        .ignoringRequestMatchers("/api/**") // Ignorar CSRF para endpoints de API
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .requiresChannel(channel -> channel
