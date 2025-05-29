@@ -48,7 +48,9 @@ public class AlbumRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Page<Album> pageResult = albumService.getAllAlbumsPaged(page, size);
-        List<AlbumDTO> albums = albumMapper.toDTOList(pageResult.getContent());
+        List<AlbumDTO> albums = albumMapper.toDTOList(pageResult.getContent()).stream()
+            .map(AlbumDTO::withoutImageData)
+            .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
         response.put("albums", albums);
@@ -67,7 +69,7 @@ public class AlbumRestController {
 
         try {
             return albumService.getAlbumById(id)
-                    .map(album -> ResponseEntity.ok(albumMapper.toDTO(album.toAlbum())))
+                    .map(album -> ResponseEntity.ok(albumMapper.toDTO(album.toAlbum()).withoutImageData()))
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -91,7 +93,7 @@ public class AlbumRestController {
             }
 
             AlbumDTO savedAlbum = albumService.saveAlbum(albumDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedAlbum.withoutImageData());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
@@ -124,7 +126,7 @@ public class AlbumRestController {
                         AlbumDTO updatedAlbumDTO = albumDTO.withId(id);
                         try {
                             AlbumDTO savedAlbum = albumService.saveAlbum(updatedAlbumDTO);
-                            return ResponseEntity.ok(savedAlbum);
+                            return ResponseEntity.ok(savedAlbum.withoutImageData());
                         } catch (RuntimeException e) {
                             return ResponseEntity.status(HttpStatus.CONFLICT).build();
                         }
@@ -189,7 +191,9 @@ public class AlbumRestController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String artist,
             @RequestParam(required = false) Integer year) {
-        List<AlbumDTO> albums = albumService.searchAlbums(title, artist, year);
+        List<AlbumDTO> albums = albumService.searchAlbums(title, artist, year).stream()
+            .map(AlbumDTO::withoutImageData)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(albums);
     }
 
@@ -201,6 +205,7 @@ public class AlbumRestController {
                     .map(albumService::getAlbumById)
                     .filter(java.util.Optional::isPresent)
                     .map(java.util.Optional::get)
+                    .map(AlbumDTO::withoutImageData)
                     .collect(Collectors.toList());
             
             return ResponseEntity.ok(favoriteAlbums);
@@ -212,7 +217,9 @@ public class AlbumRestController {
     @GetMapping("/top/liked")
     public ResponseEntity<List<AlbumDTO>> getTopLikedAlbums() {
         try {
-            List<AlbumDTO> topAlbums = albumService.getTopLikedAlbums();
+            List<AlbumDTO> topAlbums = albumService.getTopLikedAlbums().stream()
+                .map(AlbumDTO::withoutImageData)
+                .collect(Collectors.toList());
             return ResponseEntity.ok(topAlbums);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -222,7 +229,9 @@ public class AlbumRestController {
     @GetMapping("/top/rated")
     public ResponseEntity<List<AlbumDTO>> getTopRatedAlbums() {
         try {
-            List<AlbumDTO> topAlbums = albumService.getTopRatedAlbums();
+            List<AlbumDTO> topAlbums = albumService.getTopRatedAlbums().stream()
+                .map(AlbumDTO::withoutImageData)
+                .collect(Collectors.toList());
             return ResponseEntity.ok(topAlbums);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

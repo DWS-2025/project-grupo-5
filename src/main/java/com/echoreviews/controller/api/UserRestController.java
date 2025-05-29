@@ -46,21 +46,23 @@ public class UserRestController {
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
-        List<UserDTO> userDTOs = new ArrayList<>(users);
+        List<UserDTO> userDTOs = users.stream()
+            .map(UserDTO::withoutImageData)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(userDTOs);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
-                .map(user -> ResponseEntity.ok(UserDTO.fromUser(user.toUser())))
+                .map(user -> ResponseEntity.ok(user.withoutImageData()))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/username/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username)
-                .map(user -> ResponseEntity.ok(UserDTO.fromUser(user.toUser())))
+                .map(user -> ResponseEntity.ok(user.withoutImageData()))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -70,7 +72,7 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         UserDTO savedUser = userService.saveUser(userDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser.withoutImageData());
     }
 
     private Object getValueIfPresent(Map<String, Object> updates, String field) {
@@ -78,7 +80,7 @@ public class UserRestController {
             return null;
         }
         // Do not allow password changes through the general update endpoint
-        if (field.equals("password")) {
+        if (field.equals("password") || field.equals("pdfPath") || field.equals("imageUrl")) {
             return null;
         }
         return updates.get(field);
@@ -142,7 +144,7 @@ public class UserRestController {
                             );
                             
                             UserDTO savedUser = userService.saveUser(updatedUserDTO);
-                            return ResponseEntity.ok(savedUser);
+                            return ResponseEntity.ok(savedUser.withoutImageData());
                         } catch (ClassCastException e) {
                             return ResponseEntity.badRequest()
                                 .body(Map.of("error", "Invalid data type for one or more fields"));
@@ -231,6 +233,7 @@ public class UserRestController {
                     .map(userId -> userService.getUserById(userId))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
+                    .map(UserDTO::withoutImageData)
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(followers);
@@ -251,6 +254,7 @@ public class UserRestController {
                     .map(userId -> userService.getUserById(userId))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
+                    .map(UserDTO::withoutImageData)
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(following);
@@ -420,37 +424,29 @@ public class UserRestController {
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestHeader("Authorization") String authHeader) {
         
-        // Verificar que el token existe y tiene el formato correcto
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Extraer el token
         String token = authHeader.substring(7);
 
         try {
-            // Obtener el username del token
             String username = jwtUtil.extractUsername(token);
             
-            // Obtener el usuario autenticado
             UserDTO requestingUser = userService.getUserByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             
-            // Verificar que el usuario solicitante sea el mismo que se actualiza o sea admin
             if (!requestingUser.id().equals(id) && !requestingUser.isAdmin()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             
-            // Verificar que el usuario a actualizar existe
             UserDTO userToUpdate = userService.getUserById(id)
                     .orElseThrow(() -> new RuntimeException("Usuario a actualizar no encontrado"));
             
             try {
-                // Convertir el JSON a un mapa para actualizar solo los campos proporcionados
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, Object> updates = objectMapper.readValue(userJson, Map.class);
                 
-                // Crear un nuevo UserDTO con los campos actualizados
                 UserDTO updatedUserDTO = new UserDTO(
                     id,
                     getValueIfPresent(updates, "username") != null ? 
@@ -458,8 +454,7 @@ public class UserRestController {
                     null, // No actualizar la contraseña a través de esta API
                     getValueIfPresent(updates, "email") != null ? 
                         (String) getValueIfPresent(updates, "email") : userToUpdate.email(),
-                    // Solo permitir cambios a estos campos si es admin
-                    requestingUser.isAdmin() && getValueIfPresent(updates, "isAdmin") != null ? 
+                    requestingUser.isAdmin() && getValueIfPresent(updates, "isAdmin") != null ?
                         (Boolean) getValueIfPresent(updates, "isAdmin") : userToUpdate.isAdmin(),
                     requestingUser.isAdmin() && getValueIfPresent(updates, "potentiallyDangerous") != null ? 
                         (Boolean) getValueIfPresent(updates, "potentiallyDangerous") : userToUpdate.potentiallyDangerous(),
@@ -473,20 +468,15 @@ public class UserRestController {
                     userToUpdate.pdfPath()
                 );
                 
-                // Si se proporciona una imagen, validarla y actualizar el usuario con ella
                 if (image != null && !image.isEmpty()) {
-                    // Validación de imagen
                     validateImageFile(image);
                     
-                    // Generar URL para la imagen
                     String imageUrl = "/api/users/" + id + "/image";
                     
-                    // Actualizar con la nueva imagen y URL
                     updatedUserDTO = updatedUserDTO.withImageData(image.getBytes())
                                                  .withImageUrl(imageUrl);
                 }
                 
-                // Guardar el usuario actualizado
                 UserDTO result = userService.saveUser(updatedUserDTO);
                 return ResponseEntity.ok(result);
                 
@@ -511,7 +501,6 @@ public class UserRestController {
             throw new IllegalArgumentException("Image file cannot be empty");
         }
         
-        // Verificar el tipo de contenido (MIME type)
         String contentType = image.getContentType();
         if (contentType == null || !(contentType.equals("image/jpeg") || 
                                      contentType.equals("image/png") || 

@@ -23,7 +23,7 @@ public record AlbumDTO(
         String tidal_url,
         Double averageRating,
         List<Long> artistIds,
-        List<Long> reviewIds,
+        List<ReviewDTO> reviews,
         List<String> artistNames,
         List<String> favoriteUsers,
         byte[] imageData,
@@ -47,7 +47,7 @@ public record AlbumDTO(
         return new AlbumDTO(
                 id, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, newAverageRating,
-                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData, audioPreview
+                artistIds, reviews, artistNames, favoriteUsers, imageData, audioData, audioPreview
         );
     }
     @JsonIgnore
@@ -80,7 +80,7 @@ public record AlbumDTO(
                         .map(Artist::getId)
                         .collect(Collectors.toList()),
                 reviews.stream()
-                        .map(Review::getId)
+                        .map(ReviewDTO::fromReview)
                         .collect(Collectors.toList()),
                 artists.stream()
                         .map(Artist::getName)
@@ -110,6 +110,7 @@ public record AlbumDTO(
         album.setImageData(this.imageData());
         album.setAudioData(this.audioData());
         album.setAudioPreview(this.audioPreview());
+        
         // Initialize the artists list
         List<Artist> artists = new ArrayList<>();
         if (this.artistIds != null) {
@@ -120,6 +121,16 @@ public record AlbumDTO(
             }
         }
         album.setArtists(artists);
+
+        // Initialize the reviews list
+        List<Review> reviews = new ArrayList<>();
+        if (this.reviews != null) {
+            reviews = this.reviews.stream()
+                .map(ReviewDTO::toReview)
+                .collect(Collectors.toList());
+        }
+        album.setReviews(reviews);
+
         // We don't assign favoriteUsers here since we need the complete User entities
         // The favoriteUsers list will be handled in the service
         return album;
@@ -143,14 +154,14 @@ public record AlbumDTO(
         return new AlbumDTO(
                 newId, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, averageRating,
-                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData, audioPreview
+                artistIds, reviews, artistNames, favoriteUsers, imageData, audioData, audioPreview
         );
     }
     public AlbumDTO withImageData(byte[] newImageData) {
         return new AlbumDTO(
                 id, title, genre, imageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, averageRating,
-                artistIds, reviewIds, artistNames, favoriteUsers, newImageData, audioData, audioPreview
+                artistIds, reviews, artistNames, favoriteUsers, newImageData, audioData, audioPreview
         );
     }
     
@@ -158,7 +169,31 @@ public record AlbumDTO(
         return new AlbumDTO(
                 id, title, genre, newImageUrl, audioFile, description, tracklist, year,
                 spotify_url, applemusic_url, tidal_url, averageRating,
-                artistIds, reviewIds, artistNames, favoriteUsers, imageData, audioData, audioPreview
+                artistIds, reviews, artistNames, favoriteUsers, imageData, audioData, audioPreview
+        );
+    }
+
+    public AlbumDTO withoutImageData() {
+        return new AlbumDTO(
+                this.id(),
+                this.title(),
+                this.genre(),
+                this.imageUrl(),
+                this.audioFile(),
+                this.description(),
+                this.tracklist(),
+                this.year(),
+                this.spotify_url(),
+                this.applemusic_url(),
+                this.tidal_url(),
+                this.averageRating,
+                this.artistIds,
+                this.reviews,
+                this.artistNames,
+                this.favoriteUsers,
+                null,
+                this.audioData(),
+                this.audioPreview()
         );
     }
     

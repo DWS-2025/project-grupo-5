@@ -10,6 +10,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.echoreviews.dto.ReviewDTO;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +21,11 @@ import java.io.IOException;
 public interface AlbumMapper {
     @Mapping(target = "artistIds", source = "artists", qualifiedByName = "artistsToIds")
     @Mapping(target = "artistNames", source = "artists", qualifiedByName = "artistsToNames")
+    @Mapping(target = "reviews", source = "reviews", qualifiedByName = "reviewsToDTOs")
     AlbumDTO toDTO(Album album);
 
     @Mapping(target = "artists", source = "artistIds", qualifiedByName = "idsToArtists")
+    @Mapping(target = "reviews", source = "reviews", qualifiedByName = "dtosToReviews")
     Album toEntity(AlbumDTO albumDTO);
 
     List<AlbumDTO> toDTOList(List<Album> albums);
@@ -84,5 +88,25 @@ public interface AlbumMapper {
     default AlbumDTO fromJson(String json) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(json, AlbumDTO.class);
+    }
+
+    @Named("reviewsToDTOs")
+    default List<ReviewDTO> reviewsToDTOs(List<Review> reviews) {
+        if (reviews == null) {
+            return null;
+        }
+        return reviews.stream()
+                .map(ReviewDTO::fromReview)
+                .collect(Collectors.toList());
+    }
+
+    @Named("dtosToReviews")
+    default List<Review> dtosToReviews(List<ReviewDTO> reviewDTOs) {
+        if (reviewDTOs == null) {
+            return null;
+        }
+        return reviewDTOs.stream()
+                .map(ReviewDTO::toReview)
+                .collect(Collectors.toList());
     }
 }

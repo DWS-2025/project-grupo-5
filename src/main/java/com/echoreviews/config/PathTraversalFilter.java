@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  * Filter to detect and prevent path traversal attacks
  * Verifies suspicious patterns in requested URLs
  */
+
 @Component
 public class PathTraversalFilter extends OncePerRequestFilter {
     

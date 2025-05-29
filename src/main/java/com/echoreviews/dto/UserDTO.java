@@ -278,4 +278,22 @@ public record UserDTO(
             newPdfPath
         );
     }
+
+    public UserDTO withoutImageData() {
+        return new UserDTO(
+            this.id(),
+            this.username(),
+            this.password(),
+            this.email(),
+            this.isAdmin(),
+            this.potentiallyDangerous(),
+            this.banned(),
+            this.imageUrl(),
+            null,
+            this.followers(),
+            this.following(),
+            this.favoriteAlbumIds,
+            this.pdfPath
+        );
+    }
 }
