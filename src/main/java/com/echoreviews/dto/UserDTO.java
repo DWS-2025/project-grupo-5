@@ -81,7 +81,7 @@ public record UserDTO(
         user.setImageData(this.imageData());
         user.setFollowers(this.followers());
         user.setFollowing(this.following());
-        user.setPdfPath(this.pdfPath());
+
         
         if(this.favoriteAlbumIds != null) {
             user.setFavoriteAlbums(
@@ -112,8 +112,7 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
         );
     }
 
@@ -130,8 +129,7 @@ public record UserDTO(
             newImageData,
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
         );
     }
 
@@ -148,8 +146,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
+
         );
     }
 
@@ -166,8 +164,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            newFavoriteAlbumIds,
-            this.pdfPath
+            newFavoriteAlbumIds
+
         );
     }
 
@@ -184,8 +182,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             newFollowing,
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
+
         );
     }
 
@@ -202,8 +200,8 @@ public record UserDTO(
             this.imageData(),
             newFollowers,
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
+
         );
     }
 
@@ -220,8 +218,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
+
         );
     }
 
@@ -238,8 +236,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
+
         );
     }
 
@@ -256,8 +254,8 @@ public record UserDTO(
             this.imageData(),
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
+
         );
     }
 
@@ -292,8 +290,8 @@ public record UserDTO(
             null,
             this.followers(),
             this.following(),
-            this.favoriteAlbumIds,
-            this.pdfPath
+            this.favoriteAlbumIds
+
         );
     }
 }

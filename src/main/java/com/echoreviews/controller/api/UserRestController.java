@@ -138,9 +138,7 @@ public class UserRestController {
                                 userToUpdate.imageData(), // Cannot update imageData directly
                                 userToUpdate.followers(), // Cannot update followers directly
                                 userToUpdate.following(), // Cannot update following directly
-                                userToUpdate.favoriteAlbumIds(), // Cannot update favorites directly
-                                getValueIfPresent(updates, "pdfPath") != null ? 
-                                    (String) getValueIfPresent(updates, "pdfPath") : userToUpdate.pdfPath()
+                                userToUpdate.favoriteAlbumIds() // Cannot update favorites directly
                             );
                             
                             UserDTO savedUser = userService.saveUser(updatedUserDTO);
