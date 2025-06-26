@@ -124,7 +124,8 @@ public class AuthRestController {
         }
         
         try {
-            UserDTO registeredUser = userService.registerUser(userDTO);
+            UserDTO safeUserDTO = userDTO.withPdfPath(null).withImageUrl(null);
+            UserDTO registeredUser = userService.registerUser(safeUserDTO);
             
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Registration successful. Please login.");
