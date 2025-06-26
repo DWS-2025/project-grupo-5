@@ -90,6 +90,10 @@ EchoReviews is a web-based platform that allows users to explore, review, and ma
 4. Enter your review text and rating
 5. Submit the review for publication after sanitization
 
+# Important commits Phase III (2)
+### [fd13dab](https://github.com/DWS-2025/project-grupo-5/commit/fd13dab90f589fe8799393f3449f7cddc9d811aa)
+- Final commit (@darkxvortex, @noegomezz, @paaul19, @M0ntoto)
+
 # Important commits Phase III
 
 ## @darkxvortex
